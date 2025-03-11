@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongo-container
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: .
+    container_name: server-backend-container
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/server # Liên kết thư mục backend với container
+      - /node_modules # Tránh ghi đè node_modules trong container
+    environment:
+      MONGO_URI: "mongodb://host.docker.internal:27017/ecommerce"
+      WATCHPACK_POLLING: "true" # Kích hoạt hot reload
+    stdin_open: true # Giữ container luôn mở
+    tty: true # Cho phép terminal hoạt động bình thường
+    command: ["yarn", "start"]
+
+volumes:
+  mongo-data:

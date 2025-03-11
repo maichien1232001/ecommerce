@@ -1,0 +1,1060 @@
+openapi: 3.0.0
+info:
+  title: API
+  description: Full api
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000/api
+    description: Development Server
+
+paths:
+  /auth/register:
+    post:
+      summary: Đăng ký người dùng mới
+      description: Tạo tài khoản mới với tên, email và mật khẩu
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nguyễn Văn A"
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        "201":
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+                  refreshToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+        "400":
+          description: Email đã tồn tại
+        "500":
+          description: Lỗi server
+
+  /auth/login:
+    post:
+      summary: Đăng nhập người dùng
+      description: Xác thực người dùng bằng email và mật khẩu
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        "200":
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+                  refreshToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+        "401":
+          description: Email hoặc mật khẩu không hợp lệ
+        "500":
+          description: Lỗi server
+
+  /auth/refresh-token:
+    post:
+      summary: Lấy access token mới từ refresh token
+      description: Cung cấp refresh token hợp lệ để lấy access token mới
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1..."
+      responses:
+        "200":
+          description: Lấy access token mới thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+        "400":
+          description: Refresh token là bắt buộc
+        "403":
+          description: Refresh token không hợp lệ hoặc đã hết hạn
+
+  /auth/social-login:
+    post:
+      summary: Đăng nhập bằng mạng xã hội (Google, Facebook)
+      description: Xác thực người dùng thông qua mạng xã hội
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: provider
+          required: true
+          schema:
+            type: string
+            enum: [google, facebook]
+          description: Loại đăng nhập mạng xã hội (Google hoặc Facebook)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providerId:
+                  type: string
+                  example: "1234567890"
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                name:
+                  type: string
+                  example: "Nguyễn Văn A"
+      responses:
+        "200":
+          description: Đăng nhập mạng xã hội thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+                  refreshToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1..."
+        "500":
+          description: Lỗi server
+
+  /admin/users:
+    get:
+      summary: Lấy danh sách người dùng
+      description: Trả về danh sách tất cả người dùng với phân trang
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          example: 1
+          description: Trang hiện tại
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          example: 10
+          description: Số người dùng mỗi trang
+      responses:
+        "200":
+          description: Trả về danh sách người dùng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  totalUsers:
+                    type: integer
+                    example: 50
+                  totalPages:
+                    type: integer
+                    example: 5
+                  currentPage:
+                    type: integer
+                    example: 1
+        "500":
+          description: Lỗi server
+
+  /admin/products:
+    get:
+      summary: Lấy danh sách sản phẩm
+      description: Trả về danh sách tất cả sản phẩm với phân trang
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          example: 10
+      responses:
+        "200":
+          description: Trả về danh sách sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+                  totalProducts:
+                    type: integer
+                    example: 100
+                  totalPages:
+                    type: integer
+                    example: 10
+                  currentPage:
+                    type: integer
+                    example: 1
+        "500":
+          description: Lỗi server
+
+  /admin/orders:
+    get:
+      summary: Lấy danh sách đơn hàng
+      description: Trả về danh sách tất cả đơn hàng với phân trang
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          example: 10
+      responses:
+        "200":
+          description: Trả về danh sách đơn hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+                  totalOrders:
+                    type: integer
+                    example: 30
+                  totalPages:
+                    type: integer
+                    example: 3
+                  currentPage:
+                    type: integer
+                    example: 1
+        "500":
+          description: Lỗi server
+
+  /cart/add:
+    post:
+      description: API quản lý giỏ hàng
+      summary: Thêm sản phẩm vào giỏ hàng
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
+                quantity:
+                  type: integer
+                  example: 2
+      responses:
+        "200":
+          description: Giỏ hàng đã cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Lỗi nhập liệu
+        "500":
+          description: Lỗi server
+
+  /cart/:
+    get:
+      description: API quản lý giỏ hàng
+      summary: Lấy giỏ hàng của người dùng
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Giỏ hàng của người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Lỗi nhập liệu
+        "500":
+          description: Lỗi server
+
+  /cart/update{productId}:
+    put:
+      description: API quản lý giỏ hàng
+      summary: Cập nhật giỏ hàng
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
+                productId:
+                  type: string
+                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
+                quantity:
+                  type: integer
+                  example: 3
+      responses:
+        "200":
+          description: Giỏ hàng đã cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Lỗi nhập liệu
+        "500":
+          description: Lỗi server
+
+  /cart/remove/{productId}:
+    delete:
+      description: API quản lý giỏ hàng
+      summary: Xóa sản phẩm khỏi giỏ hàng
+      tags:
+        - Cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          example: "64b8c7d8f8d7a6d3a9b5f8c7"
+      responses:
+        "200":
+          description: Sản phẩm đã được xóa khỏi giỏ hàng
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Giỏ hàng không tồn tại
+        "500":
+          description: Lỗi server
+
+  /chats:
+    get:
+      summary: Lấy danh sách cuộc trò chuyện của người dùng
+      description: Trả về danh sách các cuộc trò chuyện mà người dùng đang tham gia
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Trả về danh sách cuộc trò chuyện thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Chat"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /chats/create:
+    post:
+      summary: Tạo cuộc trò chuyện mới
+      description: Khởi tạo cuộc trò chuyện giữa hai người dùng
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                participantId:
+                  type: string
+                  format: uuid
+                  description: "ID của người dùng muốn trò chuyện cùng"
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        "201":
+          description: Cuộc trò chuyện đã được tạo thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chat"
+        "404":
+          description: Người dùng không tồn tại
+        "500":
+          description: Lỗi server
+
+  /chats/message:
+    post:
+      summary: Gửi tin nhắn trong cuộc trò chuyện
+      description: Thêm một tin nhắn mới vào cuộc trò chuyện đã có sẵn
+      tags:
+        - Chat
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chatId:
+                  type: string
+                  format: uuid
+                  description: "ID của cuộc trò chuyện"
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                content:
+                  type: string
+                  description: "Nội dung tin nhắn"
+                  example: "Xin chào! Bạn khỏe không?"
+      responses:
+        "201":
+          description: Tin nhắn đã được gửi thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sender:
+                    type: string
+                    format: uuid
+                    description: "ID của người gửi tin nhắn"
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  content:
+                    type: string
+                    description: "Nội dung tin nhắn"
+                    example: "Xin chào! Bạn khỏe không?"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-03-10T12:00:00Z"
+        "404":
+          description: Cuộc trò chuyện không tồn tại
+        "500":
+          description: Lỗi server
+
+  /coupon:
+    get:
+      summary: Lấy danh sách coupon
+      description: Trả về danh sách coupon
+      tags:
+        - Coupon
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Trả về danh sách coupon thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Coupon"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /coupon/create:
+    post:
+      summary: API tạo coupon
+      description: Tạo coupon mới
+      tags:
+        - Coupon
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: Coupon123
+                discountType:
+                  type: string
+                  example: percentage
+                discountValue:
+                  type: number
+                  example: 10
+                expirationDate:
+                  type: string
+                  format: date-time
+                  example: "2024-03-10T12:00:00Z"
+                usageLimit:
+                  type: integer
+                  example: 2
+      responses:
+        "200":
+          description: Trả về danh sách coupon thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Coupon"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /coupon/apply:
+    post:
+      summary: API áp dụng coupon
+      description: Áp dụng coupon
+      tags:
+        - Coupon
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - couponCode
+              properties:
+                couponCode:
+                  type: string
+                  example: "DISCOUNT10"
+      responses:
+        "200":
+          description: Mã giảm giá hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Mã giảm giá hợp lệ"
+                  discountValue:
+                    type: number
+                    example: 10
+                  discountType:
+                    type: string
+                    example: "percentage"
+        "400":
+          description: Mã giảm giá không hợp lệ hoặc đã hết hạn
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Mã giảm giá đã hết hạn"
+        "401":
+          description: Người dùng chưa được xác thực
+        "404":
+          description: Mã giảm giá không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Mã giảm giá không tồn tại"
+        "500":
+          description: Lỗi server
+
+  /coupon/update:
+    put:
+      description: API quản lý coupon
+      summary: Cập nhật coupon
+      tags:
+        - Coupon
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                couponId:
+                  type: string
+                  format: uuid
+                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
+                code:
+                  type: string
+                  example: Coupon123
+                discountType:
+                  type: string
+                  example: percentage
+                discountValue:
+                  type: number
+                  example: 10
+                expirationDate:
+                  type: string
+                  format: date-time
+                  example: "2024-03-11T15:30:00Z"
+                usageLimit:
+                  type: integer
+                  example: 2
+                isActive:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: Giỏ hàng đã cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Lỗi nhập liệu
+        "500":
+          description: Lỗi server
+
+  /coupon/remove/{couponId}:
+    delete:
+      description: API quản lý giảm giá
+      summary: Xóa coupon
+      tags:
+        - Coupon
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: couponId
+          required: true
+          schema:
+            type: string
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+      responses:
+        "200":
+          description: Coupon đã được xóa
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Coupon không tồn tại
+        "500":
+          description: Lỗi server
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a9c3c2b4a1f9e2d7a5f5e8"
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        role:
+          type: string
+          example: "user"
+        socialLogin:
+          type: object
+          properties:
+            provider:
+              type: string
+              example: "google"
+            providerId:
+              type: string
+              example: "64a9c3c2b4a1f9e2d7a5f5e8"
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        name:
+          type: string
+          example: "Laptop Dell XPS 13"
+        price:
+          type: number
+          example: 25000000
+        stock:
+          type: integer
+          example: 100
+        category:
+          type: string
+          example: "Laptop"
+        images:
+          type: array
+          items:
+            type: string
+            example: "https://example.com/image.jpg"
+        rating:
+          type: number
+          example: 4.5
+        specifications:
+          type: object
+          properties:
+            cpu:
+              type: string
+              example: "Intel Core i7"
+            ram:
+              type: string
+              example: "16GB DDR4"
+            storage:
+              type: string
+              example: "512GB SSD"
+            screen:
+              type: string
+              example: "13.3 inch Full HD"
+            battery:
+              type: string
+              example: "10 hours"
+            camera:
+              type: string
+              example: "HD Webcam"
+            operatingSystem:
+              type: string
+              example: "Windows 11"
+            color:
+              type: string
+              example: "Silver"
+            weight:
+              type: string
+              example: "1.2 kg"
+            connectivity:
+              type: string
+              example: "WiFi 6, Bluetooth 5.1"
+            others:
+              type: string
+              example: "Backlit Keyboard, Fingerprint Sensor"
+        reviews:
+          type: array
+          items:
+            type: object
+            properties:
+              user:
+                type: string
+                example: "64a9c3c2b4a1f9e2d7a5f5e1"
+              comment:
+                type: string
+                example: "Sản phẩm rất tốt!"
+              rating:
+                type: number
+                example: 5
+              createdAt:
+                type: string
+                format: date-time
+                example: "2024-03-10T12:00:00Z"
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64b9c3d2e4a1f9e2d7a5f5e1"
+        user:
+          $ref: "#/components/schemas/User"
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                $ref: "#/components/schemas/Product"
+              quantity:
+                type: integer
+                example: 2
+              price:
+                type: number
+                example: 10000
+        totalAmount:
+          type: number
+          example: 50000000
+        status:
+          type: string
+          default: pending
+        shippingAddress:
+          type: object
+          properties:
+            address:
+              type: string
+              example: "24 Stress, Tran Hung Dao"
+            city:
+              type: string
+              example: Ha Noi
+            postalCode:
+              type: string
+              example: "M2P5N7"
+            country:
+              type: string
+              example: Canada
+        paymentStatus:
+          type: string
+          default: pending
+        paymentMethod:
+          type: string
+          example: Scan qr
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo đơn hàng"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Cart:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "60d21b4667d0d8992e610c84"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                example: "60d21b4667d0d8992e610c85"
+              quantity:
+                type: integer
+                example: 2
+              price:
+                type: number
+                example: 500000
+        totalPrice:
+          type: number
+          example: 1000000
+    Chat:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        participants:
+          type: array
+          description: "Danh sách ID của người dùng tham gia cuộc trò chuyện"
+          items:
+            type: string
+            format: uuid
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        messages:
+          type: array
+          description: "Danh sách tin nhắn trong cuộc trò chuyện"
+          items:
+            type: object
+            properties:
+              sender:
+                type: string
+                format: uuid
+                description: "ID của người gửi tin nhắn"
+                example: "64a9c3c2b4a1f9e2d7a5f5e9"
+              content:
+                type: string
+                description: "Nội dung tin nhắn"
+                example: "Xin chào! Bạn khỏe không?"
+              timestamp:
+                type: string
+                format: date-time
+                description: "Thời gian gửi tin nhắn"
+                example: "2024-03-10T12:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo cuộc trò chuyện"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Coupon:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        code:
+          type: string
+          example: Coupon123
+        discountType:
+          type: string
+          description: Loại giảm giá (phần trăm hoặc cố định)
+          example: percentage
+        discountValue:
+          type: number
+          description: Giá trị giảm giá
+          example: 10
+        expirationDate:
+          type: string
+          format: date-time
+          description: Ngày hết hạn
+          example: "2024-03-11T15:30:00Z"
+        usageLimit:
+          type: integer
+          description: Số lần sử dụng tối đa của mã giảm giá
+          example: 2
+        isActive:
+          type: boolean
+          default: true
+          description: Trạng thái sử dụng
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo mã giảm giá"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+          description: ID thông báo
+        user:
+          $ref: "#/components/schemas/User"
+        type:
+          type: string
+          example: order
+          description: Các loại thông báo có thể là order, support, alert, v.v.
+        messages:
+          type: string
+          description: Nội dung thông báo
+          example: Em an com chua
+        read:
+          type: boolean
+          default: false
+          description: Đánh dấu đã đọc chưa
+        relatedEntity:
+          type: string
+          description: ID của đơn hàng, hỗ trợ, v.v.
+          example: "65a12b34c56d78e9f0123456"
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo thông báo"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
