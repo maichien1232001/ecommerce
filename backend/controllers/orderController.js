@@ -76,6 +76,26 @@ exports.getUserOrders = async (req, res) => {
     }
 };
 
+exports.getAllOrders = async (req, res) => {
+
+    const { page = 1, limit = 10 } = req.query; // Phân trang: mặc định là trang 1 và giới hạn 10 đơn hàng mỗi trang
+
+    try {
+        const skip = (page - 1) * limit;
+        const orders = await Order.find({})
+            .skip(skip)
+            .limit(limit)
+            .populate('products.product');
+
+        const totalOrders = await Order.countDocuments({});
+        const pagination = paginationHelper(page, limit, totalOrders);
+
+        return res.status(200).json({ orders, pagination });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
 // Lấy thông tin chi tiết đơn hàng
 exports.getOrderById = async (req, res) => {
     const orderId = req.params.orderId;
@@ -106,10 +126,74 @@ exports.updateOrderStatus = async (req, res) => {
         order.status = status;
         order.updatedAt = Date.now();
         await order.save();
-        await sendOrderNotification(userId, newOrder);
+        // await sendOrderNotification(userId, newOrder);
 
         return res.status(200).json({ message: 'Trạng thái đơn hàng đã được cập nhật', order });
     } catch (error) {
         handleError(res, error);
     }
 };
+
+exports.deleteOrder = async (req, res) => {
+    const orderId = req.params.orderId;
+
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
+        }
+        await order.remove()
+        return res.status(200).json({ message: 'Đơn hàng đã được xóa' })
+    } catch (error) {
+        handleError(res, error);
+    }
+}
+
+
+
+
+// const Notification = require('../models/Notification');
+// const Order = require('../models/Order');
+// const User = require('../models/User'); // Model User
+// const admin = require('../config/firebaseAdmin'); // Firebase Admin SDK
+
+// exports.createOrder = async (req, res) => {
+//     try {
+//         const order = new Order(req.body);
+//         await order.save();
+//         const customerNotification = new Notification({
+//             user: order.user,
+//             type: "order",
+//             message: `Bạn vừa tạo thành công đơn hàng ${order._id}.`,
+//             relatedEntity: order._id,
+//         });
+//         await customerNotification.save();
+
+//         const adminUser = await User.findOne({ role: 'admin' });
+
+//         if (adminUser) {
+//             const adminNotification = new Notification({
+//                 user: adminUser._id, // Admin
+//                 type: "order",
+//                 message: `Bạn có đơn hàng ${order._id} mới.`,
+//                 relatedEntity: order._id,
+//             });
+//             await adminNotification.save();
+
+//             if (adminUser.firebaseToken) {
+//                 await admin.messaging().send({
+//                     token: adminUser.firebaseToken,
+//                     notification: {
+//                         title: 'Đơn hàng mới!',
+//                         body: `Bạn có đơn hàng ${order._id} mới.`,
+//                     },
+//                     data: { orderId: order._id.toString() },
+//                 });
+//             }
+//         }
+
+//         res.status(201).json({ message: 'Đơn hàng đã được tạo và thông báo đã gửi.' });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };

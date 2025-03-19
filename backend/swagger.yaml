@@ -743,6 +743,49 @@ paths:
         "500":
           description: Lỗi server
 
+  /notification/:
+    get:
+      description: API quản lý thông báo
+      summary: Lấy ra danh sách thông báo
+      tags:
+        - Notification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                useId:
+                  type: string
+                  format: uuid
+                  description: "ID của user"
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        "200":
+          description: Trả về danh sách thông báo thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  # /order/:
+  #   get:
+  #     description: API quản lý đơn hàng
+  #     summary: Lấy danh sách đơn hàng
+  #     tags:
+  #       - Coupon
+  #     security:
+  #       - bearerAuth: []
+
 components:
   schemas:
     User:
@@ -1047,6 +1090,57 @@ components:
           type: string
           format: date-time
           description: "Thời gian tạo thông báo"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        user:
+          $ref: "#/components/schemas/User"
+        product:
+          $ref: "#/components/schemas/Product"
+        rating:
+          type: number
+          maximum: 5
+          minimum: 1
+          description: Đánh giá sản phẩm
+        comment:
+          type: string
+          example: Sản phẩm tốt
+          description: Mô tả đánh giá sản phẩm
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo mã giảm giá"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    WishList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+        user:
+          $ref: "#/components/schemas/User"
+        product:
+          $ref: "#/components/schemas/Product"
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo mã giảm giá"
           example: "2024-03-10T12:00:00Z"
         updatedAt:
           type: string
