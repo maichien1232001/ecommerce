@@ -1,13 +1,15 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const User = require('../models/User');
+const Notification = require('../models/Notification');
 const { sendNotification } = require('../sockets/socket');
 const { handleError } = require('../utils/errorHandler');
 const paginationHelper = require('../utils/pagination'); // Nếu bạn cần phân trang trong các API
+const admin = require('../config/firebaseAdmin'); // Firebase Admin SDK
 
-// Tạo đơn hàng mới
 exports.createOrder = async (req, res) => {
     const { products, shippingAddress, paymentMethod } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id.toString();
 
     try {
         let totalAmount = 0;
@@ -27,7 +29,7 @@ exports.createOrder = async (req, res) => {
             });
         }
 
-        // Tạo đơn hàng mới
+        // Tạo đơn hàng
         const order = new Order({
             user: userId,
             products: productList,
@@ -35,23 +37,108 @@ exports.createOrder = async (req, res) => {
             shippingAddress,
             paymentMethod,
         });
-
         await order.save();
 
-        // Giảm số lượng sản phẩm trong kho
-        for (const item of products) {
-            const product = await Product.findById(item.product);
-            if (product) {
-                product.stock -= item.quantity;
-                await product.save();
+        // Gửi thông báo cho khách hàng
+        const customerNotification = new Notification({
+            user: order.user,
+            type: "order",
+            message: `Bạn vừa tạo thành công đơn hàng ${order._id}.`,
+            relatedEntity: order._id,
+        });
+        await customerNotification.save();
+
+        // Tìm admin
+        const adminUser = await User.findOne({ role: 'admin' });
+
+        if (adminUser) {
+            // Tạo thông báo trong DB
+            const adminNotification = new Notification({
+                user: adminUser._id,
+                type: "order",
+                message: `Bạn có đơn hàng ${order._id} mới.`,
+                relatedEntity: order._id,
+            });
+            await adminNotification.save();
+
+            // Kiểm tra Firebase Token của Admin
+            console.log(adminUser);
+
+            if (adminUser.firebaseToken) {
+                try {
+                    await admin.messaging().send({
+                        token: adminUser.firebaseToken,
+                        notification: {
+                            title: 'Đơn hàng mới!',
+                            body: `Bạn có đơn hàng ${order._id} mới.`,
+                        },
+                        data: { orderId: order._id.toString() },
+                    });
+
+                    console.log(`🔔 Push notification đã gửi đến admin thành công!`);
+                } catch (error) {
+                    console.error(`❌ Lỗi khi gửi push notification:`, error);
+                }
+            } else {
+                console.warn(`⚠️ Admin chưa có Firebase Token, không thể gửi thông báo.`);
             }
+        } else {
+            console.warn(`⚠️ Không tìm thấy admin, không thể gửi thông báo.`);
         }
 
-        return res.status(201).json({ message: 'Đơn hàng đã được tạo thành công', order });
+        res.status(201).json({ message: 'Đơn hàng đã được tạo và thông báo đã gửi.' });
     } catch (error) {
-        handleError(res, error);
+        console.error(`❌ Lỗi tạo đơn hàng:`, error);
+        res.status(500).json({ message: error.message });
     }
 };
+// exports.createOrder = async (req, res) => {
+//     const { products, shippingAddress, paymentMethod } = req.body;
+//     const userId = req.user.id;
+
+//     try {
+//         let totalAmount = 0;
+//         const productList = [];
+
+//         // Tính tổng giá trị đơn hàng và kiểm tra sản phẩm
+//         for (const item of products) {
+//             const product = await Product.findById(item.product);
+//             if (!product) {
+//                 return res.status(400).json({ error: 'Sản phẩm không tồn tại' });
+//             }
+//             totalAmount += product.price * item.quantity;
+//             productList.push({
+//                 product: product._id,
+//                 quantity: item.quantity,
+//                 price: product.price,
+//             });
+//         }
+
+//         // Tạo đơn hàng mới
+//         const order = new Order({
+//             user: userId,
+//             products: productList,
+//             totalAmount,
+//             shippingAddress,
+//             paymentMethod,
+//         });
+
+//         await order.save();
+
+//         // Giảm số lượng sản phẩm trong kho
+//         for (const item of products) {
+//             const product = await Product.findById(item.product);
+//             if (product) {
+//                 product.stock -= item.quantity;
+//                 await product.save();
+//             }
+//         }
+
+//         return res.status(201).json({ message: 'Đơn hàng đã được tạo thành công', order });
+//     } catch (error) {
+//         handleError(res, error);
+//     }
+// };
 
 // Lấy thông tin đơn hàng của người dùng
 exports.getUserOrders = async (req, res) => {
@@ -150,50 +237,3 @@ exports.deleteOrder = async (req, res) => {
 }
 
 
-
-
-// const Notification = require('../models/Notification');
-// const Order = require('../models/Order');
-// const User = require('../models/User'); // Model User
-// const admin = require('../config/firebaseAdmin'); // Firebase Admin SDK
-
-// exports.createOrder = async (req, res) => {
-//     try {
-//         const order = new Order(req.body);
-//         await order.save();
-//         const customerNotification = new Notification({
-//             user: order.user,
-//             type: "order",
-//             message: `Bạn vừa tạo thành công đơn hàng ${order._id}.`,
-//             relatedEntity: order._id,
-//         });
-//         await customerNotification.save();
-
-//         const adminUser = await User.findOne({ role: 'admin' });
-
-//         if (adminUser) {
-//             const adminNotification = new Notification({
-//                 user: adminUser._id, // Admin
-//                 type: "order",
-//                 message: `Bạn có đơn hàng ${order._id} mới.`,
-//                 relatedEntity: order._id,
-//             });
-//             await adminNotification.save();
-
-//             if (adminUser.firebaseToken) {
-//                 await admin.messaging().send({
-//                     token: adminUser.firebaseToken,
-//                     notification: {
-//                         title: 'Đơn hàng mới!',
-//                         body: `Bạn có đơn hàng ${order._id} mới.`,
-//                     },
-//                     data: { orderId: order._id.toString() },
-//                 });
-//             }
-//         }
-
-//         res.status(201).json({ message: 'Đơn hàng đã được tạo và thông báo đã gửi.' });
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };

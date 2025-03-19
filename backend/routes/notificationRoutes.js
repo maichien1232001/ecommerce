@@ -1,7 +1,11 @@
 const express = require('express');
-const { getUserNotifications } = require('../controllers/notificationController');
+const { getUserNotifications, saveTokenFirebase } = require('../controllers/notificationController');
+const { auth } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.get('/', getUserNotifications);
+router.get('/', auth, getUserNotifications);
+
+router.post('/save-token', auth, saveTokenFirebase);
+
 
 module.exports = router;

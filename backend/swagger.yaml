@@ -813,6 +813,9 @@ components:
             providerId:
               type: string
               example: "64a9c3c2b4a1f9e2d7a5f5e8"
+        firebaseToken:
+          type: string
+          default: null
     Product:
       type: object
       properties:
