@@ -22,7 +22,7 @@ services:
       - /node_modules # Tránh ghi đè node_modules trong container
     environment:
       MONGO_URI: "mongodb://host.docker.internal:27017/ecommerce"
-      WATCHPACK_POLLING: "true" # Kích hoạt hot reload
+      CHOKIDAR_USEPOLLING: true
     stdin_open: true # Giữ container luôn mở
     tty: true # Cho phép terminal hoạt động bình thường
     command: ["yarn", "start"]

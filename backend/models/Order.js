@@ -14,6 +14,7 @@ const orderSchema = new mongoose.Schema({
         default: 'Pending',
     },
     shippingAddress: {
+        phoneNumber: { type: Number, required: true },
         address: { type: String, required: true },  // Địa chỉ giao hàng
         city: { type: String, required: true },
         postalCode: { type: String, required: true },

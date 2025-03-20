@@ -33,7 +33,7 @@ export const login = (values, navigate) => async (dispatch) => {
         const response = await loginApi(values)
         dispatch({
             type: 'LOGIN_SUCCESS',
-            payload: response.user,
+            payload: response,
         });
         const isAdmin = checkAdmin(response)
         const token = _.get(response, "accessToken")
@@ -52,4 +52,20 @@ export const login = (values, navigate) => async (dispatch) => {
 
 export const checkAdmin = (data) => {
     return _.get(data, 'user.role') === "admin" ?? true
+}
+
+export const saveUser = (values) => async (dispatch) => {
+    dispatch({ type: 'SAVE_USER_REQUEST' });
+    console.log(2222, values)
+    try {
+        dispatch({
+            type: 'SAVE_USER_SUCCESS',
+            payload: values,
+        });
+    } catch (error) {
+        dispatch({
+            type: 'SAVE_USER_FAILURE',
+            payload: error.message,
+        });
+    }
 }

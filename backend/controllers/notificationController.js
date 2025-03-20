@@ -18,9 +18,6 @@ exports.saveTokenFirebase = async (req, res) => {
     try {
         const { firebaseToken } = req.body;
         const userId = req.user._id.toString();
-        console.log(111111, req.user);
-
-
         if (!firebaseToken) {
             return res.status(400).json({ error: "Thiếu Firebase Token" });
         }

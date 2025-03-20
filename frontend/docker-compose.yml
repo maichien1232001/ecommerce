@@ -6,10 +6,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/app # Liên kết thư mục frontend với container
-      - /app/node_modules # Tránh ghi đè node_modules trong container
+      - .:/app
+      - /app/node_modules # Giữ node_modules trong container
     environment:
       - WATCHPACK_POLLING=true # Kích hoạt hot reload
-    stdin_open: true # Giữ container luôn mở
-    tty: true # Cho phép terminal hoạt động bình thường
+    stdin_open: true
+    tty: true
     command: ["yarn", "start"]

@@ -119,3 +119,18 @@ exports.deleteCoupon = async (req, res) => {
         handleError(res, error);
     }
 };
+
+exports.getCouponById = async (req, res) => {
+    const couponId = req.params.couponId;
+
+    try {
+        const coupon = await Coupon.findById({ couponId });
+        if (!coupon) {
+            return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
+        }
+
+        return res.status(200).json(coupon);
+    } catch (error) {
+        handleError(res, error);
+    }
+};

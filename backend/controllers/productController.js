@@ -160,3 +160,15 @@ exports.getProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getProductById = async (req, res) => {
+  const { productId } = req.query;
+
+  try {
+    const product = await Product.find({ productId })
+
+    res.status(200).json({ product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

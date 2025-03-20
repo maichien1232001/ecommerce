@@ -138,3 +138,24 @@ exports.addPaymentInfo = async (req, res) => {
         handleError(res, error);
     }
 };
+
+exports.getUserById = async (req, res) => {
+    const { userId } = req.query;
+
+    try {
+        const user = await User.findById(userId)
+
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+exports.getUserProfile = async (req, res) => {
+    try {
+        res.json(req.user); // Trả về thông tin user đã xác thực từ middleware
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};

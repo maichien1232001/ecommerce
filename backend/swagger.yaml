@@ -339,7 +339,7 @@ paths:
                   type: integer
                   example: 2
       responses:
-        "200":
+        "201":
           description: Giỏ hàng đã cập nhật
           content:
             application/json:
@@ -395,7 +395,7 @@ paths:
                   type: integer
                   example: 3
       responses:
-        "200":
+        "201":
           description: Giỏ hàng đã cập nhật
           content:
             application/json:
@@ -591,7 +591,7 @@ paths:
                   type: integer
                   example: 2
       responses:
-        "200":
+        "201":
           description: Trả về danh sách coupon thành công
           content:
             application/json:
@@ -716,6 +716,52 @@ paths:
         "500":
           description: Lỗi server
 
+  /coupon/{couponId}:
+    get:
+      description: API quản lý coupon
+      summary: Lấy chi tiết coupon
+      tags:
+        - Coupon
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: couponId
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+          description: Id của coupon
+      responses:
+        "200":
+          description: Trả về thông tin chi tiết Coupon
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: Coupon123
+                  discountType:
+                    type: string
+                    example: percentage
+                  discountValue:
+                    type: number
+                    example: 10
+                  expirationDate:
+                    type: string
+                    format: date-time
+                    example: "2024-03-10T12:00:00Z"
+                  usageLimit:
+                    type: integer
+                    example: 2
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
   /coupon/remove/{couponId}:
     delete:
       description: API quản lý giảm giá
@@ -777,14 +823,997 @@ paths:
         "500":
           description: Lỗi server
 
-  # /order/:
-  #   get:
-  #     description: API quản lý đơn hàng
-  #     summary: Lấy danh sách đơn hàng
-  #     tags:
-  #       - Coupon
-  #     security:
-  #       - bearerAuth: []
+  /notification/save-token:
+    post:
+      description: API quản lý thông báo
+      summary: Lưu token firebase
+      tags:
+        - Notification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firebaseToken:
+                  type: string
+                  format: uuid
+                  description: "Token firebase"
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        "201":
+          description: Firebase Token đã được lưu
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /orders/:
+    get:
+      description: API quản lý đơn hàng
+      summary: Lấy danh sách đơn hàng
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+            format: uuid
+          example: 64a9c3c2b4a1f9e2d7a5f5e9
+          description: Id của User
+        - in: query
+          name: page
+          schema:
+            type: integer
+          example: 1
+          description: Trang hiện tại
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          example: 10
+          description: Số người dùng mỗi trang
+      responses:
+        "200":
+          description: Trả về danh sách đơn hàng của user thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+                  totalUsers:
+                    type: integer
+                    example: 50
+                  totalOrders:
+                    type: integer
+                    example: 5
+                  currentPage:
+                    type: integer
+                    example: 1
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /orders/create:
+    post:
+      description: API quản lý đơn hàng
+      summary: API Tạo đơn hàng
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product:
+                        type: string
+                        example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                      quantity:
+                        type: number
+                        example: 2
+                  description: Danh sách sản phẩm trong đơn hàng
+                shippingAddress:
+                  type: object
+                  properties:
+                    phoneNumber:
+                      type: string
+                      example: "0123456789"
+                      description: Số điện thoại đặt hàng
+                    address:
+                      type: string
+                      example: "Số 123 đường ABC - Xã DEF - Huyện GHI"
+                      description: Địa chỉ giao hàng
+                    city:
+                      type: string
+                      example: "Tỉnh JKL"
+                      description: Tỉnh giao hàng
+                    postalCode:
+                      type: string
+                      example: "41000"
+                      description: Mã bưu chính của tỉnh
+                    country:
+                      type: string
+                      example: "Vietnam"
+                      description: Quốc gia
+                  description: Thông tin địa chỉ giao hàng
+                paymentMethod:
+                  type: string
+                  default: "Pending"
+                  description: Phương thức thanh toán
+      responses:
+        "201":
+          description: Trả về thông tin đơn hàng khi tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  user:
+                    type: string
+                    example: "65b7d8c9a0f4e1d3c2b5e9a7"
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: string
+                          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                        quantity:
+                          type: number
+                          example: 2
+                        price:
+                          type: number
+                          example: 500000
+                  totalAmount:
+                    type: number
+                    example: 1000000
+                  shippingAddress:
+                    type: object
+                    properties:
+                      phoneNumber:
+                        type: string
+                        example: "0123456789"
+                      address:
+                        type: string
+                        example: "Số 123 đường ABC - Xã DEF - Huyện GHI"
+                      city:
+                        type: string
+                        example: "Tỉnh JKL"
+                      postalCode:
+                        type: string
+                        example: "41000"
+                      country:
+                        type: string
+                        example: "Vietnam"
+                  paymentMethod:
+                    type: string
+                    example: "Pending"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /orders/{orderId}:
+    get:
+      description: API quản lý đơn hàng
+      summary: Lấy chi tiết đơn hàng
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+          description: Id của đơn hàng
+      responses:
+        "200":
+          description: Trả về thông tin chi tiết đơn hàng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  user:
+                    type: string
+                    example: "65b7d8c9a0f4e1d3c2b5e9a7"
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: string
+                          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                        quantity:
+                          type: number
+                          example: 2
+                        price:
+                          type: number
+                          example: 500000
+                  totalAmount:
+                    type: number
+                    example: 1000000
+                  shippingAddress:
+                    type: object
+                    properties:
+                      phoneNumber:
+                        type: string
+                        example: "0123456789"
+                      address:
+                        type: string
+                        example: "Số 123 đường ABC - Xã DEF - Huyện GHI"
+                      city:
+                        type: string
+                        example: "Tỉnh JKL"
+                      postalCode:
+                        type: string
+                        example: "41000"
+                      country:
+                        type: string
+                        example: "Vietnam"
+                  paymentMethod:
+                    type: string
+                    example: "Pending"
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /orders/delete/{orderId}:
+    delete:
+      description: API quản lý đơn hàng
+      summary: API xóa đơn hàng
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+      responses:
+        "200":
+          description: Đơn hàng đã được xóa
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Đơn hàng không tồn tại
+        "401":
+          description: Người dùng chưa được xác thực
+        "500":
+          description: Lỗi server
+
+  /orders/{orderId}/status:
+    put:
+      description: API quản lý đơn hàng
+      summary: API cập nhật trạng thái đơn hàng
+      tags:
+        - Order
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+        - in: query
+          name: status
+          required: true
+          schema:
+            type: string
+            example: Delivered
+      responses:
+        "201":
+          description: Đơn hàng đã được cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  user:
+                    type: string
+                    example: "65b7d8c9a0f4e1d3c2b5e9a7"
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: string
+                          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                        quantity:
+                          type: number
+                          example: 2
+                        price:
+                          type: number
+                          example: 500000
+                  totalAmount:
+                    type: number
+                    example: 1000000
+                  shippingAddress:
+                    type: object
+                    properties:
+                      phoneNumber:
+                        type: string
+                        example: "0123456789"
+                      address:
+                        type: string
+                        example: "Số 123 đường ABC - Xã DEF - Huyện GHI"
+                      city:
+                        type: string
+                        example: "Tỉnh JKL"
+                      postalCode:
+                        type: string
+                        example: "41000"
+                      country:
+                        type: string
+                        example: "Vietnam"
+                  paymentMethod:
+                    type: string
+                    example: "Pending"
+        400:
+          description: Đơn hàng không tồn tại
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /payments/create:
+    post:
+      summary: Tạo đơn hàng PayPal
+      description: Tạo một đơn hàng PayPal và nhận order ID để tiếp tục thanh toán.
+      tags:
+        - Payment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                totalAmount:
+                  type: string
+                  example: 50.00
+                currency:
+                  type: string
+                  example: USD
+                  default: USD
+                returnUrl:
+                  type: string
+                  example: https://yourwebsite.com/payment-success
+                cancelUrl:
+                  type: string
+                  example: https://yourwebsite.com/payment-cancel
+      responses:
+        200:
+          description: Tạo đơn hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 7JH12345AB6789012
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+  /payments/capture:
+    post:
+      summary: Xác nhận thanh toán PayPal,
+      description: Xác nhận đơn hàng đã được thanh toán thành công trên PayPal.,
+      tags:
+        - Payment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  example: 7JH12345AB6789012
+      responses:
+        200:
+          description: Thanh toán thành công,
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    example:
+                      id: 7JH12345AB6789012
+                      status: COMPLETED,
+                      payer:
+                        email_address: customer@example.com
+                        name:
+                          given_name: John
+                          surname: Doe
+                      purchase_units:
+                        amount:
+                          currency_code: USD
+                          value: 50.00
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /products/:
+    get:
+      description: API quản lý sản phẩm
+      summary: Lấy danh sách sản phẩm
+      tags:
+        - Product
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - in: query
+          name: search
+          required: false
+          schema:
+            type: string
+            example: "Smartphone"
+        - in: query
+          name: category
+          required: false
+          schema:
+            type: string
+            example: "Phone"
+      responses:
+        200:
+          description: Đơn hàng đã được xóa
+          content:
+            application/json:
+              schema:
+                type: object
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+    post:
+      summary: Tạo sản phẩm mới
+      description: API tạo sản phẩm mới và tải ảnh lên Cloudinary nếu có.
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Laptop Dell XPS 15"
+                description:
+                  type: string
+                  example: "Laptop cao cấp với màn hình 4K OLED."
+                price:
+                  type: number
+                  format: float
+                  example: 1999.99
+                category:
+                  type: string
+                  example: "Laptop"
+                stock:
+                  type: integer
+                  example: 50
+                specifications:
+                  type: object
+                  properties:
+                    cpu:
+                      type: string
+                      example: "Intel Core i7-12700H"
+                    ram:
+                      type: string
+                      example: "16GB DDR5"
+                    storage:
+                      type: string
+                      example: "512GB SSD NVMe"
+                    screen:
+                      type: string
+                      example: "15.6 inch 4K OLED"
+                    battery:
+                      type: string
+                      example: "86Wh"
+                    operatingSystem:
+                      type: string
+                      example: "Windows 11 Pro"
+                    color:
+                      type: string
+                      example: "Xám bạc"
+                    weight:
+                      type: string
+                      example: "2kg"
+                    connectivity:
+                      type: string
+                      example: "WiFi 6, Bluetooth 5.2"
+                    others:
+                      type: string
+                      example: "Bàn phím có đèn nền, cảm biến vân tay"
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Danh sách hình ảnh tải lên (file ảnh)
+      responses:
+        201:
+          description: Tạo sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: "64f8b2a0e1a2d0c3f3e3c123"
+                  name:
+                    type: string
+                    example: "Laptop Dell XPS 15"
+                  description:
+                    type: string
+                    example: "Laptop cao cấp với màn hình 4K OLED."
+                  price:
+                    type: number
+                    example: 1999.99
+                  category:
+                    type: string
+                    example: "Laptop"
+                  stock:
+                    type: integer
+                    example: 50
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      example: "https://res.cloudinary.com/demo/image/upload/v1693532309/dell-xps15.jpg"
+                  specifications:
+                    type: object
+                    properties:
+                      cpu:
+                        type: string
+                        example: "Intel Core i7-12700H"
+                      ram:
+                        type: string
+                        example: "16GB DDR5"
+                      storage:
+                        type: string
+                        example: "512GB SSD NVMe"
+                      screen:
+                        type: string
+                        example: "15.6 inch 4K OLED"
+                      battery:
+                        type: string
+                        example: "86Wh"
+                      operatingSystem:
+                        type: string
+                        example: "Windows 11 Pro"
+                      color:
+                        type: string
+                        example: "Xám bạc"
+                      weight:
+                        type: string
+                        example: "2kg"
+                      connectivity:
+                        type: string
+                        example: "WiFi 6, Bluetooth 5.2"
+                      others:
+                        type: string
+                        example: "Bàn phím có đèn nền, cảm biến vân tay"
+        400:
+          description: Lỗi dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Dữ liệu không hợp lệ"
+        401:
+          description: Người dùng chưa xác thực
+        500:
+          description: Lỗi hệ thống khi tạo sản phẩm
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Lỗi máy chủ nội bộ"
+  /products/{productId}:
+    get:
+      description: API quản lý sản phẩm
+      summary: Lấy chi tiết sản phẩm
+      tags:
+        - Product
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+            description: ID sản phẩm
+      responses:
+        200:
+          description: Lấy chi tiết sản phẩm
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  name:
+                    type: string
+                    example: "Smartphone Xiaomi Redmi 9A"
+                    description: Tên sản phẩm
+                  description:
+                    type: string
+                    example: Smartphone Xiaomi Redmi 9A đẳng cấp với chip Snapdragon 730G5, 8GB/128
+                    description: Mô tả sản phẩm
+                  price:
+                    type: number
+                    example: 1000000
+                  category:
+                    type: string
+                    example: "Phone"
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      example: "https://example.com/image1.jpg"
+                  stock:
+                    type: integer
+                    example: 100
+                  rating:
+                    type: integer
+                    example: 4.5
+                    description: Đánh giá sản phẩm (từ 1 đến 5)
+                  reviews:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                      example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2022-01-01T10:00:00Z"
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2022-01-01T10:00:00Z"
+        400:
+          description: Sản phẩm không tồn tại
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+    delete:
+      description: API quản lý sản phẩm
+      summary: Xóa sản phẩm
+      tags:
+        - Product
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+            description: ID sản phẩm
+      responses:
+        200:
+          description: Xóa sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: Sản phẩm không tồn tại
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+    put:
+      description: API quản lý sản phẩm
+      summary: Cập nhật thông tin sản phẩm
+      tags:
+        - Product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Smartphone Xiaomi Redmi 9A"
+                description:
+                  type: string
+                  example: Smartphone Xiaomi Redmi 9A đẳng cấp với chip Snapdragon 730G5, 8GB/128
+                price:
+                  type: number
+                  example: 1000000
+                category:
+                  type: string
+                  example: "Phone"
+                stock:
+                  type: number
+                  example: 100
+                rating:
+                  type: number
+                  example: 4.5
+                specifications:
+                  type: object
+                  properties:
+                    screenSize:
+                      type: string
+                      example: "6.6 inches"
+                    processor:
+                      type: string
+                      example: "Snapdragon 730G5"
+                    memory:
+                      type: string
+                      example: "8GB/128GB"
+                    camera:
+                      type: string
+                      example: "12 MP, 12 MP"
+                    battery:
+                      type: string
+                      example: "4500mAh"
+                    warranty:
+                      type: string
+                      example: "1 year"
+
+      responses:
+        200:
+          description: Cập nhật thông tin sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                  name:
+                    type: string
+                    example: "Smartphone Xiaomi Redmi 9A"
+                  description:
+                    type: string
+                    example: Smartphone Xiaomi Redmi 9A đẳng cấp với chip Snapdragon 730G5, 8GB/128
+                  price:
+                    type: number
+                    example: 1000000
+                  category:
+                    type: string
+                    example: "Phone"
+                  stock:
+                    type: number
+                    example: 100
+                  rating:
+                    type: number
+                    example: 4.5
+                  specifications:
+                    type: object
+                    properties:
+                      screenSize:
+                        type: string
+                        example: "6.6 inches"
+                      processor:
+                        type: string
+                        example: "Snapdragon 730G5"
+                      memory:
+                        type: string
+                        example: "8GB/128GB"
+                      camera:
+                        type: string
+                        example: "12 MP, 12 MP"
+                      battery:
+                        type: string
+                        example: "4500mAh"
+                      warranty:
+                        type: string
+                        example: "1 year"
+        400:
+          description: Thông tin cập nhật không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /products/import:
+    post:
+      description: API quản lý sản phẩm
+      summary: Import sản phẩm từ file Excel
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Excel file (.xlsx) containing product data.
+      responses:
+        201:
+          description: Successfully imported products.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Nhập dữ liệu thành công!"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "Laptop Dell XPS 13"
+                        description:
+                          type: string
+                          example: "Laptop mỏng nhẹ, màn hình 4K."
+                        price:
+                          type: number
+                          example: 25000000
+                        category:
+                          type: string
+                          example: "Laptop"
+                        stock:
+                          type: integer
+                          example: 50
+                        images:
+                          type: array
+                          items:
+                            type: string
+                          example: ["image1.jpg", "image2.jpg"]
+                        specifications:
+                          type: object
+                          properties:
+                            cpu:
+                              type: string
+                              example: "Intel Core i7"
+                            ram:
+                              type: string
+                              example: "16GB"
+                            storage:
+                              type: string
+                              example: "512GB SSD"
+                            screen:
+                              type: string
+                              example: "13.4-inch 4K"
+                            battery:
+                              type: string
+                              example: "10 hours"
+                            operatingSystem:
+                              type: string
+                              example: "Windows 11"
+                            color:
+                              type: string
+                              example: "Silver"
+                            weight:
+                              type: string
+                              example: "1.2kg"
+                            connectivity:
+                              type: string
+                              example: "WiFi, Bluetooth"
+                            others:
+                              type: string
+                              example: "Bảo mật vân tay"
+        400:
+          description: No file uploaded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Vui lòng tải lên file Excel!"
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Internal server error.
 
 components:
   schemas:

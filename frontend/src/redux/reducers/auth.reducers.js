@@ -15,7 +15,6 @@ const authReducer = (state = initialState, action) => {
                 loading: true,
             };
         case 'REGISTER_SUCCESS':
-            console.log(333333, action.payload)
             return {
                 ...state,
                 loading: false,
@@ -35,6 +34,8 @@ const authReducer = (state = initialState, action) => {
                 loading: true,
             };
         case 'LOGIN_SUCCESS':
+            console.log("LOGIN_SUCCESS", action.payload);
+
             return {
                 ...state,
                 loading: false,
@@ -47,6 +48,22 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
+                error: action.payload,
+            };
+        case 'SAVE_USER_REQUEST':
+            return {
+                ...state,
+            };
+        case 'SAVE_USER_SUCCESS':
+            console.log("SAVE_USER_SUCCESS", action.payload);
+
+            return {
+                ...state,
+                user: action.payload,
+            };
+        case 'SAVE_USER_FAILURE':
+            return {
+                ...state,
                 error: action.payload,
             };
         default:

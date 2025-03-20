@@ -9,7 +9,6 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.auths.loading);
-
   const handleRedirect = () => {
     navigate("/register");
   };

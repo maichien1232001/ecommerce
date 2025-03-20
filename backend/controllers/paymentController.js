@@ -1,4 +1,3 @@
-// controllers/paymentController.js
 const paypalClient = require('../config/paypal');
 const paypal = require('@paypal/checkout-server-sdk');
 
