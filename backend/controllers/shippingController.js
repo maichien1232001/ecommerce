@@ -80,7 +80,7 @@ exports.deleteShippingMethod = async (req, res) => {
             return res.status(404).json({ error: 'Phương thức vận chuyển không tồn tại' });
         }
 
-        await shippingMethod.remove();
+        await shippingMethod.deleteOne();
 
         return res.status(200).json({ message: 'Phương thức vận chuyển đã được xóa' });
     } catch (error) {

@@ -18,14 +18,14 @@ exports.protect = async (req, res, next) => {
 
 exports.auth = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
+    console.log(token);
+
     if (!token) {
         return res.status(401).json({ error: 'Không có quyền truy cập' });
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Decoded Token:", jwt.verify(token, process.env.JWT_SECRET));
-
         const user = await User.findById(decoded.userId);
         if (!user) {
             return res.status(401).json({ error: 'Người dùng không tồn tại' });
@@ -33,6 +33,8 @@ exports.auth = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
+        console.log(error);
+
         return res.status(401).json({ error: 'Token không hợp lệ' });
     }
 };
@@ -53,11 +55,13 @@ exports.isAuthenticated = (req, res, next) => {
 };
 
 exports.isAdmin = (req, res, next) => {
-    const token = req.header('Authorization');
+    let token = req.header('Authorization');
     if (!token) {
         return res.status(401).json({ error: 'Vui lòng đăng nhập' });
     }
-
+    if (token.startsWith("Bearer ")) {
+        token = token.slice(7, token.length); // Cắt bỏ "Bearer "
+    }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (decoded.role !== 'admin') {
@@ -66,6 +70,7 @@ exports.isAdmin = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        return res.status(401).json({ error: 'Token không hợp lệ' });
+        console.error("JWT Verification Error:", error);
+        return res.status(401).json({ error: 'Token không hợp lệ', details: error.message });
     }
 };

@@ -15,7 +15,7 @@ router.get('/:couponId', auth, isAdmin, couponController.getCouponById);
 router.post('/apply/', auth, couponController.applyCoupon);
 
 // Cập nhật mã giảm giá
-router.put('/update', auth, isAdmin, couponController.updateCoupon);
+router.put('/update/:couponId', auth, isAdmin, couponController.updateCoupon);
 
 // Xóa mã giảm giá
 router.delete('/delete/:couponId', auth, isAdmin, couponController.deleteCoupon);

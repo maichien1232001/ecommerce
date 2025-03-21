@@ -80,10 +80,12 @@ exports.applyCoupon = async (req, res) => {
 
 // Cập nhật mã giảm giá
 exports.updateCoupon = async (req, res) => {
+    const couponId = req.params.couponId;
     try {
-        const { code, couponId, discountType, discountValue, expirationDate, usageLimit, isActive } = req.body;
+        const { code, discountType, discountValue, expirationDate, usageLimit, isActive } = req.body;
 
         const coupon = await Coupon.findById(couponId);
+
         if (!coupon) {
             return res.status(404).json({ error: 'Mã giảm giá không tồn tại' });
         }
@@ -106,14 +108,14 @@ exports.updateCoupon = async (req, res) => {
 // Xóa mã giảm giá
 exports.deleteCoupon = async (req, res) => {
     try {
-        const { couponId } = req.body;
+        const couponId = req.params.couponId;
 
         const coupon = await Coupon.findById(couponId);
         if (!coupon) {
             return res.status(404).json({ error: 'Mã giảm giá không tồn tại' });
         }
 
-        await coupon.remove();
+        await coupon.deleteOne();
         return res.status(200).json({ message: 'Mã giảm giá đã được xóa' });
     } catch (error) {
         handleError(res, error);
@@ -124,7 +126,7 @@ exports.getCouponById = async (req, res) => {
     const couponId = req.params.couponId;
 
     try {
-        const coupon = await Coupon.findById({ couponId });
+        const coupon = await Coupon.findById(couponId);
         if (!coupon) {
             return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
         }

@@ -324,7 +324,7 @@ paths:
       tags:
         - Cart
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -357,7 +357,7 @@ paths:
       tags:
         - Cart
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: Giỏ hàng của người dùng
@@ -370,14 +370,21 @@ paths:
         "500":
           description: Lỗi server
 
-  /cart/update{productId}:
+  /cart/update/{productId}:
     put:
       description: API quản lý giỏ hàng
       summary: Cập nhật giỏ hàng
       tags:
         - Cart
       security:
-        - bearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          example: "64b8c7d8f8d7a6d3a9b5f8c7"
       requestBody:
         required: true
         content:
@@ -385,12 +392,6 @@ paths:
             schema:
               type: object
               properties:
-                userId:
-                  type: string
-                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
-                productId:
-                  type: string
-                  example: "64b8c7d8f8d7a6d3a9b5f8c7"
                 quantity:
                   type: integer
                   example: 3
@@ -413,7 +414,7 @@ paths:
       tags:
         - Cart
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: productId
@@ -472,7 +473,6 @@ paths:
               properties:
                 participantId:
                   type: string
-                  format: uuid
                   description: "ID của người dùng muốn trò chuyện cùng"
                   example: "64a9c3c2b4a1f9e2d7a5f5e9"
       responses:
@@ -504,7 +504,6 @@ paths:
               properties:
                 chatId:
                   type: string
-                  format: uuid
                   description: "ID của cuộc trò chuyện"
                   example: "64a9c3c2b4a1f9e2d7a5f5e9"
                 content:
@@ -521,7 +520,6 @@ paths:
                 properties:
                   sender:
                     type: string
-                    format: uuid
                     description: "ID của người gửi tin nhắn"
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   content:
@@ -666,14 +664,22 @@ paths:
         "500":
           description: Lỗi server
 
-  /coupon/update:
+  /coupon/update/{couponId}:
     put:
       description: API quản lý coupon
       summary: Cập nhật coupon
       tags:
         - Coupon
       security:
-        - bearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: couponId
+          required: true
+          schema:
+            type: string
+            example: "64b8c7d8f8d7a6d3a9b5f8c7"
+          description: Id của coupon
       requestBody:
         required: true
         content:
@@ -683,7 +689,6 @@ paths:
               properties:
                 couponId:
                   type: string
-                  format: uuid
                   example: "64b8c7d8f8d7a6d3a9b5f8c7"
                 code:
                   type: string
@@ -723,14 +728,13 @@ paths:
       tags:
         - Coupon
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: couponId
           required: true
           schema:
             type: string
-            format: uuid
             example: "64b8c7d8f8d7a6d3a9b5f8c7"
           description: Id của coupon
       responses:
@@ -762,14 +766,14 @@ paths:
         "500":
           description: Lỗi server
 
-  /coupon/remove/{couponId}:
+  /coupon/delete/{couponId}:
     delete:
       description: API quản lý giảm giá
       summary: Xóa coupon
       tags:
         - Coupon
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: couponId
@@ -796,7 +800,7 @@ paths:
       tags:
         - Notification
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -806,7 +810,6 @@ paths:
               properties:
                 useId:
                   type: string
-                  format: uuid
                   description: "ID của user"
                   example: "64a9c3c2b4a1f9e2d7a5f5e9"
       responses:
@@ -830,7 +833,7 @@ paths:
       tags:
         - Notification
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -840,7 +843,6 @@ paths:
               properties:
                 firebaseToken:
                   type: string
-                  format: uuid
                   description: "Token firebase"
                   example: "64a9c3c2b4a1f9e2d7a5f5e9"
       responses:
@@ -860,19 +862,12 @@ paths:
   /orders/:
     get:
       description: API quản lý đơn hàng
-      summary: Lấy danh sách đơn hàng
+      summary: Lấy danh sách đơn hàng của user
       tags:
         - Order
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
-        - in: query
-          name: userId
-          schema:
-            type: string
-            format: uuid
-          example: 64a9c3c2b4a1f9e2d7a5f5e9
-          description: Id của User
         - in: query
           name: page
           schema:
@@ -918,7 +913,7 @@ paths:
       tags:
         - Order
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -976,7 +971,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   user:
                     type: string
@@ -1031,14 +1025,13 @@ paths:
       tags:
         - Order
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: orderId
           required: true
           schema:
             type: string
-            format: uuid
             example: "64b8c7d8f8d7a6d3a9b5f8c7"
           description: Id của đơn hàng
       responses:
@@ -1051,7 +1044,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   user:
                     type: string
@@ -1106,7 +1098,7 @@ paths:
       tags:
         - Order
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: orderId
@@ -1135,20 +1127,25 @@ paths:
       tags:
         - Order
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: orderId
           required: true
           schema:
             type: string
-            example: "64b8c7d8f8d7a6d3a9b5f8c7"
-        - in: query
-          name: status
-          required: true
-          schema:
-            type: string
-            example: Delivered
+          example: "64b8c7d8f8d7a6d3a9b5f8c7"
+          description: Id của đơn hàng
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Delivered
       responses:
         "201":
           description: Đơn hàng đã được cập nhật
@@ -1159,7 +1156,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   user:
                     type: string
@@ -1216,7 +1212,7 @@ paths:
       tags:
         - Payment
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1259,7 +1255,7 @@ paths:
       tags:
         - Payment
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1307,7 +1303,7 @@ paths:
       tags:
         - Product
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: query
           name: page
@@ -1505,7 +1501,7 @@ paths:
       tags:
         - Product
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: productId
@@ -1524,7 +1520,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   name:
                     type: string
@@ -1556,7 +1551,6 @@ paths:
                     type: array
                     items:
                       type: string
-                      format: uuid
                       example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   createdAt:
                     type: string
@@ -1579,7 +1573,7 @@ paths:
       tags:
         - Product
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       parameters:
         - in: path
           name: productId
@@ -1608,7 +1602,7 @@ paths:
       tags:
         - Product
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1616,6 +1610,9 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  type: string
+                  example: "64a9c3c2b4a1f9e2d7a5f5e8"
                 name:
                   type: string
                   example: "Smartphone Xiaomi Redmi 9A"
@@ -1666,7 +1663,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uuid
                     example: "64a9c3c2b4a1f9e2d7a5f5e9"
                   name:
                     type: string
@@ -1720,6 +1716,8 @@ paths:
       summary: Import sản phẩm từ file Excel
       tags:
         - Product
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1814,6 +1812,176 @@ paths:
           description: Người dùng chưa được xác thực
         500:
           description: Internal server error.
+
+  /report/revenue:
+    get:
+      summary: Báo cáo doanh thu theo khoảng thời gian
+      description: API báo cáo
+      tags:
+        - Report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Khoảng thời gian (day, week, month, quarter, year, custom)
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Ngày bắt đầu (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Ngày kết thúc (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Trả về danh sách doanh thu theo tháng
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi khi lấy báo cáo doanh thu
+
+  /report/order-count:
+    get:
+      summary: Báo cáo số lượng đơn hàng theo khoảng thời gian
+      description: API báo cáo
+      tags:
+        - Report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Khoảng thời gian (day, week, month, quarter, year, custom)
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Ngày bắt đầu (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Ngày kết thúc (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Trả về danh sách số lượng đơn hàng theo tháng
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi khi lấy báo cáo số lượng đơn hàng
+
+  /report/top-selling-products:
+    get:
+      summary: Báo cáo sản phẩm bán chạy theo khoảng thời gian
+      description: API báo cáo
+      tags:
+        - Report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Khoảng thời gian (day, week, month, quarter, year, custom)
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Ngày bắt đầu (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Ngày kết thúc (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Trả về danh sách top 10 sản phẩm bán chạy
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi khi lấy báo cáo sản phẩm bán chạy
+
+  /report/user-count:
+    get:
+      summary: Báo cáo tổng số người dùng theo khoảng thời gian
+      description: API báo cáo
+      tags:
+        - Report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Khoảng thời gian (day, week, month, quarter, year, custom)
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Ngày bắt đầu (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Ngày kết thúc (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Trả về tổng số người dùng
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi khi lấy báo cáo người dùng
+
+  /report/order-status:
+    get:
+      summary: Báo cáo tổng số đơn hàng theo trạng thái
+      description: API báo cáo
+      tags:
+        - Report
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          description: Khoảng thời gian (day, week, month, quarter, year, custom)
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Ngày bắt đầu (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Ngày kết thúc (chỉ áp dụng nếu period là custom)
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Trả về tổng số đơn hàng theo trạng thái
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi khi lấy báo cáo trạng thái đơn hàng
 
 components:
   schemas:
@@ -1930,7 +2098,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64b9c3d2e4a1f9e2d7a5f5e1"
         user:
           $ref: "#/components/schemas/User"
@@ -2012,14 +2179,12 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64a9c3c2b4a1f9e2d7a5f5e9"
         participants:
           type: array
           description: "Danh sách ID của người dùng tham gia cuộc trò chuyện"
           items:
             type: string
-            format: uuid
             example: "64a9c3c2b4a1f9e2d7a5f5e9"
         messages:
           type: array
@@ -2029,7 +2194,6 @@ components:
             properties:
               sender:
                 type: string
-                format: uuid
                 description: "ID của người gửi tin nhắn"
                 example: "64a9c3c2b4a1f9e2d7a5f5e9"
               content:
@@ -2056,7 +2220,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64a9c3c2b4a1f9e2d7a5f5e9"
         code:
           type: string
@@ -2097,7 +2260,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64a9c3c2b4a1f9e2d7a5f5e9"
           description: ID thông báo
         user:
@@ -2133,7 +2295,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64a9c3c2b4a1f9e2d7a5f5e9"
         user:
           $ref: "#/components/schemas/User"
@@ -2163,7 +2324,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           example: "64a9c3c2b4a1f9e2d7a5f5e9"
         user:
           $ref: "#/components/schemas/User"

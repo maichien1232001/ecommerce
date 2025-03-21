@@ -12,13 +12,10 @@ exports.importProducts = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Vui lòng tải lên file Excel!" });
     }
-
-    // Đọc file Excel từ buffer
     const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    // Chuyển đổi dữ liệu từ Excel sang đúng định dạng Product
     const products = data.map((row) => ({
       name: row["Tên sản phẩm"],
       description: row["Mô tả"],
@@ -39,8 +36,6 @@ exports.importProducts = async (req, res) => {
         others: row["Khác"],
       },
     }));
-
-    // Lưu toàn bộ dữ liệu vào MongoDB
     await Product.insertMany(products);
     res
       .status(201)
@@ -131,7 +126,7 @@ exports.deleteProduct = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    await product.remove();
+    await product.deleteOne();
     res.status(200).json({ message: "Product removed" });
   } catch (error) {
     res.status(500).json({ message: error.message });

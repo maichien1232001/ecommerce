@@ -21,6 +21,9 @@ exports.createOrder = async (req, res) => {
             if (!product) {
                 return res.status(400).json({ error: 'Sản phẩm không tồn tại' });
             }
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ error: `Sản phẩm ${product.name} không đủ hàng.` });
+            }
             totalAmount += product.price * item.quantity;
             productList.push({
                 product: product._id,
@@ -38,7 +41,11 @@ exports.createOrder = async (req, res) => {
             paymentMethod,
         });
         await order.save();
-
+        for (const item of products) {
+            await Product.findByIdAndUpdate(item.product, {
+                $inc: { stock: -item.quantity }
+            });
+        }
         // Gửi thông báo cho khách hàng
         const customerNotification = new Notification({
             user: order.user,
@@ -202,7 +209,8 @@ exports.getOrderById = async (req, res) => {
 // Cập nhật trạng thái đơn hàng
 exports.updateOrderStatus = async (req, res) => {
     const orderId = req.params.orderId;
-    const { status } = req.body;
+    const { status, products, shippingAddress, paymentMethod } = req.body;
+    console.log(status);
 
     try {
         const order = await Order.findById(orderId);
@@ -210,12 +218,15 @@ exports.updateOrderStatus = async (req, res) => {
             return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
         }
 
-        order.status = status;
-        order.updatedAt = Date.now();
+        order.status = status || order.status;
+        order.products = products || order.products;
+        order.shippingAddress = shippingAddress || order.shippingAddress;
+        order.paymentMethod = paymentMethod || order.paymentMethod;
+        order.updatedAt = Date.now() || order.updatedAt;
         await order.save();
         // await sendOrderNotification(userId, newOrder);
 
-        return res.status(200).json({ message: 'Trạng thái đơn hàng đã được cập nhật', order });
+        return res.status(201).json({ message: 'Trạng thái đơn hàng đã được cập nhật', order });
     } catch (error) {
         handleError(res, error);
     }
@@ -229,7 +240,7 @@ exports.deleteOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ error: 'Đơn hàng không tồn tại' });
         }
-        await order.remove()
+        await order.deleteOne()
         return res.status(200).json({ message: 'Đơn hàng đã được xóa' })
     } catch (error) {
         handleError(res, error);

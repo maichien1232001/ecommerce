@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema(
         description: { type: String, required: true },
         price: { type: Number, required: true },
         category: { type: String, required: true },
-        images: [{ type: String }], // Lưu URL ảnh sản phẩm
+        images: [{ type: String }],
         stock: { type: Number, default: 0 },
         rating: { type: Number, default: 0 },
         specifications: {
@@ -28,7 +28,6 @@ const productSchema = new mongoose.Schema(
             smartphone: specificationSchema,
             tablet: specificationSchema,
             desktop: specificationSchema,
-            // Các loại sản phẩm khác có thể thêm vào sau
         },
         reviews: [
             {

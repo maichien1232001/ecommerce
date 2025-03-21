@@ -2,7 +2,7 @@ const cartService = require("../services/cartService");
 
 exports.addToCart = async (req, res) => {
     try {
-        const { userId } = req.user || {}; // Nếu người dùng đã đăng nhập, lấy userId từ token
+        const userId = req.user.id;
         const { productId, quantity } = req.body;
         let cart;
 
@@ -21,7 +21,7 @@ exports.addToCart = async (req, res) => {
 
 exports.getCart = async (req, res) => {
     try {
-        const { userId } = req.user || {};
+        const userId = req.user.id;
         let cart;
 
         if (userId) {
@@ -42,8 +42,9 @@ exports.getCart = async (req, res) => {
 
 exports.updateItemQuantity = async (req, res) => {
     try {
-        const { userId } = req.user || {};
-        const { productId, quantity } = req.body;
+        const userId = req.user.id;
+        const { productId } = req.params;
+        const { quantity } = req.body;
 
         if (!quantity || quantity <= 0) {
             return res.status(400).json({ message: "Invalid quantity" });
@@ -58,7 +59,7 @@ exports.updateItemQuantity = async (req, res) => {
 
 exports.removeItemFromCart = async (req, res) => {
     try {
-        const { userId } = req.user || {};
+        const userId = req.user.id;
         const { productId } = req.params;
 
         const cart = await cartService.removeItemFromCart(userId, productId);

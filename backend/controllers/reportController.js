@@ -5,54 +5,58 @@ const moment = require('moment');
 
 // Hàm hỗ trợ chuyển đổi `period` thành ngày bắt đầu và ngày kết thúc
 const getDateRange = (period, startDate, endDate) => {
+
     const today = moment();
     let start, end;
 
     switch (period) {
         case 'day':
-            start = today.startOf('day');
-            end = today.endOf('day');
+            start = today.clone().startOf('day');
+            end = today.clone().endOf('day');
             break;
         case 'week':
-            start = today.startOf('week');
-            end = today.endOf('week');
+            start = today.clone().subtract(6, 'days').startOf('day');;
+            end = today.clone().endOf('day');
+            console.log(end);
+
             break;
         case 'month':
-            start = today.startOf('month');
-            end = today.endOf('month');
+            start = today.clone().subtract(30, 'days').startOf('day');;
+            end = today.clone().endOf('day');
             break;
         case 'quarter':
-            start = today.startOf('quarter');
-            end = today.endOf('quarter');
+            start = today.clone().subtract(89, 'days').startOf('day');;
+            end = today.clone().endOf('day');
             break;
         case 'year':
-            start = today.startOf('year');
-            end = today.endOf('year');
+            start = today.clone().subtract(364, 'days').startOf('day');;
+            end = today.clone().endOf('day');
             break;
         case 'custom':
             start = moment(startDate);
             end = moment(endDate);
             break;
         default:
-            start = today.startOf('day');
-            end = today.endOf('day');
+            start = today.clone().startOf('day');
+            end = today.clone().endOf('day');
     }
+    console.log(end);
 
-    return { startDate: start.toDate(), endDate: end.toDate() };
+    return { dateStart: start, dateEnd: end };
 };
 
 // Báo cáo doanh thu theo khoảng thời gian
 exports.getRevenueReport = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-        const { startDate: dateStart, endDate: dateEnd } = getDateRange(period, startDate, endDate);
+        const { dateStart, dateEnd } = getDateRange(period, startDate, endDate);
 
         const orders = await Order.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: dateStart,
-                        $lte: dateEnd
+                        $gte: dateStart.toDate(),
+                        $lte: dateEnd.toDate()
                     }
                 }
             },
@@ -77,14 +81,14 @@ exports.getRevenueReport = async (req, res) => {
 exports.getOrderCountReport = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-        const { startDate: dateStart, endDate: dateEnd } = getDateRange(period, startDate, endDate);
+        const { dateStart, dateEnd } = getDateRange(period, startDate, endDate);
 
         const orders = await Order.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: dateStart,
-                        $lte: dateEnd
+                        $gte: dateStart.toDate(),
+                        $lte: dateEnd.toDate()
                     }
                 }
             },
@@ -109,24 +113,24 @@ exports.getOrderCountReport = async (req, res) => {
 exports.getTopSellingProducts = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-        const { startDate: dateStart, endDate: dateEnd } = getDateRange(period, startDate, endDate);
+        const { dateStart, dateEnd } = getDateRange(period, startDate, endDate);
 
         const products = await Order.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: dateStart,
-                        $lte: dateEnd
+                        $gte: dateStart.toDate(),
+                        $lte: dateEnd.toDate()
                     }
                 }
             },
             {
-                $unwind: "$orderItems" // Tách các sản phẩm trong đơn hàng
+                $unwind: "$products" // Tách các sản phẩm trong đơn hàng
             },
             {
                 $group: {
-                    _id: "$orderItems.productId",
-                    totalQuantity: { $sum: "$orderItems.quantity" }
+                    _id: "$products.product",
+                    totalQuantity: { $sum: "$products.quantity" }
                 }
             },
             {
@@ -158,12 +162,12 @@ exports.getTopSellingProducts = async (req, res) => {
 exports.getUserCountReport = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-        const { startDate: dateStart, endDate: dateEnd } = getDateRange(period, startDate, endDate);
+        const { dateStart, dateEnd } = getDateRange(period, startDate, endDate);
 
         const userCount = await User.countDocuments({
             createdAt: {
-                $gte: dateStart,
-                $lte: dateEnd
+                $gte: dateStart.toDate(),
+                $lte: dateEnd.toDate()
             }
         });
 
@@ -177,14 +181,14 @@ exports.getUserCountReport = async (req, res) => {
 exports.getOrderStatusReport = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-        const { startDate: dateStart, endDate: dateEnd } = getDateRange(period, startDate, endDate);
+        const { dateStart, dateEnd } = getDateRange(period, startDate, endDate);
 
         const orderStatuses = await Order.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: dateStart,
-                        $lte: dateEnd
+                        $gte: dateStart.toDate(),
+                        $lte: dateEnd.toDate()
                     }
                 }
             },
