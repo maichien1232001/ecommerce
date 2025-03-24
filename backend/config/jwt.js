@@ -3,7 +3,6 @@ require('dotenv').config()
 
 // Hàm tạo JWT token
 const generateToken = (userId, role) => {
-    console.log(process.env.JWT_SECRET);
     return jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 }
 

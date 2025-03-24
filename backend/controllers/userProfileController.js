@@ -6,20 +6,25 @@ const { handleError } = require('../utils/errorHandler');
 // Cập nhật thông tin cá nhân
 exports.updateProfile = async (req, res) => {
     try {
-        const userId = req.user.id; // Lấy ID người dùng từ middleware (người dùng đã đăng nhập)
+        const { id, role } = req.user; // Lấy ID người dùng từ middleware (người dùng đã đăng nhập)
         const { name, email, phoneNumber } = req.body;
 
-        const user = await User.findById(userId);
+        const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ error: 'Người dùng không tồn tại' });
         }
+
+        if (role === 'admin') { }
 
         // Cập nhật thông tin
         user.name = name || user.name;
         user.email = email || user.email;
         user.phoneNumber = phoneNumber || user.phoneNumber;
+        if (role === 'admin') {
+            user.role = user.role;
+        }
 
-        await user.save();
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Thông tin cá nhân đã được cập nhật', user });
     } catch (error) {
@@ -47,7 +52,7 @@ exports.changePassword = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(newPassword, salt);
 
-        await user.save();
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Mật khẩu đã được thay đổi' });
     } catch (error) {
@@ -65,9 +70,8 @@ exports.addShippingAddress = async (req, res) => {
             return res.status(404).json({ error: 'Người dùng không tồn tại' });
         }
 
-        const newAddress = { address, city, postalCode, country };
-        user.shippingAddresses.push(newAddress);
-        await user.save();
+        user.shippingAddresses.push({ address, city, postalCode, country });
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Địa chỉ giao hàng đã được thêm', user });
     } catch (error) {
@@ -91,8 +95,13 @@ exports.updateShippingAddress = async (req, res) => {
             return res.status(404).json({ error: 'Địa chỉ không tồn tại' });
         }
 
-        user.shippingAddresses[addressIndex] = { address, city, postalCode, country };
-        await user.save();
+        Object.assign(user.shippingAddresses[addressIndex], {
+            ...(address !== undefined && { address }),
+            ...(city !== undefined && { city }),
+            ...(postalCode !== undefined && { postalCode }),
+            ...(country !== undefined && { country }),
+        });
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Địa chỉ giao hàng đã được cập nhật', user });
     } catch (error) {
@@ -112,7 +121,7 @@ exports.deleteShippingAddress = async (req, res) => {
         }
 
         user.shippingAddresses = user.shippingAddresses.filter(addr => addr._id.toString() !== addressId);
-        await user.save();
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Địa chỉ giao hàng đã được xóa', user });
     } catch (error) {
@@ -123,15 +132,15 @@ exports.deleteShippingAddress = async (req, res) => {
 exports.addPaymentInfo = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { cardNumber, expirationDate, cardHolderName } = req.body;
+        const { cardNumber, expirationDate, cardHolderName, billingAddress, cvv } = req.body;
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: 'Người dùng không tồn tại' });
         }
 
-        user.paymentInfo = { cardNumber, expirationDate, cardHolderName };
-        await user.save();
+        user.paymentInfo = { cardNumber, expirationDate, cardHolderName, billingAddress, cvv };
+        await user.save({ validateModifiedOnly: true });
 
         return res.status(200).json({ message: 'Thông tin thanh toán đã được thêm', user });
     } catch (error) {
@@ -139,8 +148,34 @@ exports.addPaymentInfo = async (req, res) => {
     }
 };
 
+exports.updatePaymentInfo = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { cardNumber, expirationDate, cardHolderName, billingAddress } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Người dùng không tồn tại' });
+        }
+
+        // Cập nhật thông tin thanh toán
+        Object.assign(user.paymentInfo, {
+            ...(cardNumber !== undefined && { cardNumber }),
+            ...(expirationDate !== undefined && { expirationDate }),
+            ...(cardHolderName !== undefined && { cardHolderName }),
+            ...(billingAddress !== undefined && { billingAddress }),
+        });
+
+        await user.save({ validateModifiedOnly: true });
+        return res.status(200).json({ message: 'Thông tin thanh toán đã được cập nhật', user });
+    } catch (error) {
+        handleError(res, error);
+    }
+};
+
+
 exports.getUserById = async (req, res) => {
-    const { userId } = req.query;
+    const { userId } = req.params;
 
     try {
         const user = await User.findById(userId)
@@ -155,6 +190,19 @@ exports.getUserById = async (req, res) => {
 exports.getUserProfile = async (req, res) => {
     try {
         res.json(req.user); // Trả về thông tin user đã xác thực từ middleware
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};
+
+exports.deleteUserProfile = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await User.findById(userId);
+
+        await user.deleteOne();
+
+        return res.status(200).json({ message: 'User đã được xóa' });
     } catch (error) {
         res.status(500).json({ message: "Lỗi server" });
     }

@@ -18,7 +18,6 @@ exports.protect = async (req, res, next) => {
 
 exports.auth = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    console.log(token);
 
     if (!token) {
         return res.status(401).json({ error: 'Không có quyền truy cập' });
@@ -31,23 +30,6 @@ exports.auth = async (req, res, next) => {
             return res.status(401).json({ error: 'Người dùng không tồn tại' });
         }
         req.user = user;
-        next();
-    } catch (error) {
-        console.log(error);
-
-        return res.status(401).json({ error: 'Token không hợp lệ' });
-    }
-};
-
-exports.isAuthenticated = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) {
-        return res.status(401).json({ error: 'Vui lòng đăng nhập' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
         next();
     } catch (error) {
         return res.status(401).json({ error: 'Token không hợp lệ' });

@@ -5,11 +5,15 @@ const { handleError } = require('../utils/errorHandler');
 
 // Thêm đánh giá sản phẩm
 exports.addReview = async (req, res) => {
+    const productId = req.params.productId;
     try {
-        const { productId, rating, comment } = req.body;
+        const { rating, comment } = req.body;
+        console.log(1111111, rating, comment);
+
         const userId = req.user.id;
 
         const product = await Product.findById(productId);
+
         if (!product) {
             return res.status(404).json({ error: 'Sản phẩm không tồn tại' });
         }
@@ -42,8 +46,8 @@ exports.addReview = async (req, res) => {
 
 // Lấy đánh giá của một sản phẩm
 exports.getReviews = async (req, res) => {
+    const productId = req.params.productId;
     try {
-        const productId = req.params.productId;
         const reviews = await Review.find({ product: productId }).populate('user', 'name email');
 
         return res.status(200).json(reviews);
@@ -54,10 +58,10 @@ exports.getReviews = async (req, res) => {
 
 // Cập nhật đánh giá
 exports.updateReview = async (req, res) => {
+    const productId = req.params.productId;
     try {
         const { rating, comment } = req.body;
         const userId = req.user.id;
-        const productId = req.params.productId;
 
         const review = await Review.findOne({ user: userId, product: productId });
         if (!review) {
@@ -80,3 +84,33 @@ exports.updateReview = async (req, res) => {
         handleError(res, error);
     }
 };
+
+exports.deleteReview = async (req, res) => {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const { productId, reviewId } = req.params;
+    try {
+
+        const review = await Review.findOne({ _id: reviewId, product: productId });
+
+        if (!review) {
+            return res.status(404).json({ message: 'Review không tồn tại' });
+        }
+
+        if (userRole === 'admin') {
+            await review.deleteOne();
+            return res.json({ message: 'Admin đã xóa review thành công', deletedReview: review });
+        }
+
+        if (review.user.toString() !== userId) {
+            return res.status(403).json({ message: 'Bạn không có quyền xóa review này' });
+        }
+
+        await review.deleteOne();
+        res.json({ message: 'Xóa review thành công', deletedReview: review });
+
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+

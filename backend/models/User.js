@@ -11,6 +11,26 @@ const userSchema = new mongoose.Schema(
             provider: { type: String, enum: ['google', 'facebook', 'twitter', 'telegram'] },
             providerId: { type: String }, // ID từ mạng xã hội
         },
+        shippingAddresses: [
+            {
+                address: { type: String, required: true },
+                city: { type: String, required: true },
+                postalCode: { type: String, required: true },
+                country: { type: String, required: true }
+            }
+        ],
+        paymentInfo: {
+            cardNumber: { type: String, required: true },
+            expirationDate: { type: Date, required: true },
+            cvv: { type: String, required: true },
+            cardHolderName: { type: String, required: true },
+            billingAddress: {
+                address: { type: String, required: true },
+                city: { type: String, required: true },
+                postalCode: { type: String, required: true },
+                country: { type: String, required: true }
+            }
+        },
         firebaseToken: { type: String, default: null },
     },
     { timestamps: true }

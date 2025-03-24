@@ -710,7 +710,7 @@ paths:
                   type: boolean
                   default: true
       responses:
-        "200":
+        "201":
           description: Giỏ hàng đã cập nhật
           content:
             application/json:
@@ -1346,10 +1346,12 @@ paths:
       description: API tạo sản phẩm mới và tải ảnh lên Cloudinary nếu có.
       tags:
         - Product
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
@@ -1654,7 +1656,7 @@ paths:
                       example: "1 year"
 
       responses:
-        200:
+        201:
           description: Cập nhật thông tin sản phẩm thành công
           content:
             application/json:
@@ -1721,7 +1723,7 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
@@ -1983,6 +1985,756 @@ paths:
         500:
           description: Lỗi khi lấy báo cáo trạng thái đơn hàng
 
+  /review/add/{productId}:
+    post:
+      summary: Tạo đánh giá sản phẩm
+      description: API đánh giá sản phẩm
+      tags:
+        - Review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Id sản phẩm cần đánh giá
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  example: 5
+                comment:
+                  type: string
+                  example: "Sản phẩm đẹp"
+      responses:
+        201:
+          description: Đánh giá sản phẩm thành công
+        400:
+          description: Thông tin đánh giá không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /review/{productId}:
+    get:
+      summary: Lấy đánh giá của 1 sản phẩm
+      description: API lấy đánh giá của 1 sản phẩm
+      tags:
+        - Review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          description: Id sản phẩm cần lấy đánh giá
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lấy đánh giá sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        400:
+          description: Id sản phẩm không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        404:
+          description: Sản phẩm không tồn tại
+        500:
+          description: Lỗi server
+
+    put:
+      summary: Cập nhật đánh giá của 1 sản phẩm
+      description: API Cập nhật đánh giá sản phẩm
+      tags:
+        - Review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          required: true
+          in: path
+          description: Id sản phẩm cần cập nhật đánh giá
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  example: 5
+                comment:
+                  type: string
+                  example: "Sản phẩm đẹp"
+      responses:
+        201:
+          description: Cập nhật đánh giá sản phẩm thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  product:
+                    $ref: "#/components/schemas/Product"
+                  rating:
+                    type: integer
+                    example: 5
+                  comment:
+                    type: string
+                    example: "Sản phẩm đẹp"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2022-01-01T10:00:00Z"
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2022-01-01T10:00:00Z"
+        400:
+          description: Thông tin đánh giá không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        404:
+          description: Sản phẩm không tồn tại
+        500:
+          description: Lỗi server
+
+  /review/{productId}/{reviewId}:
+    delete:
+      description: Xóa bài đánh giá
+      summary: API Xóa bài đánh giá của 1 sản phẩm
+      tags:
+        - Review
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          required: true
+          in: path
+          description: Id sản phẩm cần xóa đánh giá
+          schema:
+            type: string
+        - name: reviewId
+          required: true
+          in: path
+          description: Id bài đánh giá cần xóa
+          schema:
+            type: string
+      responses:
+        200:
+          description: Xóa bài đánh giá thành công
+        401:
+          description: Người dùng chưa được xác thực
+        404:
+          description: Bài đánh giá không tồn tại
+        500:
+          description: Lỗi server
+
+  /shipping/create:
+    post:
+      description: API quản lý giao hàng
+      summary: Tạo phương thức giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  example: 500000
+                name:
+                  type: string
+                  example: "Sản phẩm đẹp"
+                description:
+                  type: string
+                  example: "Ship hỏa tốc"
+      responses:
+        201:
+          description: Tạo phương thức giao hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shipping:
+                    $ref: "#/components/schemas/Product"
+        400:
+          description: Thông tin giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+  /shipping/:
+    get:
+      description: API lấy tất cả phương thức giao hàng
+      summary: Lấy tất cả phương thức giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Lấy tất cả phương thức giao hàng thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Shipping"
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+  /shipping/{shippingMethodId}:
+    get:
+      description: API lấy thông tin chi tiết của 1 phương thức giao hàng
+      summary: Lấy thông tin chi tiết của 1 phương thức giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: shippingMethodId
+          required: true
+          in: path
+          description: Id phương thức giao hàng cần lấy thông tin
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        200:
+          description: Lấy thông tin chi tiết phương thức giao hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shipping"
+        400:
+          description: Id phương thức giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    put:
+      description: API chỉnh sửa thông tin chi tiết của 1 phương thức giao hàng
+      summary: Sửa thông tin chi tiết của 1 phương thức giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: shippingMethodId
+          required: true
+          in: path
+          description: Id phương thức giao hàng cần lấy thông tin
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  example: 500000
+                name:
+                  type: string
+                  example: "Ship hỏa tốc"
+                description:
+                  type: string
+                  example: "Giao hàng tận nơi giao cho khách hàng trực tiếp"
+      responses:
+        201:
+          description: Cập nhật thông tin phương thức giao hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Shipping"
+        400:
+          description: Thông tin phương thức giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    delete:
+      description: API xóa thông tin của 1 phương thức giao hàng
+      summary: Xóa thông tin của 1 phương thức giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: shippingMethodId
+          required: true
+          in: path
+          description: Id phương thức giao hàng cần lấy thông tin
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        200:
+          description: Xóa thông tin phương thức giao hàng thành công
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /shipping/calculate:
+    post:
+      description: API tính toán phí giao hàng
+      summary: Tính toán phí giao hàng
+      tags:
+        - Shipping
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shippingMethodId:
+                  type: string
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                weight:
+                  type: number
+                  example: 10
+                  description: Cân nặng của đơn hàng
+                distance:
+                  type: number
+                  example: 10
+                  description: Khoảng cách từ điểm giao hàng đến địa chỉ của khách hàng
+      responses:
+        200:
+          description: Tính toán phí giao hàng thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    $ref: "#/components/schemas/Shipping"
+        400:
+          description: Thông tin tính toán phí giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/:
+    get:
+      description: API lấy thông tin người dùng
+      summary: Lấy thông tin người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Lấy thông tin người dùng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    put:
+      description: API cập nhật thông tin người dùng
+      summary: Cập nhật thông tin người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nguyễn Văn A"
+                  description: Tên người dùng
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                  description: Email người dùng
+                phoneNumber:
+                  type: string
+                  example: "0912345678"
+                  description: Số điện thoại người dùng
+      responses:
+        201:
+          description: Cập nhật thông tin người dùng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Thông tin người dùng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/change-password:
+    put:
+      description: API đổi mật khẩu người dùng
+      summary: Đổi mật khẩu người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: "password123"
+                newPassword:
+                  type: string
+                  example: "password456"
+      responses:
+        201:
+          description: Đổi mật khẩu thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Mật khẩu đã được thay đổi"
+        400:
+          description: Thông tin đổi mật khẩu không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/shipping-address:
+    post:
+      description: API tạo địa chỉ giao hàng của người dùng
+      summary: Tạo địa chỉ giao hàng của người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                  example: "24 Stress, Tran Hung Dao"
+                city:
+                  type: string
+                  example: "Ha Noi"
+                postalCode:
+                  type: string
+                  example: "M2P5N7"
+                country:
+                  type: string
+                  example: "Canada"
+      responses:
+        201:
+          description: Tạo địa chỉ giao hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Thông tin địa chỉ giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/shipping-address/{userId}:
+    put:
+      description: API cập nhật địa chỉ giao hàng của người dùng theo id
+      summary: Cập nhật địa chỉ giao hàng của người dùng theo id
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: Id người dùng cần cập nhật địa chỉ giao hàng
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e8"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addressId:
+                  type: string
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+                address:
+                  type: string
+                  example: "24 Stress, Tran Hung Dao"
+                city:
+                  type: string
+                  example: "Ha Noi"
+                postalCode:
+                  type: string
+                  example: "M2P5N7"
+                country:
+                  type: string
+                  example: "Canada"
+      responses:
+        201:
+          description: Cập nhật địa chỉ giao hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Thông tin địa chỉ giao hàng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    delete:
+      description: API xóa địa chỉ giao hàng của người dùng theo id
+      summary: Xóa địa chỉ giao hàng của người dùng theo id
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: Id người dùng cần xóa địa chỉ giao hàng
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e8"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                addressId:
+                  type: string
+                  example: "64a9c3c2b4a1f9e2d7a5f5e9"
+      responses:
+        200:
+          description: Xóa địa chỉ giao hàng thành công
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/payment-info:
+    post:
+      description: API tạo thông tin thanh toán của người dùng
+      summary: Tạo thông tin thanh toán của người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardNumber:
+                  type: string
+                  example: "4111111111111111"
+                expirationDate:
+                  type: string
+                  example: "12/25"
+                cardHolderName:
+                  type: string
+                  example: "Nguyễn Văn A"
+                cvv:
+                  type: string
+                  example: "123"
+                billingAddress:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: "24 Stress, Tran Hung Dao"
+                    city:
+                      type: string
+                      example: HaNoi
+                    postalCode:
+                      type: string
+                      example: "90000"
+                    country:
+                      type: string
+                      example: "Canada"
+      responses:
+        201:
+          description: Tạo thông tin thanh toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Thông tin thanh toán không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    put:
+      description: API sửa thông tin thanh toán của người dùng
+      summary: Sửa thông tin thanh toán của người dùng
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardNumber:
+                  type: string
+                  example: "4111111111111111"
+                expirationDate:
+                  type: string
+                  example: "12/25"
+                cardHolderName:
+                  type: string
+                  example: "Nguyễn Văn A"
+                cvv:
+                  type: string
+                  example: "123"
+                billingAddress:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: "24 Stress, Tran Hung Dao"
+                    city:
+                      type: string
+                      example: HaNoi
+                    postalCode:
+                      type: string
+                      example: "90000"
+                    country:
+                      type: string
+                      example: "Canada"
+      responses:
+        201:
+          description: Tạo thông tin thanh toán thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Thông tin thanh toán không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/{userId}:
+    get:
+      description: API lấy thông tin người dùng theo id
+      summary: Lấy thông tin người dùng theo id
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: Id người dùng cần lấy thông tin
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e8"
+      responses:
+        200:
+          description: Lấy thông tin người dùng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /profile/delete/{userId}:
+    delete:
+      description: API xóa người dùng theo id
+      summary: Xóa người dùng theo id
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: Id người dùng cần xóa
+          schema:
+            type: string
+            example: "64a9c3c2b4a1f9e2d7a5f5e8"
+      responses:
+        200:
+          description: Xóa người dùng thành công
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
 components:
   schemas:
     User:
@@ -2001,6 +2753,51 @@ components:
         role:
           type: string
           example: "user"
+        shippingAddress:
+          type: object
+          properties:
+            address:
+              type: string
+              example: "24 Stress, Tran Hung Dao"
+            city:
+              type: string
+              example: Ha Noi
+            postalCode:
+              type: string
+              example: "M2P5N7"
+            country:
+              type: string
+              example: Canada
+        paymentInfo:
+          type: object
+          properties:
+            cardNumber:
+              type: string
+              example: "4111111111111111"
+            expirationDate:
+              type: string
+              example: "12/25"
+            cardHolderName:
+              type: string
+              example: "Nguyễn Văn A"
+            cvv:
+              type: string
+              example: "123"
+            billingAddress:
+              type: object
+              properties:
+                address:
+                  type: string
+                  example: "24 Stress, Tran Hung Dao"
+                city:
+                  type: string
+                  example: Ha Noi
+                postalCode:
+                  type: string
+                  example: "90000"
+                country:
+                  type: string
+                  example: "Canada"
         socialLogin:
           type: object
           properties:
@@ -2329,6 +3126,38 @@ components:
           $ref: "#/components/schemas/User"
         product:
           $ref: "#/components/schemas/Product"
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo mã giảm giá"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Shipping:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+          description: ID phương thức giao hàng
+        name:
+          type: string
+          example: Giao hàng tận nơi
+          description: Mô tả phương thức giao hàng
+        price:
+          type: number
+          example: 100000
+          description: Giá phương thức giao hàng
+        description:
+          type: string
+          example: Giao hàng tận nơi giao cho khách hàng trực tiếp
+        shippingCost:
+          type: number
+          example: 50000
+          description: Phí giao hàng
         createdAt:
           type: string
           format: date-time
