@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('../path/to/your/firebase-service-account-key.json');
+const serviceAccount = require('../config/serviceAccountKey.json');
 
 // Khởi tạo Firebase Admin
 admin.initializeApp({
