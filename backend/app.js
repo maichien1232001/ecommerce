@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const cookieParser = require("cookie-parser");
 const connectDB = require("./config/database");
 const swaggerConfig = require('./config/swagger');
 const adminRoutes = require('./routes/adminRoutes');
@@ -25,7 +26,13 @@ connectDB();
 const app = express();
 swaggerConfig(app);
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:3000", // Frontend URL
+        credentials: true, // Cho phép gửi cookie qua CORS
+    })
+);
+app.use(cookieParser());
 app.use(express.json());
 
 // Routes

@@ -1,11 +1,13 @@
 const express = require('express');
 const passport = require('passport');
-const { register, login, socialLogin, refreshToken } = require('../controllers/authController');
+const { register, login, socialLogin, refreshToken, logOut } = require('../controllers/authController');
 const verifyTelegramPayload = require('../config/passport/telegramStrategy')
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/refreshToken', refreshToken);
+router.post('/logout', logOut);
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get(

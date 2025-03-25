@@ -4,15 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 import axios from "axios";
 import { saveUser } from "../../../redux/actions/auth.actions";
+import API from "../../../config/axiosInterceptor";
 
 const Auth = () => {
+
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auths.accessToken) || localStorage.getItem("authToken");
     useEffect(() => {
         const fetchUserData = async () => {
-            if (token) {
+            if (token && performance.navigation.type === 1) {
+
                 try {
-                    const res = await axios.get("http://localhost:5000/api/profile/", {
+                    const res = API.get("http://localhost:5000/api/profile/", {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -23,7 +26,6 @@ const Auth = () => {
                 }
             }
         };
-
         fetchUserData();
     }, [token, dispatch]);
 };

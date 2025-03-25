@@ -22,6 +22,11 @@
             &.remember {
                 padding: 0;
             }
+            .ant-form-item-control-input-content {
+                #basic_email {
+                    padding: 4px 11px;
+                }
+            }
         }
         .btn-login {
             padding: 8px 0;
@@ -34,6 +39,22 @@
                     width: 428px;
                     height: 40px;
                 }
+            }
+        }
+        .input-form {
+            margin: 0;
+            padding: 0;
+            input {
+                padding: 4px 11px;
+                border-radius: 6px;
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 0px;
+            }
+            .ant-input-suffix {
+                background: #e8f0fe;
+                margin: 0;
+                border-top-right-radius: 6px;
+                border-bottom-right-radius: 6px;
             }
         }
     }
