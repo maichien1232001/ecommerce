@@ -1,10 +1,12 @@
 // reducers/index.js
-import { combineReducers } from 'redux';
-import authReducer from './auth.reducers';
+import { combineReducers } from "redux";
+import authReducer from "./auth.reducers";
+import productReducers from "./product.reducers";
 
 const rootReducer = combineReducers({
-    auths: authReducer,
-    // Thêm các reducer khác nếu có
+  auths: authReducer,
+  products: productReducers,
+  // Thêm các reducer khác nếu có
 });
 
 export default rootReducer;

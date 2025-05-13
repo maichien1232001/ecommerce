@@ -10,6 +10,7 @@ import Login from "../app/components/Login/Login";
 import Register from "../app/components/Register/Register";
 import DashBoardManagement from "../management/components/DashBoardManagement";
 import ProductsManagement from "../management/components/ProductsManagement/AddProduct";
+import { ListProducts } from "../management/components/ProductsManagement/ListProducts";
 
 const Routers = () => (
   <Router>
@@ -42,7 +43,7 @@ const Routers = () => (
         path="/admin/products"
         element={
           <ProtectedRoute>
-            <RouterRoot layout={AdminLayout} element={ProductsManagement} />
+            <RouterRoot layout={AdminLayout} element={ListProducts} />
           </ProtectedRoute>
         }
       />
