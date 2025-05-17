@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 const initialState = {
-  products: {},
+  products: [],
   pagination: {},
   page: 1,
   limit: 10,
@@ -26,6 +26,11 @@ const productReducers = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case "IMPORT_PRODUCTS_SUCCESS":
+      return {
+        ...state,
+        products: _.get(action, "payload.data"),
       };
     case "SET_PAGINATION":
       return {

@@ -33,7 +33,7 @@ export const getProducts = async ({
   }
 };
 
-export const importProducs = async (file) => {
+export const importProducts = async (file) => {
   if (!file) {
     notifyWarning("Vui lòng chọn file Excel!", null);
     return;
@@ -41,10 +41,11 @@ export const importProducs = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   try {
-    await API.post(`${proxy}/products/import`, formData, {
+    const res = await API.post(`${proxy}/products/import`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     notifySuccess("Nhập dữ liệu thành công!");
+    return res?.data;
   } catch (error) {
     notifyError("Lỗi khi nhập dữ liệu!");
     console.error(error);

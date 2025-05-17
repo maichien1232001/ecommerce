@@ -9,7 +9,6 @@ import { getListProducts } from "../../../redux/actions/product.action";
 export const ListProducts = () => {
   const dispatch = useDispatch();
   const productState = useSelector((state) => state.products);
-  console.log(productState);
 
   useEffect(() => {
     dispatch(

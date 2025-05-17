@@ -1,4 +1,4 @@
-import { getProducts } from "../../apis/products";
+import { getProducts, importProducts } from "../../apis/products";
 
 export const getListProducts = (values, navigate) => async (dispatch) => {
   dispatch({ type: "PRODUCTS_REQUEST" });
@@ -13,6 +13,18 @@ export const getListProducts = (values, navigate) => async (dispatch) => {
       type: "PRODUCTS_FAILURE",
       payload: error.message,
     });
+  }
+};
+
+export const importFileProducts = (value) => async (dispatch) => {
+  try {
+    const res = await importProducts(value);
+    dispatch({
+      type: "IMPORT_PRODUCTS_SUCCESS",
+      payload: res,
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
 
