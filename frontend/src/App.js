@@ -1,18 +1,14 @@
 // src/App.js
-import React, { useEffect } from 'react';
-import Routers from './routes';
-import { Provider } from 'react-redux';
-import store from './redux/store';
-import Notification from './common/components/Notification';
-import Auth from './app/components/Auth/AuthHandler';
+import React from "react";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import AppContent from "./AppConent";
 
 function App() {
   return (
     <>
       <Provider store={store}>
-        <Routers />
-        <Notification />
-        <Auth />
+        <AppContent />
       </Provider>
     </>
   );

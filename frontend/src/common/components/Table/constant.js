@@ -13,17 +13,21 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     fixed: "left",
     align: "center",
     width: "70px",
+    ellipsis: true,
     render: (_, record, index) => (currentPage - 1) * pageSize + index + 1,
   },
   {
     title: "Tên sản phẩm",
     dataIndex: "name",
     key: "name",
-    width: "150px",
+    width: "250px",
+    ellipsis: true,
   },
   {
     title: "Ảnh sản phẩm",
     key: "image",
+    width: "150px",
+    ellipsis: true,
     render: (record) => {
       const imgProducts = _.get(record, "images", []);
       const firstImage = _.first(imgProducts);
@@ -50,24 +54,28 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     dataIndex: "price",
     key: "price",
     align: "center",
+    ellipsis: true,
   },
   {
     title: "Tồn kho",
     key: "stock",
     dataIndex: "stock",
     align: "center",
+    ellipsis: true,
   },
   {
     title: "Ngày tạo",
     dataIndex: "createdAt",
     key: "createdAt",
     align: "center",
+    ellipsis: true,
     render: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   {
     title: "Thao tác",
     key: "action",
     align: "center",
+    ellipsis: true,
     render: (record) => {
       const menuItems = [
         {

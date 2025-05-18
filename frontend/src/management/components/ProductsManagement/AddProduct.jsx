@@ -1,50 +1,102 @@
+import { PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Input, InputNumber, Modal, Select, Upload } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import React, { useState } from "react";
-import { Upload, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { importFileProducts } from "../../../redux/actions/product.action";
+import CategorySelect from "../../../common/components/Select";
+import UploadImg from "../../../common/components/Upload";
 
-const UploadExcel = () => {
-  const [file, setFile] = useState(null);
+const { Item } = Form;
+
+const AddProduct = () => {
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+
+  const [isOpenModalAddProduct, SetIsOpenAddProduct] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [fileList, setFileList] = useState([]);
 
-  const dispatch = useDispatch();
-
-  const handleUpload = async () => {
-    await dispatch(importFileProducts(file));
-    setFile(null);
-    setFileList([]);
+  const handleClose = () => {
+    SetIsOpenAddProduct(false);
+    form.resetFields();
   };
-
   return (
     <>
-      <Upload
-        beforeUpload={(file) => {
-          setFile(file);
-          setFileList([file]);
-          return false;
-        }}
-        fileList={fileList}
-        onRemove={() => {
-          setFile(null);
-          setFileList([]);
-        }}
-        showUploadList={true}
-        accept=".xls,.xlsx"
-      >
-        <Button icon={<UploadOutlined />}>Chọn file Excel</Button>
-      </Upload>
-
-      <Button
-        type="primary"
-        onClick={handleUpload}
-        disabled={!file}
-        style={{ marginTop: 16 }}
-      >
-        Upload
+      <Button type="primary" onClick={() => SetIsOpenAddProduct(true)}>
+        <PlusOutlined />
+        Thêm sản phẩm
       </Button>
+      <Modal
+        title={"Thêm sản phẩm"}
+        open={isOpenModalAddProduct}
+        onCancel={() => handleClose()}
+        footer={null}
+      >
+        <Form form={form}>
+          <Item
+            label={"Tên"}
+            name={"name"}
+            rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
+          >
+            <Input />
+          </Item>
+          <Item
+            label={"Mô tả"}
+            name={"description"}
+            rules={[
+              { required: true, message: "Vui lòng nhập mô tả sản phẩm" },
+            ]}
+          >
+            <TextArea
+              rows={4}
+              showCount
+              maxLength={500}
+              //   onChange={(e) => setValue(e.target.value)}
+              style={{ height: 120, resize: "none" }}
+              placeholder="Nhập mô tả sản phẩm"
+              //   value={value}
+            />
+          </Item>
+          <Item
+            label={"Giá"}
+            name={"price"}
+            rules={[{ required: true, message: "Vui lòng nhập giá sản phẩm" }]}
+          >
+            <InputNumber placeholder="Nhập giá sản phẩm" min={0} />
+          </Item>
+          <Item
+            label={"Loại sản phẩm"}
+            name={"category"}
+            rules={[{ required: true, message: "Hãy chọn loại sản phẩm" }]}
+          >
+            <CategorySelect
+              placeholder="Chọn loại sản phẩm"
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+            />
+          </Item>
+          <Item
+            label={"Số lượng"}
+            name={"stock"}
+            rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
+          >
+            <InputNumber placeholder="Nhập số lượng sản phẩm" min={0} />
+          </Item>
+          <Item
+            label={"Ảnh sản phẩm"}
+            name={"images"}
+            rules={[{ required: true, message: "Vui lòng thêm ít nhất 1 ảnh" }]}
+          >
+            <UploadImg
+              fileList={fileList}
+              setFileList={setFileList}
+              form={form}
+            />
+          </Item>
+        </Form>
+      </Modal>
     </>
   );
 };
 
-export default UploadExcel;
+export default AddProduct;

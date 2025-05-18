@@ -51,3 +51,14 @@ export const importProducts = async (file) => {
     console.error(error);
   }
 };
+
+export const addProductApi = async (value) => {
+  try {
+    const res = await API.post(`${proxy}/products/`, value);
+    notifySuccess("Thêm sản phẩm mới thành công!");
+    return res?.data;
+  } catch (error) {
+    notifyError("Đã có lỗi xảy ra!");
+    console.error(error);
+  }
+};

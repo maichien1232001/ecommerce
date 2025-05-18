@@ -1,4 +1,8 @@
-import { getProducts, importProducts } from "../../apis/products";
+import {
+  addProductApi,
+  getProducts,
+  importProducts,
+} from "../../apis/products";
 
 export const getListProducts = (values, navigate) => async (dispatch) => {
   dispatch({ type: "PRODUCTS_REQUEST" });
@@ -21,6 +25,18 @@ export const importFileProducts = (value) => async (dispatch) => {
     const res = await importProducts(value);
     dispatch({
       type: "IMPORT_PRODUCTS_SUCCESS",
+      payload: res,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addProduct = (value) => async (dispatch) => {
+  try {
+    const res = await addProductApi(value);
+    dispatch({
+      type: "ADD_PRODUCTS_SUCCESS",
       payload: res,
     });
   } catch (error) {

@@ -32,6 +32,11 @@ const productReducers = (state = initialState, action) => {
         ...state,
         products: _.get(action, "payload.data"),
       };
+    case "ADD_PRODUCTS_SUCCESS":
+      return {
+        ...state,
+        products: _.get(action, "payload.data"),
+      };
     case "SET_PAGINATION":
       return {
         ...state,

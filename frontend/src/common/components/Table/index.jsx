@@ -10,7 +10,6 @@ const TableCommon = (props) => {
   const dispatch = useDispatch();
   const productState = useSelector((state) => state.products);
   const [valueCell, setValueCell] = useState();
-  // if (_.isEmpty(data)) return;
   const handleActionClick = (key, record) => {
     console.log("Thao tác:", key);
     console.log("Dữ liệu dòng:", record);
@@ -26,6 +25,7 @@ const TableCommon = (props) => {
     <div style={{ overflow: "hidden" }}>
       <div>{title}</div>
       <Table
+        rowKey="id"
         columns={getColumns(
           handleActionClick,
           productState.page,
@@ -42,7 +42,10 @@ const TableCommon = (props) => {
           showTotal: (total) => `Tổng ${total} sản phẩm`,
         }}
         scrollToFirstRowOnChange
-        scroll={{ x: "max-content", y: 420 }}
+        scroll={{
+          x: "max-content",
+          y: window.innerHeight * 0.6,
+        }}
         onChange={(pagination) => {
           dispatch(
             setPagination({

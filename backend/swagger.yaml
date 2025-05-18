@@ -396,7 +396,7 @@ paths:
                   type: integer
                   example: 3
       responses:
-        "201":
+        "200":
           description: Giỏ hàng đã cập nhật
           content:
             application/json:
@@ -710,7 +710,7 @@ paths:
                   type: boolean
                   default: true
       responses:
-        "201":
+        "200":
           description: Giỏ hàng đã cập nhật
           content:
             application/json:
@@ -1147,7 +1147,7 @@ paths:
                   type: string
                   example: Delivered
       responses:
-        "201":
+        "200":
           description: Đơn hàng đã được cập nhật
           content:
             application/json:
@@ -1656,7 +1656,7 @@ paths:
                       example: "1 year"
 
       responses:
-        201:
+        200:
           description: Cập nhật thông tin sản phẩm thành công
           content:
             application/json:
@@ -2084,7 +2084,7 @@ paths:
                   type: string
                   example: "Sản phẩm đẹp"
       responses:
-        201:
+        200:
           description: Cập nhật đánh giá sản phẩm thành công
           content:
             application/json:
@@ -2271,7 +2271,7 @@ paths:
                   type: string
                   example: "Giao hàng tận nơi giao cho khách hàng trực tiếp"
       responses:
-        201:
+        200:
           description: Cập nhật thông tin phương thức giao hàng thành công
           content:
             application/json:
@@ -2396,7 +2396,7 @@ paths:
                   example: "0912345678"
                   description: Số điện thoại người dùng
       responses:
-        201:
+        200:
           description: Cập nhật thông tin người dùng thành công
           content:
             application/json:
@@ -2431,7 +2431,7 @@ paths:
                   type: string
                   example: "password456"
       responses:
-        201:
+        200:
           description: Đổi mật khẩu thành công
           content:
             application/json:
@@ -2528,7 +2528,7 @@ paths:
                   type: string
                   example: "Canada"
       responses:
-        201:
+        200:
           description: Cập nhật địa chỉ giao hàng thành công
           content:
             application/json:
@@ -2670,7 +2670,7 @@ paths:
                       type: string
                       example: "Canada"
       responses:
-        201:
+        200:
           description: Tạo thông tin thanh toán thành công
           content:
             application/json:
@@ -2735,6 +2735,122 @@ paths:
         500:
           description: Lỗi server
 
+  /category/:
+    get:
+      description: API lấy thông tin loại hàng
+      summary: Lấy thông tin loại hàng
+      tags:
+        - Category
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Lấy thông tin loại hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    post:
+      description: API Tạo loại hàng
+      summary: Tạo loại hàng
+      tags:
+        - Category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Laptop"
+                description:
+                  type: string
+                  example: Loại hàng Laptop
+      responses:
+        201:
+          description: Thêm thông tin loại hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Thông tin người dùng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+
+  /category/{categoryId}:
+    put:
+      description: API cập nhật thông tin Loại hàng
+      summary: Cập nhật thông tin Loại hàng
+      tags:
+        - Category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        200:
+          description: Cập nhật thông tin Loại hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Thông tin người dùng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
+    delete:
+      description: API Xóa thông tin Loại hàng
+      summary: Xóa thông tin Loại hàng
+      tags:
+        - Category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+      responses:
+        200:
+          description: Xóa thông tin Loại hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Thông tin người dùng không hợp lệ
+        401:
+          description: Người dùng chưa được xác thực
+        500:
+          description: Lỗi server
 components:
   schemas:
     User:
@@ -2826,8 +2942,7 @@ components:
           type: integer
           example: 100
         category:
-          type: string
-          example: "Laptop"
+          $ref: "#/components/schemas/Category"
         images:
           type: array
           items:
@@ -3158,6 +3273,31 @@ components:
           type: number
           example: 50000
           description: Phí giao hàng
+        createdAt:
+          type: string
+          format: date-time
+          description: "Thời gian tạo mã giảm giá"
+          example: "2024-03-10T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: "Thời gian cập nhật lần cuối"
+          example: "2024-03-11T15:30:00Z"
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64a9c3c2b4a1f9e2d7a5f5e9"
+          description: ID loại hàng
+        name:
+          type: string
+          example: "Laptop"
+        description:
+          type: string
+        slug:
+          type: string
+          example: lap-top
         createdAt:
           type: string
           format: date-time

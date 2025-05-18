@@ -3,6 +3,7 @@ const multer = require("multer");
 const xlsx = require("xlsx");
 const cloudinaryService = require("../services/cloudinaryService");
 const paginationHelper = require("../utils/pagination");
+const Category = require("../models/Category");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -16,26 +17,35 @@ exports.importProducts = async (req, res) => {
     const sheetName = workbook.SheetNames[0];
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-    const products = data.map((row) => ({
-      name: row["Tên sản phẩm"],
-      description: row["Mô tả"],
-      price: row["Giá"],
-      category: row["Danh mục"],
-      stock: row["Tồn kho"],
-      images: row["Hình ảnh"] ? row["Hình ảnh"].split(",") : [],
-      specifications: {
-        cpu: row["CPU"],
-        ram: row["RAM"],
-        storage: row["Bộ nhớ"],
-        screen: row["Màn hình"],
-        battery: row["Pin"],
-        operatingSystem: row["Hệ điều hành"],
-        color: row["Màu sắc"],
-        weight: row["Trọng lượng"],
-        connectivity: row["Kết nối"],
-        others: row["Khác"],
-      },
-    }));
+    const products = [];
+
+    for (const row of data) {
+      const categoryName = row["Danh mục"];
+      const category = await Category.findOne({ name: categoryName });
+      if (!category) continue; // hoặc push error log
+
+      products.push({
+        name: row["Tên sản phẩm"],
+        description: row["Mô tả"],
+        price: row["Giá"],
+        category: category._id,
+        stock: row["Tồn kho"],
+        images: row["Hình ảnh"] ? row["Hình ảnh"].split(",") : [],
+        specifications: {
+          cpu: row["CPU"],
+          ram: row["RAM"],
+          storage: row["Bộ nhớ"],
+          screen: row["Màn hình"],
+          battery: row["Pin"],
+          operatingSystem: row["Hệ điều hành"],
+          color: row["Màu sắc"],
+          weight: row["Trọng lượng"],
+          connectivity: row["Kết nối"],
+          others: row["Khác"],
+        },
+      });
+    }
+
     await Product.insertMany(products);
     res
       .status(201)
@@ -53,26 +63,26 @@ exports.createProduct = async (req, res) => {
     req.body;
 
   try {
+    const foundCategory = await Category.findById(category);
+    if (!foundCategory)
+      return res.status(400).json({ message: "Category không tồn tại!" });
+
     const images = [];
-    if (req.files && req.files.images) {
-      try {
-        const uploadPromises = req.files.images.map((image) =>
-          cloudinaryService.uploadImage(image.path)
-        );
-        const uploadResults = await Promise.all(uploadPromises);
-        uploadResults.forEach((uploadedImage) => {
-          images.push(uploadedImage.secure_url);
-        });
-      } catch (error) {
-        console.error("Error uploading images:", error);
-      }
+    if (req.files?.images) {
+      const uploadPromises = req.files.images.map((image) =>
+        cloudinaryService.uploadImage(image.path)
+      );
+      const uploadResults = await Promise.all(uploadPromises);
+      uploadResults.forEach((uploadedImage) => {
+        images.push(uploadedImage.secure_url);
+      });
     }
 
     const newProduct = new Product({
       name,
       description,
       price,
-      category,
+      category: foundCategory._id,
       stock,
       images,
       specifications,
@@ -95,7 +105,14 @@ exports.updateProduct = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    if (req.files && req.files.images) {
+    if (category) {
+      const foundCategory = await Category.findById(category);
+      if (!foundCategory)
+        return res.status(400).json({ message: "Category không tồn tại!" });
+      product.category = foundCategory._id;
+    }
+
+    if (req.files?.images) {
       const images = [];
       for (let image of req.files.images) {
         const uploadedImage = await cloudinaryService.uploadImage(image.path);
@@ -107,7 +124,6 @@ exports.updateProduct = async (req, res) => {
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
-    product.category = category || product.category;
     product.stock = stock || product.stock;
     product.specifications = specifications || product.specifications;
 
@@ -140,9 +156,10 @@ exports.getProducts = async (req, res) => {
   try {
     const filter = {};
     if (search) filter.name = { $regex: search, $options: "i" };
-    if (category) filter.category = category;
+    if (category) filter.category = category; // truyền ObjectId từ frontend
 
     const products = await Product.find(filter)
+      .populate("category", "name slug") // nếu cần
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -160,7 +177,11 @@ exports.getProductById = async (req, res) => {
   const { productId } = req.query;
 
   try {
-    const product = await Product.find({ productId })
+    const product = await Product.findById(productId).populate(
+      "category",
+      "name slug"
+    );
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     res.status(200).json({ product });
   } catch (error) {
