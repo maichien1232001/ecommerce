@@ -62,3 +62,12 @@ export const addProductApi = async (value) => {
     console.error(error);
   }
 };
+
+export const viewProductApi = async (id) => {
+  try {
+    const res = await API.get(`${proxy}/products/${id}`);
+    return res?.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

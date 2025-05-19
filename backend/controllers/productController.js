@@ -23,7 +23,7 @@ exports.importProducts = async (req, res) => {
       const categoryName = row["Danh mục"];
       const category = await Category.findOne({ name: categoryName });
       if (!category) continue; // hoặc push error log
-
+      const specType = row["Thông số kỹ thuật"];
       products.push({
         name: row["Tên sản phẩm"],
         description: row["Mô tả"],
@@ -32,16 +32,18 @@ exports.importProducts = async (req, res) => {
         stock: row["Tồn kho"],
         images: row["Hình ảnh"] ? row["Hình ảnh"].split(",") : [],
         specifications: {
-          cpu: row["CPU"],
-          ram: row["RAM"],
-          storage: row["Bộ nhớ"],
-          screen: row["Màn hình"],
-          battery: row["Pin"],
-          operatingSystem: row["Hệ điều hành"],
-          color: row["Màu sắc"],
-          weight: row["Trọng lượng"],
-          connectivity: row["Kết nối"],
-          others: row["Khác"],
+          [specType]: {
+            cpu: row["CPU"],
+            ram: row["RAM"],
+            storage: row["Bộ nhớ"],
+            screen: row["Màn hình"],
+            battery: row["Pin"],
+            operatingSystem: row["Hệ điều hành"],
+            color: row["Màu sắc"],
+            weight: row["Trọng lượng"],
+            connectivity: row["Kết nối"],
+            others: row["Khác"],
+          },
         },
       });
     }
@@ -59,25 +61,13 @@ exports.importProducts = async (req, res) => {
 
 // Tạo sản phẩm mới
 exports.createProduct = async (req, res) => {
-  const { name, description, price, category, stock, specifications } =
+  const { name, description, price, category, stock, specifications, images } =
     req.body;
 
   try {
     const foundCategory = await Category.findById(category);
     if (!foundCategory)
       return res.status(400).json({ message: "Category không tồn tại!" });
-
-    const images = [];
-    if (req.files?.images) {
-      const uploadPromises = req.files.images.map((image) =>
-        cloudinaryService.uploadImage(image.path)
-      );
-      const uploadResults = await Promise.all(uploadPromises);
-      uploadResults.forEach((uploadedImage) => {
-        images.push(uploadedImage.secure_url);
-      });
-    }
-
     const newProduct = new Product({
       name,
       description,
@@ -174,7 +164,7 @@ exports.getProducts = async (req, res) => {
 };
 
 exports.getProductById = async (req, res) => {
-  const { productId } = req.query;
+  const { productId } = req.params;
 
   try {
     const product = await Product.findById(productId).populate(

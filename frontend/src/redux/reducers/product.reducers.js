@@ -2,6 +2,7 @@ import _ from "lodash";
 
 const initialState = {
   products: [],
+  product: {},
   pagination: {},
   page: 1,
   limit: 10,
@@ -35,8 +36,14 @@ const productReducers = (state = initialState, action) => {
     case "ADD_PRODUCTS_SUCCESS":
       return {
         ...state,
-        products: _.get(action, "payload.data"),
+        products: [...state.products, ..._.get(action, "payload.data", [])],
       };
+    case "VIEW_PRODUCTS_SUCCESS":
+      return {
+        ...state,
+        product: _.get(action, "payload.product"),
+      };
+
     case "SET_PAGINATION":
       return {
         ...state,

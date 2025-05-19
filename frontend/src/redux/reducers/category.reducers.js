@@ -15,7 +15,6 @@ const categoryReducers = (state = initialState, action) => {
         loading: true,
       };
     case "CATEGORIES_SUCCESS":
-      console.log("action", action);
       return {
         ...state,
         loading: false,

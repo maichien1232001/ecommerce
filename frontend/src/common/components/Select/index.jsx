@@ -6,12 +6,14 @@ const { Option } = Select;
 
 const CategorySelect = ({ placeholder, value, onChange }) => {
   const listCategories = useSelector((state) => state.category.category);
+  const selectValue =
+    value && value._id ? { value: value._id, label: value.name } : undefined;
   return (
     <Select
       placeholder={placeholder}
       style={{ width: "100%" }}
       labelInValue
-      value={value ? { value: value._id, label: value.name } : undefined}
+      value={selectValue}
       onChange={(option) => {
         const selected = listCategories.find((cat) => cat._id === option.value);
         onChange(selected);

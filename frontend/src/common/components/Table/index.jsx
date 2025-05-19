@@ -6,23 +6,12 @@ import { setPagination } from "../../../redux/actions/product.action";
 import { getColumns } from "./constant";
 
 const TableCommon = (props) => {
-  const { loading, title, data } = props;
+  const { loading, title, data, handleActionClick } = props;
   const dispatch = useDispatch();
   const productState = useSelector((state) => state.products);
   const [valueCell, setValueCell] = useState();
-  const handleActionClick = (key, record) => {
-    console.log("Thao tác:", key);
-    console.log("Dữ liệu dòng:", record);
-
-    // Ví dụ xử lý:
-    if (key === "edit") {
-      // mở modal sửa
-    } else if (key === "delete") {
-      // gọi API xóa
-    }
-  };
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div style={{ overflow: "hidden", width: "99.9%" }}>
       <div>{title}</div>
       <Table
         rowKey="id"

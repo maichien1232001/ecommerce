@@ -8,6 +8,12 @@ exports.uploadImages = async (req, res) => {
       return res.status(400).send("No files uploaded.");
     }
 
+    // === Giả sử ảnh cũ được gửi từ client (trong formData.imagesInfo) ===
+    let existingImages = [];
+    if (req.body.imagesInfo) {
+      existingImages = JSON.parse(req.body.imagesInfo); // mảng [{ url, public_id }]
+    }
+
     const uploadedUrls = [];
 
     for (const file of req.files) {
@@ -27,7 +33,9 @@ exports.uploadImages = async (req, res) => {
       fs.unlinkSync(filePath);
     }
 
-    res.status(200).json({ imageUrls: uploadedUrls });
+    const allImages = [...existingImages, ...uploadedUrls];
+
+    res.status(200).json({ images: allImages });
   } catch (err) {
     console.error("UPLOAD ERROR: ", err);
     res.status(500).json({ error: err.message });
