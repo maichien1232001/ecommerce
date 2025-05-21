@@ -2,29 +2,28 @@ import React, { useState } from "react";
 import { Table } from "antd";
 import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { setPagination } from "../../../redux/actions/product.action";
+import { updateFilter } from "../../../redux/actions/product.action";
 import { getColumns } from "./constant";
 
 const TableCommon = (props) => {
   const { loading, title, data, handleActionClick } = props;
   const dispatch = useDispatch();
   const productState = useSelector((state) => state.products);
-  const [valueCell, setValueCell] = useState();
   return (
-    <div style={{ overflow: "hidden", width: "99.9%" }}>
+    <div style={{ overflow: "hidden" }}>
       <div>{title}</div>
       <Table
         rowKey="id"
         columns={getColumns(
           handleActionClick,
-          productState.page,
-          productState.limit
+          _.get(productState, "filter.page"),
+          _.get(productState, "filter.limit")
         )}
         dataSource={data}
         loading={loading}
         pagination={{
-          current: productState.page,
-          pageSize: productState.limit,
+          current: _.get(productState, "filter.page"),
+          pageSize: _.get(productState, "filter.limit"),
           total: _.get(productState, "pagination.totalCount"),
           showSizeChanger: true,
           pageSizeOptions: ["5", "10", "20", "50", "100"],
@@ -37,7 +36,7 @@ const TableCommon = (props) => {
         }}
         onChange={(pagination) => {
           dispatch(
-            setPagination({
+            updateFilter({
               page: pagination.current,
               limit: pagination.pageSize,
             })

@@ -52,7 +52,7 @@ const specificationsMap = {
   ],
 };
 
-const SpecificationsFields = ({ productType }) => {
+const SpecificationsFields = ({ productType, disabled }) => {
   if (!productType) return null;
 
   const prefix = ["specifications", productType];
@@ -67,6 +67,7 @@ const SpecificationsFields = ({ productType }) => {
             rows={2}
             maxLength={200}
             allowClear
+            disabled={disabled}
           />
         </Item>
       ))}

@@ -1,9 +1,12 @@
 import {
   addProductApi,
+  deleteProductApi,
+  editProductApi,
   getProducts,
   importProducts,
   viewProductApi,
 } from "../../apis/products";
+import { notifyError, notifySuccess } from "../../common/components/Tostify";
 
 export const getListProducts = (values, navigate) => async (dispatch) => {
   dispatch({ type: "PRODUCTS_REQUEST" });
@@ -42,7 +45,9 @@ export const addProduct = (value) => async (dispatch, getState) => {
       type: "ADD_PRODUCTS_SUCCESS",
       payload: res,
     });
+    notifySuccess("Thêm sản phẩm mới thành công!");
   } catch (error) {
+    notifyError("Đã có lỗi xảy ra!");
     console.log(error);
   }
 };
@@ -52,17 +57,46 @@ export const viewProduct = (value) => async (dispatch) => {
     const res = await viewProductApi(value);
     await dispatch({
       type: "VIEW_PRODUCTS_SUCCESS",
-      payload: { product: res.product },
+      payload: { product: res?.product },
     });
-    return res.product; // 👈 trả về product
+    return res?.product; // 👈 trả về product
   } catch (error) {
     throw error;
   }
 };
 
-export const setPagination = (payload) => {
+export const deleteProduct = (value) => async (dispatch) => {
+  try {
+    await deleteProductApi(value);
+    await dispatch({
+      type: "DELETE_PRODUCTS_SUCCESS",
+      payload: value,
+    });
+    notifySuccess("Xóa sản phẩm thành công!");
+  } catch (error) {
+    notifyError("Đã có lỗi xảy ra!");
+    throw error;
+  }
+};
+
+export const editProduct = (id, value) => async (dispatch) => {
+  try {
+    const res = await editProductApi(id, value);
+    await dispatch({
+      type: "EDIT_PRODUCTS_SUCCESS",
+      payload: res,
+    });
+    notifySuccess("Cập nhật sản phẩm thành công!");
+    return res; // 👈 trả về product
+  } catch (error) {
+    notifyError("Đã có lỗi xảy ra!");
+    throw error;
+  }
+};
+
+export const updateFilter = (payload) => {
   return {
-    type: "SET_PAGINATION",
+    type: "UPDATE_FILTER",
     payload,
   };
 };

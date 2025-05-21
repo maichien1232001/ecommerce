@@ -4,10 +4,9 @@ import { Upload, Spin } from "antd";
 import React from "react";
 import useImageUploadHandler from "./useImageUploadHandler";
 
-const UploadImg = ({ fileList, setFileList, form }) => {
+const UploadImg = ({ fileList, setFileList, form, disabled }) => {
   const { loading, handleUploadChange, handleImageRemove } =
     useImageUploadHandler(fileList, setFileList, form);
-
   return (
     <Spin spinning={loading}>
       <Upload
@@ -19,6 +18,7 @@ const UploadImg = ({ fileList, setFileList, form }) => {
         beforeUpload={() => false}
         onChange={handleUploadChange}
         onRemove={handleImageRemove}
+        disabled={disabled}
       >
         <div>
           <PlusOutlined />

@@ -4,8 +4,22 @@ const initialState = {
   products: [],
   product: {},
   pagination: {},
-  page: 1,
-  limit: 10,
+  filter: {
+    page: 1,
+    limit: 10,
+    name: "",
+    priceMin: "",
+    priceMax: "",
+    createdFrom: "",
+    createdTo: "",
+    updatedFrom: "",
+    updatedTo: "",
+    inStock: "",
+    category: "",
+    isFeatured: "",
+    status: "",
+    brand: "",
+  },
 };
 
 const productReducers = (state = initialState, action) => {
@@ -43,13 +57,45 @@ const productReducers = (state = initialState, action) => {
         ...state,
         product: _.get(action, "payload.product"),
       };
-
-    case "SET_PAGINATION":
+    case "EDIT_PRODUCTS_SUCCESS":
+      console.log(action.payload);
       return {
         ...state,
-        page: action.payload.page,
-        limit: action.payload.limit,
+        products: state.products.map((product) =>
+          product._id === action.payload._id ? action.payload : product
+        ),
       };
+
+    case "DELETE_PRODUCTS_SUCCESS":
+      return {
+        ...state,
+        products: state.products.filter(
+          (product) => product._id !== action.payload
+        ),
+      };
+
+    case "UPDATE_FILTER":
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          page: action.payload.page,
+          limit: action.payload.limit,
+          name: _.get(action, "payload.name"),
+          priceMin: _.get(action, "payload.priceMin"),
+          priceMax: _.get(action, "payload.priceMax"),
+          createdFrom: _.get(action, "payload.createdFrom"),
+          createdTo: _.get(action, "payload.createdTo"),
+          updatedFrom: _.get(action, "payload.updatedFrom"),
+          updatedTo: _.get(action, "payload.updatedTo"),
+          inStock: _.get(action, "payload.inStock"),
+          category: _.get(action, "payload.category"),
+          isFeatured: _.get(action, "payload.isFeatured"),
+          status: _.get(action, "payload.status"),
+          brand: _.get(action, "payload.brand"),
+        },
+      };
+
     default:
       return state;
   }

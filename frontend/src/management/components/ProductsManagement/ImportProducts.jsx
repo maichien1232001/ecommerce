@@ -17,7 +17,7 @@ const ImportProducts = () => {
   };
 
   return (
-    <>
+    <div className="import-products">
       <Upload
         beforeUpload={(file) => {
           setFile(file);
@@ -34,16 +34,12 @@ const ImportProducts = () => {
       >
         <Button icon={<UploadOutlined />}>Chọn file Excel</Button>
       </Upload>
-
-      <Button
-        type="primary"
-        onClick={handleUpload}
-        disabled={!file}
-        style={{ marginTop: 16 }}
-      >
-        Upload
-      </Button>
-    </>
+      {file && (
+        <Button type="primary" onClick={handleUpload} style={{ marginTop: 16 }}>
+          Upload
+        </Button>
+      )}
+    </div>
   );
 };
 

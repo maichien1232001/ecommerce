@@ -10,8 +10,18 @@ const proxy = "http://localhost:5000/api";
 export const getProducts = async ({
   page = 1,
   limit = 10,
-  search = "",
-  category = "",
+  name = "",
+  priceMin,
+  priceMax,
+  createdFrom,
+  createdTo,
+  updatedFrom,
+  updatedTo,
+  inStock,
+  category,
+  isFeatured,
+  status,
+  brand,
 }) => {
   try {
     const params = {
@@ -19,8 +29,18 @@ export const getProducts = async ({
       limit,
     };
 
-    if (search) params.search = search;
+    if (name) params.name = name;
+    if (priceMin !== undefined) params.priceMin = priceMin;
+    if (priceMax !== undefined) params.priceMax = priceMax;
+    if (createdFrom) params.createdFrom = createdFrom;
+    if (createdTo) params.createdTo = createdTo;
+    if (updatedFrom) params.updatedFrom = updatedFrom;
+    if (updatedTo) params.updatedTo = updatedTo;
+    if (inStock !== undefined) params.inStock = inStock;
     if (category) params.category = category;
+    if (isFeatured) params.isFeatured = isFeatured;
+    if (status) params.status = status;
+    if (brand) params.brand = brand;
 
     const response = await API.get(`${proxy}/products`, {
       params,
@@ -55,10 +75,9 @@ export const importProducts = async (file) => {
 export const addProductApi = async (value) => {
   try {
     const res = await API.post(`${proxy}/products/`, value);
-    notifySuccess("Thêm sản phẩm mới thành công!");
+
     return res?.data;
   } catch (error) {
-    notifyError("Đã có lỗi xảy ra!");
     console.error(error);
   }
 };
@@ -66,6 +85,24 @@ export const addProductApi = async (value) => {
 export const viewProductApi = async (id) => {
   try {
     const res = await API.get(`${proxy}/products/${id}`);
+    return res?.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const editProductApi = async (id, value) => {
+  try {
+    const res = await API.put(`${proxy}/products/${id}`, value);
+    return res?.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteProductApi = async (id) => {
+  try {
+    const res = await API.delete(`${proxy}/products/${id}`);
     return res?.data;
   } catch (error) {
     console.error(error);

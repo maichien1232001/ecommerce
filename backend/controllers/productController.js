@@ -4,6 +4,7 @@ const xlsx = require("xlsx");
 const cloudinaryService = require("../services/cloudinaryService");
 const paginationHelper = require("../utils/pagination");
 const Category = require("../models/Category");
+const { buildProductFilter } = require("../utils/buildProductFilter");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -13,6 +14,7 @@ exports.importProducts = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Vui lòng tải lên file Excel!" });
     }
+
     const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
     const sheetName = workbook.SheetNames[0];
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -22,15 +24,26 @@ exports.importProducts = async (req, res) => {
     for (const row of data) {
       const categoryName = row["Danh mục"];
       const category = await Category.findOne({ name: categoryName });
-      if (!category) continue; // hoặc push error log
-      const specType = row["Thông số kỹ thuật"];
+      if (!category) continue;
+
+      const specType = row["Loại sản phẩm"]?.toLowerCase(); // laptop/smartphone/...
+
+      const isFeatured =
+        row["Sản phẩm nổi bật"]?.toString().toLowerCase() === "true";
+
       products.push({
         name: row["Tên sản phẩm"],
         description: row["Mô tả"],
         price: row["Giá"],
         category: category._id,
-        stock: row["Tồn kho"],
+        stock: row["Tồn kho"] || 0,
         images: row["Hình ảnh"] ? row["Hình ảnh"].split(",") : [],
+        isFeatured: row["Nổi bật"],
+        status: row["Trạng thái"],
+        brand:
+          typeof row["Thương hiệu"] === "string"
+            ? row["Thương hiệu"].toLowerCase()
+            : null,
         specifications: {
           [specType]: {
             cpu: row["CPU"],
@@ -38,6 +51,7 @@ exports.importProducts = async (req, res) => {
             storage: row["Bộ nhớ"],
             screen: row["Màn hình"],
             battery: row["Pin"],
+            camera: row["Camera"],
             operatingSystem: row["Hệ điều hành"],
             color: row["Màu sắc"],
             weight: row["Trọng lượng"],
@@ -49,6 +63,7 @@ exports.importProducts = async (req, res) => {
     }
 
     await Product.insertMany(products);
+
     res
       .status(201)
       .json({ message: "Nhập dữ liệu thành công!", data: products });
@@ -141,17 +156,43 @@ exports.deleteProduct = async (req, res) => {
 
 // Lấy danh sách sản phẩm với phân trang và tìm kiếm
 exports.getProducts = async (req, res) => {
-  const { page = 1, limit = 10, search = "", category = "" } = req.query;
+  const {
+    page,
+    limit,
+    name,
+    priceMin,
+    priceMax,
+    createdFrom,
+    createdTo,
+    updatedFrom,
+    updatedTo,
+    inStock,
+    category,
+    isFeatured,
+    status,
+    brand,
+  } = req.query;
 
   try {
-    const filter = {};
-    if (search) filter.name = { $regex: search, $options: "i" };
-    if (category) filter.category = category; // truyền ObjectId từ frontend
+    const filter = buildProductFilter({
+      name,
+      priceMin,
+      priceMax,
+      createdFrom,
+      createdTo,
+      updatedFrom,
+      updatedTo,
+      inStock,
+      category,
+      isFeatured,
+      status,
+      brand,
+    });
 
     const products = await Product.find(filter)
-      .populate("category", "name slug") // nếu cần
+      .populate("category", "name slug")
       .skip((page - 1) * limit)
-      .limit(limit)
+      .limit(Number(limit))
       .sort({ createdAt: -1 });
 
     const totalCount = await Product.countDocuments(filter);

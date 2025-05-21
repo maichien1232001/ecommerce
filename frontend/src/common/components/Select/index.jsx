@@ -1,31 +1,50 @@
 import React from "react";
 import { Select } from "antd";
-import { useSelector } from "react-redux";
 
-const { Option } = Select;
+const CommonSelect = ({
+  options = [],
+  value,
+  onChange,
+  getValue, // (item) => giá trị so sánh
+  getLabel, // (item) => label hiển thị
+  placeholder,
+  disabled,
+  labelInValue = false,
+}) => {
+  // Tìm đúng option nếu đang dùng labelInValue
+  const formattedValue = labelInValue
+    ? value && getValue && getLabel
+      ? { value: getValue(value), label: getLabel(value) }
+      : undefined
+    : getValue
+    ? getValue(value)
+    : value;
 
-const CategorySelect = ({ placeholder, value, onChange }) => {
-  const listCategories = useSelector((state) => state.category.category);
-  const selectValue =
-    value && value._id ? { value: value._id, label: value.name } : undefined;
+  const handleChange = (option) => {
+    if (labelInValue) {
+      const selected = options.find((item) => getValue(item) === option.value);
+      onChange?.(selected); // trả về object đầy đủ
+    } else {
+      onChange?.(option); // trả về value đơn giản
+    }
+  };
+
   return (
     <Select
+      disabled={disabled}
       placeholder={placeholder}
       style={{ width: "100%" }}
-      labelInValue
-      value={selectValue}
-      onChange={(option) => {
-        const selected = listCategories.find((cat) => cat._id === option.value);
-        onChange(selected);
-      }}
+      value={formattedValue}
+      labelInValue={labelInValue}
+      onChange={handleChange}
     >
-      {listCategories.map((cat) => (
-        <Option key={cat._id} value={cat._id}>
-          {cat.name}
-        </Option>
+      {options.map((item) => (
+        <Select.Option key={getValue(item)} value={getValue(item)}>
+          {getLabel(item)}
+        </Select.Option>
       ))}
     </Select>
   );
 };
 
-export default CategorySelect;
+export default CommonSelect;

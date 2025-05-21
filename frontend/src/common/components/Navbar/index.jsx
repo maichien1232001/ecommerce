@@ -1,6 +1,6 @@
 import React from "react";
-import {Link} from "react-router-dom";
-import {Layout, Menu} from "antd";
+import { Link } from "react-router-dom";
+import { Layout, Menu } from "antd";
 import _ from "lodash";
 import {
   DashboardOutlined,
@@ -14,7 +14,7 @@ import {
 
 import "./Navbar.scss";
 
-const {Sider} = Layout;
+const { Sider } = Layout;
 
 const listMenu = [
   {
@@ -68,7 +68,7 @@ const NavBar = () => {
 
   return (
     <Sider
-      style={{height: `${height}px`}}
+      style={{ height: `${height}px` }}
       className="navbar-container"
       data-height={height}
     >
@@ -78,7 +78,7 @@ const NavBar = () => {
           !_.isEmpty(menuItem) ? _.get(menuItem, "key") : 1
         }`}
         theme="dark"
-        style={styles.menu}
+        className="navbar-menu"
       >
         {_.map(listMenu, (item) => {
           return (
@@ -92,19 +92,4 @@ const NavBar = () => {
   );
 };
 
-const styles = {
-  layout: {
-    height: "100%",
-  },
-  sider: {
-    background: "#001529",
-  },
-  menu: {
-    height: "100%",
-  },
-  content: {
-    padding: "2rem",
-    background: "#fff",
-  },
-};
 export default NavBar;

@@ -1,45 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const specificationSchema = new mongoose.Schema({
-    cpu: { type: String },
-    ram: { type: String },
-    storage: { type: String },
-    screen: { type: String },
-    battery: { type: String },
-    camera: { type: String },
-    operatingSystem: { type: String },
-    color: { type: String },
-    weight: { type: String },
-    connectivity: { type: String },
-    others: { type: String },
+  cpu: String,
+  ram: String,
+  storage: String,
+  screen: String,
+  battery: String,
+  camera: String,
+  operatingSystem: String,
+  color: String,
+  weight: String,
+  connectivity: String,
+  others: String,
 });
 
 const productSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true },
-        description: { type: String, required: true },
-        price: { type: Number, required: true },
-        category: { type: String, required: true },
-        images: [{ type: String }],
-        stock: { type: Number, default: 0 },
-        rating: { type: Number, default: 0 },
-        specifications: {
-            laptop: specificationSchema,
-            smartphone: specificationSchema,
-            tablet: specificationSchema,
-            desktop: specificationSchema,
-        },
-        reviews: [
-            {
-                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-                comment: String,
-                rating: { type: Number, min: 1, max: 5 },
-                createdAt: { type: Date, default: Date.now },
-            },
-        ],
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    category: { type: String, required: true },
+    brand: { type: String },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "discontinued"],
+      default: "active",
     },
-    { timestamps: true }
+    isFeatured: { type: Boolean, default: false },
+    stock: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 },
+    images: [{ type: String }],
+    specifications: {
+      laptop: specificationSchema,
+      smartphone: specificationSchema,
+      tablet: specificationSchema,
+      desktop: specificationSchema,
+    },
+  },
+  { timestamps: true }
 );
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

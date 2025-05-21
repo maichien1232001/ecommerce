@@ -6,14 +6,13 @@ import FormProducts from "./FormProducts";
 import useImageUploadHandler from "../../../common/components/Upload/useImageUploadHandler";
 import { useDispatch } from "react-redux";
 import { addProduct } from "../../../redux/actions/product.action";
+import ProductModal from "./ProductModal";
 
 const AddProduct = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [isOpenModalAddProduct, SetIsOpenAddProduct] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [fileList, setFileList] = useState([]);
-  const [productType, setProductType] = useState();
 
   const { handleImageRemove } = useImageUploadHandler(
     fileList,
@@ -42,26 +41,13 @@ const AddProduct = () => {
         <PlusOutlined />
         Thêm sản phẩm
       </Button>
-      <Modal
-        title={"Thêm sản phẩm"}
-        open={isOpenModalAddProduct}
-        onCancel={() => handleClose()}
-        footer={null}
-        width={800}
-      >
-        <FormProducts
-          form={form}
-          handleClose={handleClose}
-          handleSubmit={handleSubmit}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          fileList={fileList}
-          setFileList={setFileList}
-          isEdit={true}
-          productType={productType} // truyền vào để dùng trong form
-          setProductType={setProductType}
-        />
-      </Modal>
+      <ProductModal
+        visible={isOpenModalAddProduct}
+        onClose={handleClose}
+        title="Thêm sản phẩm"
+        isEdit={true}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 };
