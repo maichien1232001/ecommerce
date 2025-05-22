@@ -6,25 +6,25 @@ import { updateFilter } from "../../../redux/actions/product.action";
 import { getColumns } from "./constant";
 
 const TableCommon = (props) => {
-  const { loading, title, data, handleActionClick } = props;
+  const { loading, title, data, className, handleActionClick } = props;
   const dispatch = useDispatch();
-  const productState = useSelector((state) => state.products);
+  const { filter, pagination } = useSelector((state) => state.products);
   return (
-    <div style={{ overflow: "hidden" }}>
-      <div>{title}</div>
+    <div className={className}>
+      <div style={{ marginBottom: 8 }}>{title}</div>
       <Table
         rowKey="id"
         columns={getColumns(
           handleActionClick,
-          _.get(productState, "filter.page"),
-          _.get(productState, "filter.limit")
+          _.get(filter, "page"),
+          _.get(filter, "limit")
         )}
         dataSource={data}
         loading={loading}
         pagination={{
-          current: _.get(productState, "filter.page"),
-          pageSize: _.get(productState, "filter.limit"),
-          total: _.get(productState, "pagination.totalCount"),
+          current: _.get(filter, "page"),
+          pageSize: _.get(filter, "limit"),
+          total: _.get(pagination, "totalCount"),
           showSizeChanger: true,
           pageSizeOptions: ["5", "10", "20", "50", "100"],
           showTotal: (total) => `Tổng ${total} sản phẩm`,
@@ -37,6 +37,7 @@ const TableCommon = (props) => {
         onChange={(pagination) => {
           dispatch(
             updateFilter({
+              ...filter,
               page: pagination.current,
               limit: pagination.pageSize,
             })

@@ -3,7 +3,7 @@ import _ from "lodash";
 import { messaging } from "../../config/firebase";
 import { getToken } from "firebase/messaging";
 
-const proxy = "http://localhost:5000/api";
+const proxy = "http://localhost:8080/api";
 
 export const saveTokenFireBase = async (token) => {
   if (_.isEmpty(token)) return;

@@ -1,6 +1,6 @@
 import API from "../config/axiosInterceptor";
 
-const proxy = "http://localhost:5000/api";
+const proxy = "http://localhost:8080/api";
 
 export const uploadImagesApi = async (formData) => {
   try {

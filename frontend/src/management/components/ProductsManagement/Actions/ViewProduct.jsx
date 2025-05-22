@@ -1,5 +1,5 @@
 import React from "react";
-import ProductModal from "./ProductModal";
+import ProductModal from "../ProductModal";
 
 const ViewProduct = (props) => {
   const { visible, onClose, product } = props;

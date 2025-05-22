@@ -5,7 +5,7 @@ import {
 } from "../../common/components/Tostify";
 import API from "../../config/axiosInterceptor";
 
-const proxy = "http://localhost:5000/api";
+const proxy = "http://localhost:8080/api";
 
 export const getProducts = async ({
   page = 1,
@@ -38,7 +38,9 @@ export const getProducts = async ({
     if (updatedTo) params.updatedTo = updatedTo;
     if (inStock !== undefined) params.inStock = inStock;
     if (category) params.category = category;
-    if (isFeatured) params.isFeatured = isFeatured;
+    if (isFeatured !== undefined && isFeatured !== null) {
+      params.isFeatured = isFeatured;
+    }
     if (status) params.status = status;
     if (brand) params.brand = brand;
 

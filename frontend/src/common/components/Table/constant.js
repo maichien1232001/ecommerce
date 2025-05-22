@@ -8,8 +8,8 @@ const imgErr =
 
 export const status = [
   { label: "Tất cả", value: "" },
-  { label: "Hoạt động", value: "active" },
-  { label: "Ngừng hoạt động", value: "inactive" },
+  { label: "Đang bán", value: "active" },
+  { label: "Ngừng bán", value: "inactive" },
   { label: "Ngừng kinh doanh", value: "discontinued" },
 ];
 
@@ -54,8 +54,24 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     title: "Mô tả sản phẩm",
     dataIndex: "description",
     key: "description",
-    ellipsis: true,
-    width: "300px",
+    width: "250px",
+    render: (text) => {
+      if (!text) return "";
+      // Tách chuỗi mỗi 60 ký tự
+      const wrappedText = text.match(/.{1,80}/g)?.join("\n");
+      return (
+        <pre
+          style={{
+            fontFamily: "inherit",
+            whiteSpace: "pre-wrap",
+            margin: 0,
+            wordBreak: "break-word",
+          }}
+        >
+          {wrappedText}
+        </pre>
+      );
+    },
   },
   {
     title: "Trạng thái",
@@ -63,7 +79,21 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     key: "status",
     ellipsis: true,
     width: "150px",
-    render: (item) => <>{_.find(status, (i) => i.value === item)?.label}</>,
+    align: "center",
+    render: (item) => {
+      const statusItem = _.find(status, (i) => i.value === item);
+      const color = {
+        active: "#1677ff",
+        inactive: "#faad14",
+        discontinued: "#ff4d4f",
+      }[item];
+
+      return (
+        <span style={{ color: color || "#333" }}>
+          {statusItem?.label || "Không xác định"}
+        </span>
+      );
+    },
   },
   {
     title: "Thương hiệu",
@@ -71,6 +101,7 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     key: "brand",
     ellipsis: true,
     width: "150px",
+    align: "center",
     render: (item) => <>{_.capitalize(item)}</>,
   },
   {

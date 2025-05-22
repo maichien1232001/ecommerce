@@ -20,6 +20,7 @@ const userProfileRoutes = require("./routes/userProfileRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const imageRoutes = require("./routes/imageRoutes");
+const brandRoutes = require("./routes/brandRoutes");
 
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -54,6 +55,7 @@ app.use("/api/shipping", shippingRoutes);
 app.use("/api/profile", userProfileRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/brand", brandRoutes);
 app.use("/api/cloudinary", imageRoutes);
 
 // Handle lỗi

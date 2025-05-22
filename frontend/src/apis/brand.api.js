@@ -1,9 +1,9 @@
 import API from "../config/axiosInterceptor";
 
 const proxy = "http://localhost:8080/api";
-export const getListCategoryApi = async () => {
+export const getListBrandApi = async () => {
   try {
-    const res = await API.get(`${proxy}/category`);
+    const res = await API.get(`${proxy}/brand`);
 
     return res.data;
   } catch (error) {

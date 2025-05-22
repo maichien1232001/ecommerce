@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Upload, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { importFileProducts } from "../../../redux/actions/product.action";
+import { importFileProducts } from "../../../../redux/actions/product.action";
 
 const ImportProducts = () => {
   const [file, setFile] = useState(null);

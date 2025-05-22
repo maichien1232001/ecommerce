@@ -16,7 +16,7 @@ const initialState = {
     updatedTo: "",
     inStock: "",
     category: "",
-    isFeatured: "",
+    isFeatured: null,
     status: "",
     brand: "",
   },

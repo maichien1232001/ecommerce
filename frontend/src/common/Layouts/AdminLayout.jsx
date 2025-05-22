@@ -1,7 +1,6 @@
 // src/layouts/AdminLayout.js
 import React from "react";
 import NavBar from "../components/Navbar";
-// import Sidebar from '../components/Sidebar';
 // import AdminHeader from '../components/AdminHeader';
 
 const AdminLayout = ({ children }) => {
@@ -12,12 +11,14 @@ const AdminLayout = ({ children }) => {
         {/* <AdminHeader /> */}
         <main
           style={{
+            overflow: "auto",
             padding: 16,
+            paddingTop: 0,
             height: "100vh",
-            background: "linear-gradient(135deg, #f9f9f9, #ffffff)",
+            background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
           }}
         >
-          {children} {/* Các trang con sẽ được render ở đây */}
+          {children}
         </main>
       </div>
     </div>

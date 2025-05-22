@@ -14,16 +14,33 @@ const FormProducts = (props) => {
   const {
     form,
     handleClose,
-    selectedCategory,
-    setSelectedCategory,
-    fileList,
-    setFileList,
     handleSubmit,
     isEdit,
-    productType,
-    setProductType,
+    state,
+    setState,
+    // selectedCategory,
+    // setSelectedCategory,
+    // fileList,
+    // setFileList,
+    // productType,
+    // setProductType,
   } = props;
   const categories = useSelector((state) => state.category.category);
+  const brand = useSelector((state) => state.brand.brand);
+  const handleSetFileList = (list) => {
+    setState((prev) => ({
+      ...prev,
+      fileList: list,
+    }));
+  };
+  const handleSetProductType = (value) => {
+    console.log("value", value);
+    setState((prev) => ({
+      ...prev,
+      productType: value,
+    }));
+  };
+
   return (
     <Form
       className="custom-form"
@@ -74,19 +91,14 @@ const FormProducts = (props) => {
       >
         <CommonSelect
           options={categories}
-          value={selectedCategory}
-          onChange={(cat) => setSelectedCategory(cat)} // trả về object đầy đủ
+          value={state.selectedCategory}
+          onChange={(cat) => setState({ ...state, selectedCategory: cat })}
           getValue={(item) => item._id}
           getLabel={(item) => item.name}
           labelInValue
           disabled={!isEdit}
           placeholder="Chọn loại sản phẩm"
         />
-        {/* <CategorySelect
-          value={selectedCategory}
-          onChange={setSelectedCategory}
-          disabled={!isEdit}
-        /> */}
       </Item>
 
       <Item
@@ -108,26 +120,47 @@ const FormProducts = (props) => {
         rules={[
           {
             required: true,
-            message: fileList.length === 0 && "Vui lòng thêm ít nhất 1 ảnh",
+            message:
+              state.fileList.length === 0 && "Vui lòng thêm ít nhất 1 ảnh",
           },
         ]}
       >
         <UploadImg
-          fileList={fileList}
-          setFileList={setFileList}
+          fileList={state.fileList}
+          setFileList={handleSetFileList}
           form={form}
           disabled={!isEdit}
         />
       </Item>
 
+      <Item
+        label={"Hãng"}
+        name={"brand"}
+        rules={[{ required: true, message: "Hãy chọn hãng" }]}
+      >
+        <CommonSelect
+          options={brand}
+          value={state.selectedBrand}
+          onChange={(cat) => setState({ ...state, selectedBrand: cat })}
+          getValue={(item) => item?._id}
+          getLabel={(item) => item?.name}
+          labelInValue
+          disabled={!isEdit}
+          placeholder="Chọn hãng sản phẩm"
+        />
+      </Item>
+
       <ProductTypeSelect
-        productType={productType}
-        setProductType={setProductType}
+        productType={state.productType}
+        setProductType={handleSetProductType}
         disabled={!isEdit}
       />
 
-      {productType && (
-        <SpecificationsFields productType={productType} disabled={!isEdit} />
+      {state.productType && (
+        <SpecificationsFields
+          productType={state.productType}
+          disabled={!isEdit}
+        />
       )}
 
       <Form.Item>

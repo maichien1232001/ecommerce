@@ -9,22 +9,23 @@ const FilterByCategory = () => {
   const listCategories = useSelector((state) => state.category.category);
   const { filter } = useSelector((state) => state.products);
   return (
-    <>
-      <label style={{ marginRight: 8, fontSize: 14 }}>Loại sản phẩm:</label>
+    <div>
+      <div style={{ marginRight: 8, fontSize: 14 }}>Loại sản phẩm:</div>
       <CommonSelect
         options={listCategories}
         value={selectedCategory}
         onChange={(cat) => {
           setSelectedCategory(cat);
-          dispatch(updateFilter({ ...filter, category: cat._id }));
+          dispatch(updateFilter({ ...filter, category: cat?._id }));
         }}
-        getValue={(item) => item._id}
-        getLabel={(item) => item.name}
+        getValue={(item) => item?._id}
+        getLabel={(item) => item?.name}
         labelInValue
         //   disabled={!isEdit}
         placeholder="Chọn loại sản phẩm"
+        allowClear
       />
-    </>
+    </div>
   );
 };
 

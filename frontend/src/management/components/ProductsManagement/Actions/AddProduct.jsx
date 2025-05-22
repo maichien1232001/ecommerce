@@ -1,12 +1,11 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Modal } from "antd";
 import React, { useCallback, useState } from "react";
-import "./ProductsManagement.scss";
-import FormProducts from "./FormProducts";
-import useImageUploadHandler from "../../../common/components/Upload/useImageUploadHandler";
+import "../ProductsManagement.scss";
+import useImageUploadHandler from "../../../../common/components/Upload/useImageUploadHandler";
 import { useDispatch } from "react-redux";
-import { addProduct } from "../../../redux/actions/product.action";
-import ProductModal from "./ProductModal";
+import { addProduct } from "../../../../redux/actions/product.action";
+import ProductModal from "../ProductModal";
 
 const AddProduct = () => {
   const [form] = Form.useForm();

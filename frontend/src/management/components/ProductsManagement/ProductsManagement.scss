@@ -1,6 +1,10 @@
+:root {
+  --primary-color: #1677ff;
+  --boxshadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 .list-products {
   overflow: hidden;
-  width: 87.9vw;
+  width: calc(100vw - 247px);
   .header-action-product {
     margin-top: 16px;
     display: flex;
@@ -8,47 +12,90 @@
     .header-action-product-card {
       width: 100%;
       background-color: #f0f2f5;
+      .header-btn-wrapper{
+        display: flex;
+        align-items: center;
+        gap: 0 8px;
+      }
       .ant-card-body {
         display: flex;
         justify-content: space-between;
+        flex-direction: column;
+        padding: 8px;
+        box-shadow: var(--boxshadow);
+
+        .header-btn-product-card{
+          display: flex;
+          justify-content: space-between;
+        }
+        .header-filter{
+          display: flex;
+          align-items: center;
+          gap: 0 8px;
+          .filter-toggle-icon{
+            cursor: pointer;
+            color: var(--primary-color);
+            &:hover{
+              opacity: 0.8;
+            }
+          }
+        }
+        .search-product{
+          width: 400px;
+          .ant-input-affix-wrapper{
+            height: 40px;
+          }
+          .ant-btn{
+            height: 40px;
+          }
+        }
+        .advanced-filter{
+         margin-top: 8px;
+        }
       }
       .import-products {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        margin-bottom: 8px;
-      }
-      .header-filter {
-        display: flex;
       }
     }
   }
-  .custom-form .ant-form-item {
-    margin-bottom: 8px !important;
-    .input-form {
-      margin: 0;
-      padding: 0;
-      &-textarea {
-        textarea {
-          height: 100%;
-          resize: none;
-        }
-      }
-      input {
-        padding: 4px 11px;
-        border-radius: 6px;
-        border-top-right-radius: 0px;
-        border-bottom-right-radius: 0px;
+  .card-table-product{
+    margin-top: 16px;
+    .ant-card-body{
+      padding: 8px;
+    }
+    .table-product{ 
+      overflow: hidden;
+    }
+  }
+}
+
+.custom-form .ant-form-item {
+  margin-bottom: 8px !important;
+  .input-form {
+    margin: 0;
+    padding: 0;
+    &-textarea {
+      textarea {
+        height: 100%;
+        resize: none;
       }
     }
-    .ant-input-suffix {
-      &:active {
-        border-radius: 6px;
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
-        // background: #e8f0fe;
-        margin: 0;
-      }
+    input {
+      padding: 4px 11px;
+      border-radius: 6px;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+  }
+  .ant-input-suffix {
+    &:active {
+      border-radius: 6px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      // background: #e8f0fe;
+      margin: 0;
     }
   }
 }

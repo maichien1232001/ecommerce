@@ -1,7 +1,8 @@
-import React, { memo } from "react";
-import { Select } from "antd";
-
-const { Option } = Select;
+import React, { memo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import _ from "lodash";
+import CommonSelect from "../../../../common/components/Select";
+import { updateFilter } from "../../../../redux/actions/product.action";
 
 const options = [
   { label: "Tất cả", value: "all" },
@@ -11,26 +12,26 @@ const options = [
 ];
 
 const StockFilter = ({ label = "Tồn kho:", onFilter }) => {
-  const handleChange = (value) => {
-    onFilter?.(value);
-  };
+  const dispatch = useDispatch();
+  const { filter } = useSelector((state) => state.products);
+  const [selectedStock, setSelectedStock] = useState(null);
 
   return (
     <div style={{ marginBottom: 12 }}>
       <label style={{ marginRight: 8, fontSize: 14 }}>{label}</label>
       <div>
-        <Select
+        <CommonSelect
           defaultValue="all"
-          onChange={handleChange}
-          style={{ width: 200 }}
-          allowClear
-        >
-          {options.map((opt) => (
-            <Option key={opt.value} value={opt.value}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
+          options={options}
+          value={selectedStock}
+          onChange={(value) => {
+            setSelectedStock(value);
+            dispatch(updateFilter({ ...filter, inStock: value }));
+          }}
+          getValue={(item) => item?.value}
+          getLabel={(item) => item?.label}
+          allowClear={selectedStock !== null}
+        />
       </div>
     </div>
   );

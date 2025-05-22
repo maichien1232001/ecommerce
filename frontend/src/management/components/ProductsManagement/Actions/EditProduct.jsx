@@ -1,7 +1,7 @@
 import React from "react";
-import ProductModal from "./ProductModal";
+import ProductModal from "../ProductModal";
 import { useDispatch } from "react-redux";
-import { editProduct } from "../../../redux/actions/product.action";
+import { editProduct } from "../../../../redux/actions/product.action";
 
 const EditProduct = (props) => {
   const { visible, onClose, product } = props;

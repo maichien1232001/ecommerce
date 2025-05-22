@@ -118,7 +118,7 @@ const DateFieldFilter = ({
             setFilterOption(selected);
             if (selected !== "custom") setCustomRange([]);
           }}
-          style={{ width: 200 }}
+          style={{ width: "100%" }}
           allowClear
         >
           {dateOptions.map((opt) => (
