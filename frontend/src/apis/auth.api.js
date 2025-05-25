@@ -11,9 +11,11 @@ export const registerApi = async (values) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response ? error.response.data.message : "Something went wrong"
-    );
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -24,8 +26,10 @@ export const loginApi = async (values) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response ? error.response.data.message : "Something went wrong"
-    );
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };

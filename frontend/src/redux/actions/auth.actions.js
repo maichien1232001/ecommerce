@@ -12,7 +12,7 @@ export const register = (values, navigate) => async (dispatch) => {
     });
     const isAdmin = checkAdmin(response);
     const token = _.get(response, "accessToken");
-    token ?? localStorage.setItem("authToken", token);
+    token ?? localStorage.setItem("accessToken", token);
     !isAdmin ? navigate("/") : navigate("/admin/products");
   } catch (error) {
     dispatch({
@@ -44,19 +44,4 @@ export const login = (values, navigate) => async (dispatch) => {
 
 export const checkAdmin = (data) => {
   return _.get(data, "user.role") === "admin" ?? true;
-};
-
-export const saveUser = (values) => async (dispatch) => {
-  dispatch({ type: "SAVE_USER_REQUEST" });
-  try {
-    dispatch({
-      type: "SAVE_USER_SUCCESS",
-      payload: values,
-    });
-  } catch (error) {
-    dispatch({
-      type: "SAVE_USER_FAILURE",
-      payload: error.message,
-    });
-  }
 };

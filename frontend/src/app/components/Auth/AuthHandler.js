@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
-import axios from "axios";
-import { saveUser } from "../../../redux/actions/auth.actions";
-import API from "../../../config/axiosInterceptor";
+import { getUserProfile } from "../../../redux/actions/user.actions";
 
 const Auth = () => {
   const dispatch = useDispatch();
@@ -14,11 +12,7 @@ const Auth = () => {
     const fetchUserData = async () => {
       if (token && performance.navigation.type === 1) {
         try {
-          const res = API.get("http://localhost:8080/api/profile/", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          dispatch(saveUser(res.data)); // Lưu user vào Redux
+          dispatch(getUserProfile(token));
         } catch (error) {
           message.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!");
           // dispatch(logout()); // Gọi action logout

@@ -2,6 +2,8 @@ import { Form, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import FormProducts from "./FormProducts";
+import { find } from "lodash";
+import { optionTags, statusOptionsBase } from "../../../constants/products";
 
 const ProductModal = ({
   visible,
@@ -12,29 +14,42 @@ const ProductModal = ({
   isEdit,
 }) => {
   const [form] = Form.useForm();
-  // const [selectedCategory, setSelectedCategory] = useState(null);
-  // const [selectedBrand, setSelectedBrand] = useState(null);
-  // const [selectedFeatured, setSelectedFeatured] = useState(null);
-  // const [selectedStatus, setSelectedStatus] = useState(null);
-  // const [fileList, setFileList] = useState([]);
-  // const [productType, setProductType] = useState();
   const [state, setState] = useState({
     selectedCategory: null,
     selectedBrand: null,
-    selectedFeatured: null,
     selectedStatus: null,
     fileList: [],
     productType: null,
+    selectedTag: null,
   });
   const listCategories = useSelector((state) => state.category.category);
+  const listbrands = useSelector((state) => state.brand.brand);
 
   useEffect(() => {
     if (visible) {
       if (product) {
         const currentType = Object.keys(product.specifications || {})[0];
-        const matchedCategory = listCategories.find(
-          (cat) => cat._id === product.category
+
+        // Map các trường cần match vào danh sách
+        const matchMap = {
+          category: [listCategories, product.category],
+          brand: [listbrands, product.brand],
+          status: [statusOptionsBase, product.status],
+          specialTag: [optionTags, product.specialTag],
+        };
+
+        const matchedValues = Object.entries(matchMap).reduce(
+          (acc, [key, [list, value]]) => {
+            acc[key] =
+              find(
+                list,
+                (item) => item._id === value || item.value === value
+              ) || null;
+            return acc;
+          },
+          {}
         );
+
         const newFileList =
           product.images?.map((img, index) => ({
             uid: index.toString(),
@@ -43,20 +58,25 @@ const ProductModal = ({
             url: img.url || img,
           })) || [];
 
+        // Cập nhật state
         setState((prev) => ({
           ...prev,
           productType: currentType,
-          selectedCategory: matchedCategory || null,
+          selectedCategory: matchedValues.category,
           fileList: newFileList,
         }));
 
+        // Cập nhật form
         form.setFieldsValue({
           name: product.name,
           price: product.price,
           description: product.description,
-          category: matchedCategory,
+          category: matchedValues.category,
           stock: product.stock,
           productType: currentType,
+          brand: matchedValues.brand,
+          status: matchedValues.status,
+          specialTag: matchedValues.specialTag,
           specifications: {
             [currentType]: product.specifications?.[currentType] || {},
           },
@@ -70,9 +90,6 @@ const ProductModal = ({
           fileList: [],
           productType: "",
         });
-        // setSelectedCategory(null);
-        // setFileList([]);
-        // setProductType("");
       }
     }
   }, [visible, product, form, listCategories]);
@@ -96,18 +113,6 @@ const ProductModal = ({
         state={state}
         setState={setState}
         isEdit={isEdit}
-        // selectedCategory={selectedCategory}
-        // setSelectedCategory={setSelectedCategory}
-        // fileList={fileList}
-        // setFileList={setFileList}
-        // productType={productType}
-        // setProductType={setProductType}
-        // selectedBrand={selectedBrand}
-        // setSelectedBrand={setSelectedBrand}
-        // selectedFeatured={selectedFeatured}
-        // setSelectedFeatured={setSelectedFeatured}
-        // selectedStatus={selectedStatus}
-        // setSelectedStatus={setSelectedStatus}
       />
     </Modal>
   );

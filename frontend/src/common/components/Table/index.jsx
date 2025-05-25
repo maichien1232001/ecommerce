@@ -32,7 +32,7 @@ const TableCommon = (props) => {
         scrollToFirstRowOnChange
         scroll={{
           x: "max-content",
-          y: window.innerHeight * 0.6,
+          y: window.innerHeight * 0.7,
         }}
         onChange={(pagination) => {
           dispatch(

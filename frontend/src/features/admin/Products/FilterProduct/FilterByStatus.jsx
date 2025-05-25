@@ -3,38 +3,32 @@ import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 import CommonSelect from "../../../../common/components/Select";
 import { updateFilter } from "../../../../redux/actions/product.action";
+import { statusFilterOptions } from "../../../../constants/products";
 
-const options = [
-  { label: "Tất cả", value: "all" },
-  { label: "Nổi bật", value: true },
-  { label: "Không nổi bật", value: false },
-];
-
-const FeaturedFilter = ({ label = "Nổi bật:", onFilter }) => {
+const StatusFilter = ({ label = "Trạng thái" }) => {
   const dispatch = useDispatch();
   const { filter } = useSelector((state) => state.products);
-  const [selectedSFeatured, setSelectedSFeatured] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   return (
     <div style={{ marginBottom: 12 }}>
       <label style={{ marginRight: 8, fontSize: 14 }}>{label}</label>
-
       <div>
         <CommonSelect
-          defaultValue="all"
-          options={options}
-          value={selectedSFeatured}
+          defaultValue=""
+          options={statusFilterOptions}
+          value={selectedStatus}
           onChange={(value) => {
-            setSelectedSFeatured(value);
-            dispatch(updateFilter({ ...filter, isFeatured: value }));
+            setSelectedStatus(value);
+            dispatch(updateFilter({ ...filter, status: value }));
           }}
           getValue={(item) => item?.value}
           getLabel={(item) => item?.label}
-          allowClear={selectedSFeatured !== null}
+          allowClear={selectedStatus !== null}
         />
       </div>
     </div>
   );
 };
 
-export default memo(FeaturedFilter);
+export default memo(StatusFilter);

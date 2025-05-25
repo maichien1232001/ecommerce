@@ -19,7 +19,7 @@ export const getProducts = async ({
   updatedTo,
   inStock,
   category,
-  isFeatured,
+  specialTag,
   status,
   brand,
 }) => {
@@ -38,9 +38,7 @@ export const getProducts = async ({
     if (updatedTo) params.updatedTo = updatedTo;
     if (inStock !== undefined) params.inStock = inStock;
     if (category) params.category = category;
-    if (isFeatured !== undefined && isFeatured !== null) {
-      params.isFeatured = isFeatured;
-    }
+    if (specialTag) params.specialTag = specialTag;
     if (status) params.status = status;
     if (brand) params.brand = brand;
 
@@ -51,7 +49,11 @@ export const getProducts = async ({
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
-    throw error;
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -70,7 +72,11 @@ export const importProducts = async (file) => {
     return res?.data;
   } catch (error) {
     notifyError("Lỗi khi nhập dữ liệu!");
-    console.error(error);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -80,7 +86,11 @@ export const addProductApi = async (value) => {
 
     return res?.data;
   } catch (error) {
-    console.error(error);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -89,7 +99,11 @@ export const viewProductApi = async (id) => {
     const res = await API.get(`${proxy}/products/${id}`);
     return res?.data;
   } catch (error) {
-    console.error(error);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -98,7 +112,11 @@ export const editProductApi = async (id, value) => {
     const res = await API.put(`${proxy}/products/${id}`, value);
     return res?.data;
   } catch (error) {
-    console.error(error);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -107,6 +125,10 @@ export const deleteProductApi = async (id) => {
     const res = await API.delete(`${proxy}/products/${id}`);
     return res?.data;
   } catch (error) {
-    console.error(error);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };

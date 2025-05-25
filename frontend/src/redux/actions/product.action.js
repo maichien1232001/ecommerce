@@ -45,6 +45,7 @@ export const addProduct = (value) => async (dispatch, getState) => {
       type: "ADD_PRODUCTS_SUCCESS",
       payload: res,
     });
+    console.log(res);
     notifySuccess("Thêm sản phẩm mới thành công!");
   } catch (error) {
     notifyError("Đã có lỗi xảy ra!");

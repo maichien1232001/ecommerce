@@ -9,7 +9,7 @@ const buildProductFilter = ({
   updatedTo,
   inStock,
   category,
-  isFeatured,
+  specialTag,
   status,
   brand,
 }) => {
@@ -49,8 +49,8 @@ const buildProductFilter = ({
     filter.category = category; // assume ObjectId from client
   }
 
-  if (typeof isFeatured !== "undefined") {
-    filter.isFeatured = isFeatured === "true"; // string to boolean
+  if (specialTag) {
+    filter.specialTag = specialTag;
   }
 
   if (status) {

@@ -1,30 +1,17 @@
 import { Button, Form, Input, InputNumber, Select } from "antd";
 import React, { useState } from "react";
-import CategorySelect from "../../../common/components/Select";
 import UploadImg from "../../../common/components/Upload";
 import ProductTypeSelect from "./ProductTypeSelect";
 import SpecificationsFields from "./specificationsMap";
 import { useSelector } from "react-redux";
 import CommonSelect from "../../../common/components/Select";
+import { optionTags, statusOptionsBase } from "../../../constants/products";
 
 const { Item } = Form;
 const { TextArea } = Input;
 
 const FormProducts = (props) => {
-  const {
-    form,
-    handleClose,
-    handleSubmit,
-    isEdit,
-    state,
-    setState,
-    // selectedCategory,
-    // setSelectedCategory,
-    // fileList,
-    // setFileList,
-    // productType,
-    // setProductType,
-  } = props;
+  const { form, handleClose, handleSubmit, isEdit, state, setState } = props;
   const categories = useSelector((state) => state.category.category);
   const brand = useSelector((state) => state.brand.brand);
   const handleSetFileList = (list) => {
@@ -34,7 +21,6 @@ const FormProducts = (props) => {
     }));
   };
   const handleSetProductType = (value) => {
-    console.log("value", value);
     setState((prev) => ({
       ...prev,
       productType: value,
@@ -134,9 +120,9 @@ const FormProducts = (props) => {
       </Item>
 
       <Item
-        label={"Hãng"}
+        label={"Thương hiệu"}
         name={"brand"}
-        rules={[{ required: true, message: "Hãy chọn hãng" }]}
+        rules={[{ required: true, message: "Hãy chọn thương hiệu" }]}
       >
         <CommonSelect
           options={brand}
@@ -146,7 +132,41 @@ const FormProducts = (props) => {
           getLabel={(item) => item?.name}
           labelInValue
           disabled={!isEdit}
-          placeholder="Chọn hãng sản phẩm"
+          placeholder="Chọn thương hiệu sản phẩm"
+        />
+      </Item>
+
+      <Item
+        label={"Trạng thái"}
+        name={"status"}
+        rules={[{ required: true, message: "Hãy chọn trạng thái" }]}
+      >
+        <CommonSelect
+          options={statusOptionsBase}
+          value={state.selectedStatus}
+          onChange={(cat) => setState({ ...state, selectedStatus: cat })}
+          getValue={(item) => item?.value}
+          getLabel={(item) => item?.label}
+          labelInValue
+          disabled={!isEdit}
+          placeholder="Chọn trạng thái sản phẩm"
+        />
+      </Item>
+
+      <Item
+        label={"Tags"}
+        name={"specialTag"}
+        rules={[{ required: true, message: "Hãy chọn tag" }]}
+      >
+        <CommonSelect
+          options={optionTags}
+          value={state.selectedTag}
+          onChange={(cat) => setState({ ...state, selectedTag: cat })}
+          getValue={(item) => item?.value}
+          getLabel={(item) => item?.label}
+          labelInValue
+          disabled={!isEdit}
+          placeholder="Chọn tag sản phẩm"
         />
       </Item>
 

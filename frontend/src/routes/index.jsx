@@ -8,8 +8,10 @@ import AdminLayout from "../common/Layouts/AdminLayout";
 import HomePage from "../app/components/Home";
 import Login from "../app/components/Login/Login";
 import Register from "../app/components/Register/Register";
-import DashBoardManagement from "../management/components/DashBoardManagement";
-import { ListProducts } from "../management/components/ProductsManagement/ListProducts";
+import DashBoard from "../features/admin/DashBoard";
+import { ListProducts } from "../features/admin/Products/ListProducts";
+import Setting from "../app/components/Settings";
+import Account from "../features/admin/Account";
 
 const Routers = () => (
   <Router>
@@ -34,7 +36,7 @@ const Routers = () => (
         path="/admin/"
         element={
           <ProtectedRoute>
-            <RouterRoot layout={AdminLayout} element={DashBoardManagement} />
+            <RouterRoot layout={AdminLayout} element={DashBoard} />
           </ProtectedRoute>
         }
       />
@@ -43,6 +45,22 @@ const Routers = () => (
         element={
           <ProtectedRoute>
             <RouterRoot layout={AdminLayout} element={ListProducts} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/accounts"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={AdminLayout} element={Account} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={AdminLayout} element={Setting} />
           </ProtectedRoute>
         }
       />

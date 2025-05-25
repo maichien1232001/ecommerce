@@ -1,6 +1,7 @@
 // src/layouts/AdminLayout.js
 import React from "react";
-import NavBar from "../components/Navbar";
+import NavBar from "../../app/components/Navbar";
+import HeaderCommon from "../../app/components/Header";
 // import AdminHeader from '../components/AdminHeader';
 
 const AdminLayout = ({ children }) => {
@@ -8,13 +9,13 @@ const AdminLayout = ({ children }) => {
     <div style={{ display: "flex" }}>
       <NavBar />
       <div style={{ flex: 1 }}>
-        {/* <AdminHeader /> */}
+        <HeaderCommon />
         <main
           style={{
             overflow: "auto",
             padding: 16,
             paddingTop: 0,
-            height: "100vh",
+            height: "calc(100vh - 64px)",
             background: "linear-gradient(135deg, #fdfbfb, #ebedee)",
           }}
         >

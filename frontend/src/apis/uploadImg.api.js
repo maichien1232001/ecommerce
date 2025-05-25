@@ -1,3 +1,4 @@
+import { notifyError, notifySuccess } from "../common/components/Tostify";
 import API from "../config/axiosInterceptor";
 
 const proxy = "http://localhost:8080/api";
@@ -11,7 +12,12 @@ export const uploadImagesApi = async (formData) => {
     });
     return res.data; // chứa imageUrls: [{ url, public_id }]
   } catch (error) {
-    throw new Error(error.response?.data?.message || "Lỗi khi upload ảnh");
+    notifyError("Lỗi khi upload ảnh", null);
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };
 
@@ -22,6 +28,10 @@ export const deleteImagesApi = async (publicId) => {
     });
   } catch (error) {
     console.log(error);
-    throw new Error(error.response?.data?.message || "Lỗi khi xóa ảnh");
+    const errMsg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      "Đã có lỗi xảy ra. Vui lòng thử lại.";
+    throw new Error(errMsg);
   }
 };

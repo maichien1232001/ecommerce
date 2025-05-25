@@ -18,8 +18,8 @@ import ProductNameFilter from "./FilterProduct/FilterByName";
 import { Card, Col, Row, Tooltip } from "antd";
 import FilterByCategory from "./FilterProduct/FilterByCategory";
 import StatusFilter from "./FilterProduct/FilterByStatus";
-import FeaturedFilter from "./FilterProduct/FilterByFeatured";
 import BrandFilter from "./FilterProduct/FilterByBrand";
+import TagFilter from "./FilterProduct/FilterByTags";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 export const ListProducts = () => {
@@ -123,7 +123,7 @@ export const ListProducts = () => {
                   </Col>
 
                   <Col xs={24} md={6}>
-                    <FeaturedFilter />
+                    <TagFilter />
                   </Col>
                   <Col xs={24} md={6}>
                     <DateFieldFilter

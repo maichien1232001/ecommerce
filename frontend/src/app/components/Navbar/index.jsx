@@ -10,6 +10,7 @@ import {
   HeartOutlined,
   TagOutlined,
   UserOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 
 import "./Navbar.scss";
@@ -58,6 +59,12 @@ const listMenu = [
     icon: <UserOutlined />,
     path: "/admin/accounts",
     title: "Accounts",
+  },
+  {
+    key: 8,
+    icon: <SettingOutlined />,
+    path: "/admin/settings",
+    title: "Settings",
   },
 ];
 

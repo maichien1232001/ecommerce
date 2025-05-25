@@ -26,10 +26,7 @@ exports.importProducts = async (req, res) => {
       const category = await Category.findOne({ name: categoryName });
       if (!category) continue;
 
-      const specType = row["Loại sản phẩm"]?.toLowerCase(); // laptop/smartphone/...
-
-      const isFeatured =
-        row["Sản phẩm nổi bật"]?.toString().toLowerCase() === "true";
+      const specType = row["Loại sản phẩm"]?.toLowerCase();
 
       products.push({
         name: row["Tên sản phẩm"],
@@ -38,8 +35,8 @@ exports.importProducts = async (req, res) => {
         category: category._id,
         stock: row["Tồn kho"] || 0,
         images: row["Hình ảnh"] ? row["Hình ảnh"].split(",") : [],
-        isFeatured: row["Nổi bật"],
         status: row["Trạng thái"],
+        specialTag: row["Thẻ đặc biệt"],
         brand:
           typeof row["Thương hiệu"] === "string"
             ? row["Thương hiệu"].toLowerCase()
@@ -76,21 +73,31 @@ exports.importProducts = async (req, res) => {
 
 // Tạo sản phẩm mới
 exports.createProduct = async (req, res) => {
-  const { name, description, price, category, stock, specifications, images } =
-    req.body;
+  const {
+    name,
+    description,
+    price,
+    category,
+    stock,
+    specifications,
+    images,
+    brand,
+    specialTag,
+    status,
+  } = req.body;
 
   try {
-    const foundCategory = await Category.findById(category);
-    if (!foundCategory)
-      return res.status(400).json({ message: "Category không tồn tại!" });
     const newProduct = new Product({
       name,
       description,
       price,
-      category: foundCategory._id,
+      category: category._id,
       stock,
       images,
       specifications,
+      brand: brand._id,
+      specialTag: specialTag.value,
+      status: status.value,
     });
 
     await newProduct.save();
@@ -103,38 +110,43 @@ exports.createProduct = async (req, res) => {
 // Cập nhật sản phẩm
 exports.updateProduct = async (req, res) => {
   const { productId } = req.params;
-  const { name, description, price, category, stock, specifications } =
-    req.body;
+  const {
+    name,
+    description,
+    price,
+    category,
+    stock,
+    specifications,
+    images, // đã upload xong, là mảng các object { url, public_id }
+    brand,
+    specialTag,
+    status,
+  } = req.body;
 
   try {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    if (category) {
-      const foundCategory = await Category.findById(category);
-      if (!foundCategory)
-        return res.status(400).json({ message: "Category không tồn tại!" });
-      product.category = foundCategory._id;
-    }
-
-    if (req.files?.images) {
-      const images = [];
-      for (let image of req.files.images) {
-        const uploadedImage = await cloudinaryService.uploadImage(image.path);
-        images.push(uploadedImage.secure_url);
-      }
+    // Gán thẳng danh sách ảnh mới từ body
+    if (images && Array.isArray(images)) {
       product.images = images;
     }
 
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.price = price || product.price;
-    product.stock = stock || product.stock;
-    product.specifications = specifications || product.specifications;
+    product.name = name ?? product.name;
+    product.description = description ?? product.description;
+    product.price = price ?? product.price;
+    product.category = category ?? product.category;
+    product.stock = stock ?? product.stock;
+    product.brand = brand ?? product.brand;
+    product.specialTag = specialTag?.value || product.specialTag;
+    product.status = status?.value || product.status;
+    product.specifications = specifications ?? product.specifications;
 
     await product.save();
+
     res.status(200).json(product);
   } catch (error) {
+    console.error("Update error:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -168,7 +180,7 @@ exports.getProducts = async (req, res) => {
     updatedTo,
     inStock,
     category,
-    isFeatured,
+    specialTag,
     status,
     brand,
   } = req.query;
@@ -184,7 +196,7 @@ exports.getProducts = async (req, res) => {
       updatedTo,
       inStock,
       category,
-      isFeatured,
+      specialTag,
       status,
       brand,
     });

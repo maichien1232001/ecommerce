@@ -26,9 +26,13 @@ const productSchema = new mongoose.Schema(
       enum: ["active", "inactive", "discontinued"],
       default: "active",
     },
-    isFeatured: { type: Boolean, default: false },
+    specialTag: {
+      type: String,
+      enum: ["basic", "sale", "featured", "new", "bestseller", "topRated"],
+      default: "basic",
+    },
     stock: { type: Number, default: 0 },
-    rating: { type: Number, default: 0 },
+    // rating: { type: Number, default: 0 },
     images: [{ type: String }],
     specifications: {
       laptop: specificationSchema,

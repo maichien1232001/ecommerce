@@ -3,32 +3,33 @@ import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 import CommonSelect from "../../../../common/components/Select";
 import { updateFilter } from "../../../../redux/actions/product.action";
-import { status } from "../../../../common/components/Table/constant";
+import { optionTagsFilter } from "../../../../constants/products";
 
-const StatusFilter = ({ label = "Trạng thái" }) => {
+const TagFilter = ({ label = "Tag:", onFilter }) => {
   const dispatch = useDispatch();
   const { filter } = useSelector((state) => state.products);
-  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [selectedTag, setSelectedTag] = useState("all");
 
   return (
     <div style={{ marginBottom: 12 }}>
       <label style={{ marginRight: 8, fontSize: 14 }}>{label}</label>
+
       <div>
         <CommonSelect
           defaultValue=""
-          options={status}
-          value={selectedStatus}
+          options={optionTagsFilter}
+          value={selectedTag}
           onChange={(value) => {
-            setSelectedStatus(value);
-            dispatch(updateFilter({ ...filter, status: value }));
+            setSelectedTag(value);
+            dispatch(updateFilter({ ...filter, specialTag: value }));
           }}
           getValue={(item) => item?.value}
           getLabel={(item) => item?.label}
-          allowClear={selectedStatus !== null}
+          allowClear={selectedTag !== null}
         />
       </div>
     </div>
   );
 };
 
-export default memo(StatusFilter);
+export default memo(TagFilter);

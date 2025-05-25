@@ -47,20 +47,6 @@ const authReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-    case "SAVE_USER_REQUEST":
-      return {
-        ...state,
-      };
-    case "SAVE_USER_SUCCESS":
-      return {
-        ...state,
-        user: action.payload,
-      };
-    case "SAVE_USER_FAILURE":
-      return {
-        ...state,
-        error: action.payload,
-      };
     default:
       return state;
   }
