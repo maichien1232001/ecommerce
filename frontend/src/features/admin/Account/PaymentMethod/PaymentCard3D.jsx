@@ -14,7 +14,6 @@ const PaymentCard3D = ({ payment }) => {
     if (!payment.cardNumber) return "**** **** **** ****";
     return payment.cardNumber.replace(/(\d{4})(?=\d)/g, "$1 ");
   }, [payment.cardNumber]);
-
   const formattedExpirationDate = useMemo(() => {
     if (!payment.expirationDate) return "**/**";
     return dayjs(payment.expirationDate).format("MM/YY");
@@ -103,7 +102,7 @@ const PaymentCard3D = ({ payment }) => {
         <div className="card-back">
           <Card className="credit-card-back">
             <div
-              style={{ height: 40, background: "#000", margin: "0 -24px" }}
+              style={{ height: 40, background: "#000", margin: "10px -24px" }}
             ></div>
 
             <div style={{ margin: "20px 0" }}>

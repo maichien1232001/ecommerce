@@ -12,6 +12,7 @@ import DashBoard from "../features/admin/DashBoard";
 import { ListProducts } from "../features/admin/Products/ListProducts";
 import Setting from "../app/components/Settings";
 import Account from "../features/admin/Account";
+import ForgotPassword from "../app/components/ForgotPassword";
 
 const Routers = () => (
   <Router>
@@ -27,6 +28,10 @@ const Routers = () => (
       <Route
         path="/login"
         element={<RouterRoot layout={BlankLayout} element={Login} />}
+      />
+      <Route
+        path="/forgot-password"
+        element={<RouterRoot layout={BlankLayout} element={ForgotPassword} />}
       />
       <Route
         path="/register"

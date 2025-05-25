@@ -30,6 +30,10 @@ export const login = (values, navigate) => async (dispatch) => {
       type: "LOGIN_SUCCESS",
       payload: response,
     });
+    dispatch({
+      type: "GET_USER_PROFILE_SUCCESS",
+      payload: response,
+    });
     const isAdmin = checkAdmin(response);
     const token = _.get(response, "accessToken");
     localStorage.setItem("authToken", token);

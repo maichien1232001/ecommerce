@@ -7,10 +7,6 @@ import PaymentItem from "./PaymentItem";
 import PaymentCard3D from "./PaymentCard3D";
 import PaymentModal from "./PaymentModal";
 import { useSelector } from "react-redux";
-import {
-  notifyError,
-  notifySuccess,
-} from "../../../../common/components/Tostify";
 const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -21,11 +17,6 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
   const paymentInfo = useMemo(
     () => user?.paymentInfo || [],
     [user?.paymentInfo]
-  );
-
-  const defaultPayment = useMemo(
-    () => paymentInfo.find((payment) => payment?.isDefault) || paymentInfo[0],
-    [paymentInfo]
   );
 
   const showModal = useCallback((payment = null) => {
@@ -159,7 +150,13 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
         </Col>
 
         <Col span={12}>
-          {defaultPayment && <PaymentCard3D payment={defaultPayment} />}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px 0" }}
+          >
+            {paymentInfo.map((payment) => (
+              <PaymentCard3D key={payment.id} payment={payment} />
+            ))}
+          </div>
         </Col>
       </Row>
 
