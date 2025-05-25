@@ -1,50 +1,78 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5000/api", // Thay bằng API server của bạn
-    withCredentials: true, // Quan trọng để gửi cookie chứa refresh token
+  baseURL: "http://localhost:8080/api", // Thay bằng API server của bạn
+  withCredentials: true, // Quan trọng để gửi cookie chứa refresh token
 });
 
 // Thêm interceptor cho request
 API.interceptors.request.use(
-    (config) => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
+  (config) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
 // Thêm interceptor cho response
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+function onRefreshed(newToken) {
+  refreshSubscribers.forEach((callback) => callback(newToken));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(callback) {
+  refreshSubscribers.push(callback);
+}
+
 API.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-            try {
-                // Gọi API refreshToken và gửi kèm cookies
-                const { data } = await API.post("auth/refreshToken", {}, { withCredentials: true });
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          addRefreshSubscriber((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(API(originalRequest));
+          });
+        });
+      }
 
-                // Cập nhật accessToken mới vào headers
-                localStorage.setItem("accessToken", data.accessToken);
-                API.defaults.headers.common["Authorization"] = `Bearer ${data.accessToken}`;
+      isRefreshing = true;
 
-                // Gửi lại request gốc
-                return API(originalRequest);
-            } catch (refreshError) {
-                console.error("Refresh token failed", refreshError);
-                return Promise.reject(refreshError);
-            }
-        }
+      try {
+        const { data } = await API.post(
+          "auth/refreshToken",
+          {},
+          { withCredentials: true }
+        );
 
-        return Promise.reject(error);
+        const newAccessToken = data.accessToken;
+        localStorage.setItem("accessToken", newAccessToken);
+        API.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+        isRefreshing = false;
+        onRefreshed(newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return API(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        console.error("Refresh token failed", refreshError);
+        return Promise.reject(refreshError);
+      }
     }
-);
 
+    return Promise.reject(error);
+  }
+);
 
 export default API;

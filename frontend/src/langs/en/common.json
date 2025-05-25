@@ -1,0 +1,10 @@
+{
+  "products": "Manage Products",
+  "dashboard": "Dashboard",
+  "account": "Manage Account",
+  "profile": "Profile",
+  "settings": "Settings",
+  "logout": "Logout",
+  "admin": "Admin",
+  "language": "Language"
+}

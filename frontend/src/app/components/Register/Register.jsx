@@ -1,9 +1,9 @@
 import React from "react";
-import {Button, Checkbox, Form, Input} from "antd";
+import { Button, Checkbox, Form, Input } from "antd";
 import "./Register.scss";
-import {useNavigate} from "react-router-dom";
-import {register} from "../../../redux/actions/auth.actions";
-import {useDispatch} from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { register } from "../../../redux/actions/auth.actions";
+import { useDispatch } from "react-redux";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,13 +14,11 @@ const Register = () => {
   };
 
   const onFinish = (values) => {
-    const {username, email, password} = values;
+    const { username, email, password } = values;
 
-    dispatch(register({name: username, email, password}, navigate));
+    dispatch(register({ name: username, email, password }, navigate));
   };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo) => {};
 
   return (
     <div className="container-register">

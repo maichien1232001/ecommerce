@@ -1,9 +1,9 @@
 import React from "react";
-import {Button, Checkbox, Form, Input} from "antd";
+import { Button, Checkbox, Form, Input } from "antd";
 import "./Login.scss";
-import {useNavigate} from "react-router-dom";
-import {login} from "../../../redux/actions/auth.actions";
-import {useDispatch, useSelector} from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../../redux/actions/auth.actions";
+import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,12 +14,10 @@ const Login = () => {
   };
 
   const onFinish = (values) => {
-    const {email, password} = values;
-    dispatch(login({email, password}, navigate));
+    const { email, password } = values;
+    dispatch(login({ email, password }, navigate));
   };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo) => {};
 
   return (
     <div className="container-login">

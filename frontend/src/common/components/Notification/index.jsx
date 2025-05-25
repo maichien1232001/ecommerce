@@ -1,41 +1,14 @@
-import {useEffect} from "react";
-import {useSelector} from "react-redux";
-import {messaging} from "../../../config/firebase";
-import {getToken, onMessage} from "firebase/messaging";
-import {isEmpty} from "lodash";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { messaging } from "../../../config/firebase";
+import { onMessage } from "firebase/messaging";
+import { saveTokenFireBase } from "../../../apis/auth";
 
 const Notification = () => {
   const token = useSelector((state) => state.auths.accessToken);
 
   useEffect(() => {
-    if (isEmpty(token)) return; // Chỉ chạy khi token hợp lệ
-
-    const requestPermission = async () => {
-      try {
-        const currentToken = await getToken(messaging, {
-          vapidKey:
-            "BNbN8SFxQZHSj35TENBimrPsooFc7K-KClVYwoonTF4BMV8VSxO7AMl_p4rJhSfcn1PtYg4V7466hID2tBybC7g",
-        });
-
-        if (currentToken) {
-          console.log("FCM Token:", currentToken);
-          await fetch("http://localhost:5000/api/notification/save-token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({firebaseToken: currentToken}),
-          });
-        } else {
-          console.log("No registration token available.");
-        }
-      } catch (err) {
-        console.log("An error occurred while retrieving token.", err);
-      }
-    };
-
-    requestPermission();
+    saveTokenFireBase();
   }, [token]); // Chạy lại khi token thay đổi
 
   // Lắng nghe tin nhắn từ Firebase
