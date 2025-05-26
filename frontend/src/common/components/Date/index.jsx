@@ -29,7 +29,7 @@ const DateFieldFilter = ({
   field = "createdAt",
   data = [],
   label,
-  onDateChange, // mới: callback khi có khoảng thời gian
+  onDateChange,
 }) => {
   const [filterOption, setFilterOption] = useState("null");
   const [customRange, setCustomRange] = useState([]);
@@ -37,7 +37,7 @@ const DateFieldFilter = ({
   const dateRange = useMemo(() => {
     if (filterOption === "null") return null;
 
-    const now = dayjs().tz("Asia/Ho_Chi_Minh"); // 👈 dùng timezone VN
+    const now = dayjs().tz("Asia/Ho_Chi_Minh");
     let fromDate = null;
     let toDate = now.endOf("day");
 
@@ -52,7 +52,7 @@ const DateFieldFilter = ({
           break;
         case "yesterday":
           fromDate = now.subtract(1, "day").startOf("day");
-          toDate = now.subtract(1, "day").endOf("day"); // 👈 thiếu dòng này
+          toDate = now.subtract(1, "day").endOf("day");
           break;
         case "last7days":
           fromDate = now.subtract(6, "day").startOf("day");

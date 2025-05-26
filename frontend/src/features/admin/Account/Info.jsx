@@ -19,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { updateProfileAccount } from "../../../redux/actions/user.actions";
 import dayjs from "dayjs";
 import _ from "lodash";
+import { notifyError, notifySuccess } from "../../../common/components/Tostify";
 
 const { Option } = Select;
 
@@ -35,7 +36,6 @@ const Info = ({ user }) => {
 
   useEffect(() => {
     if (user) {
-      // Safe date parsing with validation
       let dateOfBirth = null;
       if (user.dateOfBirth) {
         const parsedDate = dayjs(user.dateOfBirth);
@@ -84,15 +84,12 @@ const Info = ({ user }) => {
       return;
     }
 
-    // Convert sang base64 để hiển thị preview
     const reader = new FileReader();
     reader.onload = () => setAvatarUrl(reader.result);
     reader.readAsDataURL(file);
-
-    // Lưu file vào form để submit sau
     form.setFieldsValue({ avatarFile: file });
 
-    e.target.value = ""; // reset input
+    e.target.value = "";
   };
 
   const handleSubmit = async (values) => {
@@ -111,7 +108,6 @@ const Info = ({ user }) => {
         }
       }
 
-      // Safe date conversion
       let dateOfBirth = null;
       if (values.dateOfBirth) {
         if (dayjs.isDayjs(values.dateOfBirth)) {
@@ -127,17 +123,16 @@ const Info = ({ user }) => {
       const payload = {
         ...values,
         dateOfBirth,
-        avatar: uploadedUrl || values.avatar, // Keep existing avatar if no new upload
+        avatar: uploadedUrl || values.avatar,
       };
 
-      // Remove form-specific fields
       delete payload.avatarFile;
 
       await dispatch(updateProfileAccount(payload));
-      message.success("Cập nhật thông tin thành công!");
+      notifySuccess("Cập nhật thông tin thành công!");
     } catch (err) {
       console.error("Lỗi upload ảnh:", err);
-      message.error("Tải ảnh lên thất bại");
+      notifyError("Tải ảnh lên thất bại");
       return;
     } finally {
       setUploading(false);
@@ -159,7 +154,7 @@ const Info = ({ user }) => {
                 verticalAlign: "middle",
               }}
             >
-              {getFirstCharacter(user?.name || "User")}
+              {getFirstCharacter(user?.name)}
             </Avatar>
             <div className="avatar-overlay">
               <div className="avatar-actions">

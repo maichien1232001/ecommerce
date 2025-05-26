@@ -27,7 +27,6 @@ const PaymentModal = ({
   const [form] = Form.useForm();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("VNPay");
 
-  // Danh sách phương thức thanh toán
   const paymentMethods = [
     { value: "VNPay", label: "VNPay" },
     { value: "PayPal", label: "PayPal" },
@@ -42,14 +41,12 @@ const PaymentModal = ({
     [isEditing]
   );
 
-  // Kiểm tra xem có cần hiển thị thông tin thẻ không
   const shouldShowCardInfo = useMemo(() => {
     return (
       selectedPaymentMethod === "VNPay" || selectedPaymentMethod === "PayPal"
     );
   }, [selectedPaymentMethod]);
 
-  // Kiểm tra xem có cần địa chỉ cụ thể không
   const needsSpecificAddress = useMemo(() => {
     return (
       selectedPaymentMethod === "PayPal" || selectedPaymentMethod === "COD"
@@ -84,12 +81,9 @@ const PaymentModal = ({
     [onSubmit, shouldShowCardInfo, needsSpecificAddress]
   );
 
-  // Xử lý thay đổi phương thức thanh toán
   const handlePaymentMethodChange = useCallback(
     (value) => {
       setSelectedPaymentMethod(value);
-
-      // Reset các field không cần thiết khi thay đổi phương thức
       if (value === "COD") {
         form.setFieldsValue({
           cardNumber: undefined,
@@ -102,7 +96,6 @@ const PaymentModal = ({
     [form]
   );
 
-  // Set form values when editing
   useEffect(() => {
     if (isVisible) {
       if (isEditing && editingPayment) {
@@ -155,7 +148,6 @@ const PaymentModal = ({
       destroyOnClose
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        {/* Phương thức thanh toán */}
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item
@@ -182,7 +174,6 @@ const PaymentModal = ({
           </Col>
         </Row>
 
-        {/* Thông tin thẻ - chỉ hiển thị cho VNPay và PayPal */}
         {shouldShowCardInfo && (
           <>
             <Row gutter={16}>
@@ -283,9 +274,19 @@ const PaymentModal = ({
           />
         </Row>
 
-        {/* Địa chỉ cụ thể - chỉ hiển thị cho PayPal và COD */}
         {needsSpecificAddress && (
           <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Tên người nhận"
+                name="cardHolderName"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tên người nhận!" },
+                ]}
+              >
+                <Input placeholder="NGUYEN VAN A" />
+              </Form.Item>
+            </Col>
             <Col span={needsPostalCode ? 16 : 24}>
               <Form.Item
                 label="Địa chỉ cụ thể"

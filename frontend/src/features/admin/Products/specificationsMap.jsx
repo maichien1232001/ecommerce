@@ -29,7 +29,6 @@ const specificationsMap = {
     { label: "Khác", name: "others" },
   ],
   tablet: [
-    // Có thể thêm hoặc bớt trường cho tablet
     { label: "CPU", name: "cpu" },
     { label: "RAM", name: "ram" },
     { label: "Storage", name: "storage" },
@@ -40,7 +39,6 @@ const specificationsMap = {
     { label: "Khác", name: "others" },
   ],
   desktop: [
-    // Thông số cho desktop có thể khác
     { label: "CPU", name: "cpu" },
     { label: "RAM", name: "ram" },
     { label: "Storage", name: "storage" },

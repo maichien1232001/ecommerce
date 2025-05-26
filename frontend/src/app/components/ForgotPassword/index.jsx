@@ -25,10 +25,7 @@ const ForgotPassword = () => {
     setUserEmail(email);
 
     try {
-      // Dispatch forgot password action
       // dispatch(forgotPassword(email));
-
-      // Simulate API call
       setTimeout(() => {
         setIsEmailSent(true);
         message.success("Email khôi phục mật khẩu đã được gửi!");
@@ -43,7 +40,6 @@ const ForgotPassword = () => {
   };
 
   const handleResendEmail = () => {
-    // Resend email logic
     message.info("Email đã được gửi lại!");
   };
 

@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getDistrictsApi, getWardsApi } from "../apis/provinces.api";
 
-// Hook để quản lý mapping giữa name và code của location
 export const useLocationMapping = (provinces) => {
   const [locationData, setLocationData] = useState({
     districts: {},
     wards: {},
   });
 
-  // Fetch districts và cache theo province code
   const fetchAndCacheDistricts = async (provinceCode) => {
     if (!locationData.districts[provinceCode]) {
       const res = await getDistrictsApi(provinceCode);
@@ -24,7 +22,6 @@ export const useLocationMapping = (provinces) => {
     return locationData.districts[provinceCode];
   };
 
-  // Fetch wards và cache theo district code
   const fetchAndCacheWards = async (districtCode) => {
     if (!locationData.wards[districtCode]) {
       const res = await getWardsApi(districtCode);
@@ -40,7 +37,6 @@ export const useLocationMapping = (provinces) => {
     return locationData.wards[districtCode];
   };
 
-  // Tìm code từ name
   const getCodeFromName = async (type, name, parentCode = null) => {
     switch (type) {
       case "province":
@@ -64,7 +60,6 @@ export const useLocationMapping = (provinces) => {
     }
   };
 
-  // Tìm name từ code
   const getNameFromCode = async (type, code, parentCode = null) => {
     switch (type) {
       case "province":

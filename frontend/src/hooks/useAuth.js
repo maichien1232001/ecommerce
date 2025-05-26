@@ -21,10 +21,10 @@ const useAuth = () => {
             }
           );
 
-          dispatch(login(res)); // Lưu user vào Redux
+          dispatch(login(res));
         } catch (error) {
           message.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!");
-          // dispatch(logout()); // Gọi action logout
+          // dispatch(logout());
         }
       }
     };

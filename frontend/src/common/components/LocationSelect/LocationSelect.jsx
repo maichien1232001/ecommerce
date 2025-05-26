@@ -20,7 +20,6 @@ const LocationSelect = ({
   const [wards, setWards] = useState([]);
   const [wardName, setWardName] = useState(defaultValues.ward);
 
-  // Sử dụng useLocationMapping hook
   const { getCodeFromName, fetchAndCacheDistricts, fetchAndCacheWards } =
     useLocationMapping(provinces);
 
@@ -34,7 +33,6 @@ const LocationSelect = ({
     setWards(wardsData);
   };
 
-  // Initialize data when component mounts with default values
   useEffect(() => {
     const initializeProvince = async () => {
       if (defaultValues.province && !provinceCode) {

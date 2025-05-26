@@ -60,7 +60,7 @@ export const viewProduct = (value) => async (dispatch) => {
       type: "VIEW_PRODUCTS_SUCCESS",
       payload: { product: res?.product },
     });
-    return res?.product; // 👈 trả về product
+    return res?.product;
   } catch (error) {
     throw error;
   }
@@ -88,7 +88,7 @@ export const editProduct = (id, value) => async (dispatch) => {
       payload: res,
     });
     notifySuccess("Cập nhật sản phẩm thành công!");
-    return res; // 👈 trả về product
+    return res;
   } catch (error) {
     notifyError("Đã có lỗi xảy ra!");
     throw error;

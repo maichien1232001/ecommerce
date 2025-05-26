@@ -1,4 +1,3 @@
-// reducers/productReducer.js
 const initialState = {
   user: {},
   loading: false,

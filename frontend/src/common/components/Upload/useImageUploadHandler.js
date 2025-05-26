@@ -32,7 +32,7 @@ const useImageUploadHandler = (fileList, setFileList, form) => {
 
     try {
       const res = await uploadImagesApi(formData);
-      const allImages = res.images; // server trả toàn bộ danh sách ảnh sau khi thêm ảnh mới
+      const allImages = res.images;
 
       const updatedFileList = allImages.map((img, index) => ({
         uid: `server-${index}`,

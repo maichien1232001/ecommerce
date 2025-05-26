@@ -51,7 +51,6 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
     width: "250px",
     render: (text) => {
       if (!text) return "";
-      // Tách chuỗi mỗi 60 ký tự
       const wrappedText = text.match(/.{1,80}/g)?.join("\n");
       return (
         <pre
@@ -171,7 +170,7 @@ const getColumns = (onActionClick, currentPage, pageSize) => [
         <Dropdown
           menu={{
             items: menuItems,
-            onClick: ({ key }) => onActionClick(key, record), // ✅ Truyền key và record về
+            onClick: ({ key }) => onActionClick(key, record),
           }}
           trigger={["click"]}
         >

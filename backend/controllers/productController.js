@@ -4,7 +4,10 @@ const xlsx = require("xlsx");
 const cloudinaryService = require("../services/cloudinaryService");
 const paginationHelper = require("../utils/pagination");
 const Category = require("../models/Category");
-const { buildProductFilter } = require("../utils/buildProductFilter");
+const {
+  buildProductFilter,
+  buildSortOption,
+} = require("../utils/buildProductFilter");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -91,11 +94,11 @@ exports.createProduct = async (req, res) => {
       name,
       description,
       price,
-      category: category._id,
+      category: category.name,
       stock,
       images,
       specifications,
-      brand: brand._id,
+      brand: brand.name,
       specialTag: specialTag.value,
       status: status.value,
     });
@@ -135,9 +138,9 @@ exports.updateProduct = async (req, res) => {
     product.name = name ?? product.name;
     product.description = description ?? product.description;
     product.price = price ?? product.price;
-    product.category = category ?? product.category;
+    product.category = category?.name ?? product.category;
     product.stock = stock ?? product.stock;
-    product.brand = brand ?? product.brand;
+    product.brand = brand?.name ?? product.brand;
     product.specialTag = specialTag?.value || product.specialTag;
     product.status = status?.value || product.status;
     product.specifications = specifications ?? product.specifications;
@@ -169,8 +172,8 @@ exports.deleteProduct = async (req, res) => {
 // Lấy danh sách sản phẩm với phân trang và tìm kiếm
 exports.getProducts = async (req, res) => {
   const {
-    page,
-    limit,
+    page = 1,
+    limit = 10,
     name,
     priceMin,
     priceMax,
@@ -206,7 +209,6 @@ exports.getProducts = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(Number(limit))
       .sort({ createdAt: -1 });
-
     const totalCount = await Product.countDocuments(filter);
     const pagination = paginationHelper(page, limit, totalCount);
 

@@ -21,12 +21,6 @@ const addressReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-    // case "SEARCH_PROVINCES_SUCCESS":
-    //   return {
-    //     ...state,
-    //     loading: false,
-    //     provinces: action.payload,
-    //   };
     default:
       return state;
   }
