@@ -1,6 +1,6 @@
-// actions/productActions.js
 import { registerApi, loginApi } from "../../apis/auth.api";
 import _ from "lodash";
+import { checkAdmin } from "../../constants/auth";
 
 export const register = (values, navigate) => async (dispatch) => {
   dispatch({ type: "REGISTER_REQUEST" });
@@ -30,7 +30,11 @@ export const login = (values, navigate) => async (dispatch) => {
       type: "LOGIN_SUCCESS",
       payload: response,
     });
-    const isAdmin = checkAdmin(response);
+    dispatch({
+      type: "GET_USER_PROFILE_SUCCESS",
+      payload: response?.user,
+    });
+    const isAdmin = checkAdmin(response?.user);
     const token = _.get(response, "accessToken");
     localStorage.setItem("authToken", token);
     !isAdmin ? navigate("/") : navigate("/admin/products");
@@ -40,8 +44,4 @@ export const login = (values, navigate) => async (dispatch) => {
       payload: error.message,
     });
   }
-};
-
-export const checkAdmin = (data) => {
-  return _.get(data, "user.role") === "admin" ?? true;
 };

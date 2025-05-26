@@ -9,9 +9,8 @@ const Notification = () => {
 
   useEffect(() => {
     saveTokenFireBase();
-  }, [token]); // Chạy lại khi token thay đổi
+  }, [token]);
 
-  // Lắng nghe tin nhắn từ Firebase
   useEffect(() => {
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log("Message received:", payload);
@@ -19,7 +18,7 @@ const Notification = () => {
     });
 
     return () => unsubscribe();
-  }, []); // Chạy 1 lần duy nhất khi component mount
+  }, []);
 
   return null;
 };

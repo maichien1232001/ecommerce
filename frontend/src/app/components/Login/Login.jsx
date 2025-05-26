@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./Login.scss";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../../redux/actions/auth.actions";
@@ -9,6 +10,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.auths.loading);
+
   const handleRedirect = () => {
     navigate("/register");
   };
@@ -17,86 +19,112 @@ const Login = () => {
     const { email, password } = values;
     dispatch(login({ email, password }, navigate));
   };
-  const onFinishFailed = (errorInfo) => {};
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
 
   return (
     <div className="container-login">
-      <Form
-        className="form-login"
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        style={{
-          maxWidth: 600,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item
-          className="form-item"
-          name="email"
-          label="E-mail"
-          rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail!",
-            },
-            {
-              required: true,
-              message: "Please input your E-mail!",
-            },
-          ]}
-        >
-          <Input className="input-form" />
-        </Form.Item>
+      <div className="form-wrapper">
+        <div className="login-header">
+          <h1>Chào mừng trở lại</h1>
+          <p>Đăng nhập vào tài khoản của bạn để tiếp tục mua sắm</p>
+        </div>
 
-        <Form.Item
-          className="form-item"
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
+        <Form
+          className="form-login"
+          name="login"
+          layout="vertical"
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
         >
-          <Input.Password className="input-form" />
-        </Form.Item>
+          <Form.Item
+            className="form-item"
+            name="email"
+            label="Email"
+            rules={[
+              {
+                type: "email",
+                message: "Vui lòng nhập đúng định dạng email!",
+              },
+              {
+                required: true,
+                message: "Vui lòng nhập email của bạn!",
+              },
+            ]}
+          >
+            <Input
+              className="input-form"
+              prefix={<UserOutlined />}
+              placeholder="Nhập email của bạn"
+              size="large"
+            />
+          </Form.Item>
 
-        <Form.Item
-          className="form-item remember"
-          name="remember"
-          valuePropName="checked"
-          label={null}
-        >
-          <Checkbox>Nhớ mật khẩu</Checkbox>
-        </Form.Item>
+          <Form.Item
+            className="form-item"
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu!",
+              },
+              {
+                min: 6,
+                message: "Mật khẩu phải có ít nhất 6 ký tự!",
+              },
+            ]}
+          >
+            <Input.Password
+              className="input-form"
+              prefix={<LockOutlined />}
+              placeholder="Nhập mật khẩu của bạn"
+              size="large"
+            />
+          </Form.Item>
 
-        <Form.Item className="btn-login" label={null}>
-          <Button loading={loading} type="primary" htmlType="submit">
-            Đăng nhập
-          </Button>
-        </Form.Item>
-      </Form>
-      <div className="footer-login">
-        <span>
-          Nếu bạn đã có tài khoản, click vào{" "}
-          <span className="link-login" onClick={() => handleRedirect()}>
-            đây
-          </span>{" "}
-          để có thể đăng ký
-        </span>
+          <div className="forgot-password">
+            <a href="/forgot-password">Quên mật khẩu?</a>
+          </div>
+
+          <Form.Item
+            className="form-item remember"
+            name="remember"
+            valuePropName="checked"
+          >
+            <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+          </Form.Item>
+
+          <Form.Item className="btn-login">
+            <Button
+              loading={loading}
+              type="primary"
+              htmlType="submit"
+              size="large"
+              block
+            >
+              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <div className="footer-login">
+          <span>
+            Chưa có tài khoản?{" "}
+            <span className="link-login" onClick={handleRedirect}>
+              Đăng ký ngay
+            </span>
+          </span>
+        </div>
       </div>
     </div>
   );
 };
+
 export default Login;

@@ -21,7 +21,6 @@ const FilterByCategory = () => {
         getValue={(item) => item?._id}
         getLabel={(item) => item?.name}
         labelInValue
-        //   disabled={!isEdit}
         placeholder="Chọn loại sản phẩm"
         allowClear
       />

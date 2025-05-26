@@ -1,7 +1,16 @@
 import React from "react";
 import { Modal, Button, Tag } from "antd";
+import { StarOutlined } from "@ant-design/icons";
 
-const AddressViewModal = ({ visible, address, onCancel, onEdit }) => {
+const AddressViewModal = ({
+  visible,
+  address,
+  onCancel,
+  onEdit,
+  onSetDefault,
+  loading = false,
+  showSetDefault = true,
+}) => {
   const getFullAddress = (address) => {
     const parts = [
       address.detailAddress,
@@ -12,26 +21,33 @@ const AddressViewModal = ({ visible, address, onCancel, onEdit }) => {
     return parts.join(", ");
   };
 
+  const footerButtons = [
+    <Button key="close" onClick={onCancel}>
+      Đóng
+    </Button>,
+  ];
+
+  footerButtons.splice(
+    -1,
+    0,
+    <Button
+      key="update"
+      type="primary"
+      onClick={() => {
+        onCancel();
+        onEdit(address);
+      }}
+    >
+      Chỉnh sửa
+    </Button>
+  );
+
   return (
     <Modal
       title="Chi tiết địa chỉ"
       open={visible}
       onCancel={onCancel}
-      footer={[
-        <Button key="close" onClick={onCancel}>
-          Đóng
-        </Button>,
-        <Button
-          key="update"
-          type="primary"
-          onClick={() => {
-            onCancel();
-            onEdit(address);
-          }}
-        >
-          Chỉnh sửa
-        </Button>,
-      ]}
+      footer={footerButtons}
     >
       {address && (
         <div className="address-detail-view">

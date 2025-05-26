@@ -7,7 +7,11 @@ const EditProduct = (props) => {
   const { visible, onClose, product } = props;
   const dispatch = useDispatch();
   const handleSubmit = async (values) => {
-    await dispatch(editProduct(product._id, { id: product._id, ...values }));
+    const payload = {
+      ...values,
+      images: values.images?.map((file) => file.url ?? file) ?? [],
+    };
+    await dispatch(editProduct(product._id, { id: product._id, ...payload }));
     onClose();
   };
 

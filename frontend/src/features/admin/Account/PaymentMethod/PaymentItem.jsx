@@ -20,40 +20,48 @@ const PaymentItem = ({
     onEdit(payment);
     setModalMode("update");
   };
+
   const handleDelete = () => {
     onDelete(payment?._id);
     setModalMode("delete");
   };
+
+  const handleSetDefault = () => {
+    onSetDefault({
+      id: payment?._id,
+      isDefault: true,
+    });
+  };
+
   const dropdownMenu = useMemo(
     () => ({
       items: [
-        {
-          key: "setDefault",
-          label: payment?.isDefault ? "Huỷ thẻ mặc định" : "Đặt làm mặc định",
-          icon: payment?.isDefault ? <StarFilled /> : <StarOutlined />,
-          onClick: () =>
-            onSetDefault({
-              id: payment?._id,
-              isDefault: !payment?.isDefault,
-            }),
-        },
-
+        ...(!payment?.isDefault
+          ? [
+              {
+                key: "setDefault",
+                label: "Đặt làm mặc định",
+                icon: <StarOutlined />,
+                onClick: handleSetDefault,
+              },
+            ]
+          : []),
         {
           key: "edit",
           label: "Chỉnh sửa",
           icon: <EditOutlined />,
-          onClick: () => handleEdit(),
+          onClick: handleEdit,
         },
         {
           key: "delete",
           label: "Xóa",
           icon: <DeleteOutlined />,
           danger: true,
-          onClick: () => handleDelete(),
+          onClick: handleDelete,
         },
       ],
     }),
-    [payment, onEdit, onDelete, onSetDefault]
+    [payment?.isDefault]
   );
 
   const maskedCardNumber = useMemo(() => {
@@ -68,7 +76,10 @@ const PaymentItem = ({
     <Card
       size="small"
       className="payment-item-card"
-      style={{ marginBottom: 12 }}
+      style={{
+        marginBottom: 12,
+        border: payment?.isDefault ? "2px solid #1890ff" : "1px solid #d9d9d9",
+      }}
     >
       <div
         style={{
@@ -90,7 +101,21 @@ const PaymentItem = ({
             >
               {maskedCardNumber}
               {payment?.isDefault && (
-                <StarFilled style={{ color: "#faad14", fontSize: 14 }} />
+                <>
+                  <StarFilled style={{ color: "#faad14", fontSize: 14 }} />
+                  <span
+                    style={{
+                      fontSize: "10px",
+                      color: "#1890ff",
+                      fontWeight: "normal",
+                      padding: "0 4px",
+                      backgroundColor: "#e6f7ff",
+                      borderRadius: "2px",
+                    }}
+                  >
+                    Mặc định
+                  </span>
+                </>
               )}
             </div>
             <div style={{ color: "#666", fontSize: "12px" }}>

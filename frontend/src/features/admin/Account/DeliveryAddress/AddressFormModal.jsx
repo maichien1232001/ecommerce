@@ -10,6 +10,8 @@ const AddressFormModal = ({
   onCancel,
   onSubmit,
   selectedAddress,
+  hideDefaultCheckbox = false,
+  loading = false,
 }) => {
   const handleSubmit = (values) => {
     onSubmit(values, mode);
@@ -114,14 +116,19 @@ const AddressFormModal = ({
         <Form.Item label="Mã bưu điện" name="postalCode">
           <Input placeholder="Nhập mã bưu điện (tùy chọn)" />
         </Form.Item>
-        <Form.Item name="isDefault" valuePropName="checked">
-          <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
-        </Form.Item>
+
+        {/* Chỉ hiển thị checkbox isDefault nếu không bị ẩn */}
+        {!hideDefaultCheckbox && (
+          <Form.Item name="isDefault" valuePropName="checked">
+            <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
+          </Form.Item>
+        )}
+
         <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
           <Button onClick={onCancel} style={{ marginRight: 8 }}>
             Hủy
           </Button>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             {mode === "add" ? "Thêm địa chỉ" : "Cập nhật"}
           </Button>
         </Form.Item>

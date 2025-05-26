@@ -11,7 +11,7 @@ i18next.use(initReactI18next).init({
   },
   lng: "vi",
   fallbackLng: "vi",
-  ns: Object.keys(vi), // ['header', 'login', 'dashboard']
+  ns: Object.keys(vi),
   defaultNS: "common",
   interpolation: {
     escapeValue: false,

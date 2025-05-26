@@ -1,15 +1,14 @@
-// src/layouts/MainLayout.js
-import React from 'react';
+import React from "react";
+import HeaderCommon from "../../app/components/Header";
 
 const MainLayout = ({ children }) => {
-    return (
-        <div>
-            <main>
-                {children}
-            </main>
-            {/* <Footer /> */}
-        </div>
-    );
+  return (
+    <div>
+      <HeaderCommon />
+      <main>{children}</main>
+      {/* <Footer /> */}
+    </div>
+  );
 };
 
 export default MainLayout;

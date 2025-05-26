@@ -1,8 +1,6 @@
-// src/layouts/AdminLayout.js
 import React from "react";
 import NavBar from "../../app/components/Navbar";
 import HeaderCommon from "../../app/components/Header";
-// import AdminHeader from '../components/AdminHeader';
 
 const AdminLayout = ({ children }) => {
   return (

@@ -3,15 +3,13 @@ import { useSelector } from "react-redux";
 import { Button, Card, Modal, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-// Import các component đã tách
 import AddressCard from "./AddressCard";
 import AddressFormModal from "./AddressFormModal";
 import AddressViewModal from "./AddressViewModal";
 import EmptyAddressState from "./EmptyAddressState";
-import { notifySuccess } from "../../../../common/components/Tostify";
 
 const DeliveryAddress = (props) => {
-  const { addressForm, onFinishAddress, onDeleteAddress, user } = props;
+  const { addressForm, onFinishAddress, user } = props;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -21,12 +19,10 @@ const DeliveryAddress = (props) => {
   const shippingAddresses = user?.shippingAddresses || [];
   const provinces = useSelector((state) => state.address.provinces);
 
-  // Modal handlers
   const showAddModal = () => {
     setModalMode("add");
     setSelectedAddress(null);
     addressForm.resetFields();
-    addressForm.setFieldsValue({ isDefault: false });
     setIsModalVisible(true);
   };
 
@@ -52,17 +48,29 @@ const DeliveryAddress = (props) => {
       async onOk() {
         try {
           setLoading(true);
-          // Call API to delete address using address._id
           await onFinishAddress(address._id, null, "delete");
-          message.success("Đã xóa địa chỉ thành công!");
         } catch (error) {
           message.error("Có lỗi xảy ra khi xóa địa chỉ!");
-          console.error("Delete address error:", error);
         } finally {
           setLoading(false);
         }
       },
     });
+  };
+
+  const handleSetDefault = async (address) => {
+    try {
+      setLoading(true);
+      const addressData = {
+        ...address,
+        isDefault: true,
+      };
+      await onFinishAddress(address._id, addressData, "update");
+    } catch (error) {
+      console.error("Set default address error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleModalSubmit = async (values) => {
@@ -74,24 +82,17 @@ const DeliveryAddress = (props) => {
         addressData = {
           ...values,
         };
-        await onFinishAddress(addressData, modalMode);
-        notifySuccess("Thêm địa chỉ thành công!");
+        await onFinishAddress(null, addressData, modalMode);
       } else if (modalMode === "update") {
         addressData = {
           ...values,
-          _id: selectedAddress._id, // Include the address ID for update
+          _id: selectedAddress._id,
         };
         await onFinishAddress(selectedAddress._id, addressData, modalMode);
-        notifySuccess("Cập nhật địa chỉ thành công!");
       }
 
       setIsModalVisible(false);
     } catch (error) {
-      message.error(
-        modalMode === "add"
-          ? "Có lỗi xảy ra khi thêm địa chỉ!"
-          : "Có lỗi xảy ra khi cập nhật địa chỉ!"
-      );
       console.error("Address operation error:", error);
     } finally {
       setLoading(false);
@@ -123,7 +124,9 @@ const DeliveryAddress = (props) => {
               onEdit={() => showEditModal(address)}
               onDelete={() => handleDelete(address)}
               onView={() => showViewModal(address)}
+              onSetDefault={() => handleSetDefault(address)}
               loading={loading}
+              showSetDefault={!address.isDefault}
             />
           ))}
         </div>
@@ -131,7 +134,6 @@ const DeliveryAddress = (props) => {
         <EmptyAddressState onAdd={showAddModal} loading={loading} />
       )}
 
-      {/* Add/Edit Modal */}
       <AddressFormModal
         visible={isModalVisible}
         mode={modalMode}
@@ -140,15 +142,17 @@ const DeliveryAddress = (props) => {
         loading={loading}
         onCancel={() => setIsModalVisible(false)}
         onSubmit={handleModalSubmit}
+        hideDefaultCheckbox={true}
       />
 
-      {/* View Modal */}
       <AddressViewModal
         visible={viewModalVisible}
         address={selectedAddress}
         onCancel={() => setViewModalVisible(false)}
         onEdit={showEditModal}
+        onSetDefault={handleSetDefault}
         loading={loading}
+        showSetDefault={selectedAddress && !selectedAddress.isDefault}
       />
     </Card>
   );

@@ -1,11 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api", // Thay bằng API server của bạn
-  withCredentials: true, // Quan trọng để gửi cookie chứa refresh token
+  baseURL: "http://localhost:8080/api",
+  withCredentials: true, // gửi cookie chứa refresh token
 });
 
-// Thêm interceptor cho request
 API.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -17,7 +16,6 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Thêm interceptor cho response
 let isRefreshing = false;
 let refreshSubscribers = [];
 

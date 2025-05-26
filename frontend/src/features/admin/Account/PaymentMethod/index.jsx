@@ -7,10 +7,7 @@ import PaymentItem from "./PaymentItem";
 import PaymentCard3D from "./PaymentCard3D";
 import PaymentModal from "./PaymentModal";
 import { useSelector } from "react-redux";
-import {
-  notifyError,
-  notifySuccess,
-} from "../../../../common/components/Tostify";
+
 const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -23,16 +20,11 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
     [user?.paymentInfo]
   );
 
-  const defaultPayment = useMemo(
-    () => paymentInfo.find((payment) => payment?.isDefault) || paymentInfo[0],
-    [paymentInfo]
-  );
-
   const showModal = useCallback((payment = null) => {
     setIsEditing(!!payment);
     setEditingPayment(payment);
     setIsModalVisible(true);
-    setModalMode("add");
+    setModalMode(payment ? "update" : "add");
   }, []);
 
   const handleCancel = useCallback(() => {
@@ -48,11 +40,9 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
         if (modalMode === "update") {
           updatedPaymentInfo = { ...values, _id: editingPayment?._id };
         } else if (modalMode === "add") {
-          updatedPaymentInfo = {
-            ...values,
-            isDefault: true,
-          };
+          updatedPaymentInfo = values;
         }
+
         await onUpdatePaymentInfo(
           editingPayment?._id,
           updatedPaymentInfo,
@@ -64,30 +54,28 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
         console.log(error);
       }
     },
-    [isEditing, editingPayment, paymentInfo, onUpdatePaymentInfo, handleCancel]
+    [modalMode, editingPayment, onUpdatePaymentInfo, handleCancel]
   );
 
   const handleDelete = useCallback(
     async (paymentId) => {
+      const deletingPayment = paymentInfo.find((p) => p._id === paymentId);
+      const confirmTitle = deletingPayment?.isDefault
+        ? "Xác nhận xóa thẻ mặc định"
+        : "Xác nhận xóa";
+      const confirmContent = deletingPayment?.isDefault
+        ? "Bạn đang xóa thẻ mặc định. Thẻ khác sẽ tự động được đặt làm mặc định. Bạn có chắc chắn muốn xóa?"
+        : "Bạn có chắc chắn muốn xóa phương thức thanh toán này?";
+
       Modal.confirm({
-        title: "Xác nhận xóa",
-        content: "Bạn có chắc chắn muốn xóa phương thức thanh toán này?",
+        title: confirmTitle,
+        content: confirmContent,
         onOk: async () => {
           try {
-            const updatedPaymentInfo = paymentInfo.filter(
-              (item) => item?._id !== paymentId
-            );
-
-            if (updatedPaymentInfo.length > 0) {
-              const deletedPayment = paymentInfo.find(
-                (item) => item?.id === paymentId
-              );
-              if (deletedPayment?.isDefault) {
-                updatedPaymentInfo[0].isDefault = true;
-              }
-            }
-            await onUpdatePaymentInfo(paymentId, updatedPaymentInfo, "delete");
-          } catch (error) {}
+            await onUpdatePaymentInfo(paymentId, null, "delete");
+          } catch (error) {
+            console.log(error);
+          }
         },
       });
     },
@@ -97,11 +85,17 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
   const handleSetDefault = useCallback(
     async (value) => {
       try {
+        if (!value.isDefault) {
+          message.warning("Phải có ít nhất một thẻ mặc định!");
+          return;
+        }
+
         const updatedPaymentInfo = {
-          ...paymentInfo.find((item) => item.id === value?.id),
-          isDefault: value?.isDefault,
+          ...paymentInfo.find((item) => item._id === value.id),
+          isDefault: true,
         };
-        await onUpdatePaymentInfo(value?.id, updatedPaymentInfo, "update");
+
+        await onUpdatePaymentInfo(value.id, updatedPaymentInfo, "update");
       } catch (error) {
         console.log(error);
       }
@@ -159,7 +153,13 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
         </Col>
 
         <Col span={12}>
-          {defaultPayment && <PaymentCard3D payment={defaultPayment} />}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px 0" }}
+          >
+            {paymentInfo.map((payment) => (
+              <PaymentCard3D key={payment._id} payment={payment} />
+            ))}
+          </div>
         </Col>
       </Row>
 

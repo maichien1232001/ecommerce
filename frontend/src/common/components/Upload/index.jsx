@@ -1,4 +1,3 @@
-// components/UploadImg.jsx
 import { PlusOutlined } from "@ant-design/icons";
 import { Upload, Spin } from "antd";
 import React from "react";

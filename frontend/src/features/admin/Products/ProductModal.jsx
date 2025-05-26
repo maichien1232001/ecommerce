@@ -29,16 +29,27 @@ const ProductModal = ({
     if (visible) {
       if (product) {
         const currentType = Object.keys(product.specifications || {})[0];
-
-        // Map các trường cần match vào danh sách
-        const matchMap = {
-          category: [listCategories, product.category],
-          brand: [listbrands, product.brand],
+        const matchMapValue = {
           status: [statusOptionsBase, product.status],
           specialTag: [optionTags, product.specialTag],
         };
+        const matchMapName = {
+          category: [listCategories, product.category],
+          brand: [listbrands, product.brand],
+        };
 
-        const matchedValues = Object.entries(matchMap).reduce(
+        const matchedValues = Object.entries(matchMapValue).reduce(
+          (acc, [key, [list, value]]) => {
+            acc[key] =
+              find(
+                list,
+                (item) => item._id === value || item.value === value
+              ) || null;
+            return acc;
+          },
+          {}
+        );
+        const matchedName = Object.entries(matchMapName).reduce(
           (acc, [key, [list, value]]) => {
             acc[key] =
               find(
@@ -58,23 +69,21 @@ const ProductModal = ({
             url: img.url || img,
           })) || [];
 
-        // Cập nhật state
         setState((prev) => ({
           ...prev,
           productType: currentType,
-          selectedCategory: matchedValues.category,
+          selectedCategory: matchedName.category,
           fileList: newFileList,
         }));
 
-        // Cập nhật form
         form.setFieldsValue({
           name: product.name,
           price: product.price,
           description: product.description,
-          category: matchedValues.category,
+          category: matchedName.category,
           stock: product.stock,
           productType: currentType,
-          brand: matchedValues.brand,
+          brand: matchedName.brand,
           status: matchedValues.status,
           specialTag: matchedValues.specialTag,
           specifications: {

@@ -14,7 +14,6 @@ const rootReducer = combineReducers({
   brand: brandReducers,
   user: userReducers,
   address: addressReducer,
-  // Thêm các reducer khác nếu có
 });
 
 export default rootReducer;

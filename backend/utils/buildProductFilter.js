@@ -1,4 +1,3 @@
-// helpers/productFilterHelper.js
 const buildProductFilter = ({
   name,
   priceMin,
@@ -46,7 +45,7 @@ const buildProductFilter = ({
   }
 
   if (category) {
-    filter.category = category; // assume ObjectId from client
+    filter.category = category;
   }
 
   if (specialTag) {
@@ -54,14 +53,35 @@ const buildProductFilter = ({
   }
 
   if (status) {
-    filter.status = status; // e.g., "active", "inactive", etc.
+    filter.status = status;
   }
 
   if (brand) {
-    filter.brand = brand; // assume ObjectId or string from client
+    filter.brand = brand;
   }
 
   return filter;
 };
 
-module.exports = { buildProductFilter };
+const buildSortOption = (sortBy) => {
+  switch (sortBy) {
+    case "active":
+      return { price: 1 };
+    case "featured":
+      return { price: -1 };
+    case "new":
+      return { sold: -1 };
+    case "name_asc":
+      return { name: 1 };
+    case "bestseller":
+      return { name: -1 };
+    // case "createdAt_asc":
+    //   return { createdAt: 1 };
+    // case "createdAt_desc":
+    //   return { createdAt: -1 };
+    default:
+      return { createdAt: -1 };
+  }
+};
+
+module.exports = { buildProductFilter, buildSortOption };

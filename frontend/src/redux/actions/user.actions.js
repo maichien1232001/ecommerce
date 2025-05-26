@@ -19,13 +19,11 @@ export const updateProfileAccount = (values, navigate) => async (dispatch) => {
       type: "UPDATE_PROFILE_SUCCESS",
       payload: response,
     });
-    notifySuccess("Cập nhật thông tin thành công");
   } catch (error) {
     dispatch({
       type: "UPDATE_PROFILE_FAILURE",
       payload: error.message,
     });
-    notifySuccess("Cập nhật thông tin thất bại");
   }
 };
 
