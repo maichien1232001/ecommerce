@@ -17,7 +17,8 @@ const Login = () => {
 
   const onFinish = (values) => {
     const { email, password } = values;
-    dispatch(login({ email, password }, navigate));
+    let sessionID = localStorage.getItem("sessionID");
+    dispatch(login({ email, password, sessionID }, navigate));
   };
 
   const onFinishFailed = (errorInfo) => {

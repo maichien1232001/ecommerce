@@ -17,6 +17,7 @@ import ShopPage from "../features/shop/Shop";
 import DetailProduct from "../features/shop/DetailProduct";
 import Error403 from "../common/components/Errors/Error403";
 import RoleBasedRedirect from "./RoleBasedRedirect";
+import Cart from "../features/shop/Cart";
 
 const Routers = () => (
   <Router>
@@ -53,6 +54,14 @@ const Routers = () => (
         element={
           <ProtectedRoute>
             <RouterRoot layout={MainLayout} element={DetailProduct} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={Cart} />
           </ProtectedRoute>
         }
       />

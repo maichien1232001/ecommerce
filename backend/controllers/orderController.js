@@ -104,7 +104,7 @@ exports.createOrder = async (req, res) => {
 };
 // exports.createOrder = async (req, res) => {
 //     const { products, shippingAddress, paymentMethod } = req.body;
-//     const userId = req.user.id;
+//     const userId = req?.user?.id;
 
 //     try {
 //         let totalAmount = 0;
@@ -153,7 +153,7 @@ exports.createOrder = async (req, res) => {
 
 // Lấy thông tin đơn hàng của người dùng
 exports.getUserOrders = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req?.user?.id;
   const { page = 1, limit = 10 } = req.query; // Phân trang: mặc định là trang 1 và giới hạn 10 đơn hàng mỗi trang
 
   try {

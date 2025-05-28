@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux"; // Import useSelector
 import { viewProduct } from "../../../redux/actions/product.action";
 import {
   Carousel,
@@ -11,20 +11,28 @@ import {
   Divider,
   Tag,
   Button,
+  InputNumber,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { optionTags, statusOptionsBase } from "../../../constants/products";
 import BackButton from "../../../common/components/BackButton";
 import "./DetailProduct.scss";
+import { v4 as uuidv4 } from "uuid";
+import { notifyError, notifySuccess } from "../../../common/components/Tostify";
+import { addToCart } from "../../../redux/actions/cart.actions";
 
 const { Title, Text, Paragraph } = Typography;
 
 const DetailProduct = () => {
   const { productId } = useParams();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth || state?.user);
+  const isAuthenticated = !!user?._id;
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -51,6 +59,28 @@ const DetailProduct = () => {
       fetchProductById();
     }
   }, [productId, dispatch]);
+
+  const handleAddToCart = async () => {
+    try {
+      let sessionID = localStorage.getItem("sessionID");
+
+      if (!isAuthenticated) {
+        if (!sessionID) {
+          sessionID = uuidv4();
+          localStorage.setItem("sessionID", sessionID);
+        }
+
+        await dispatch(addToCart(null, productId, quantity, sessionID));
+      } else {
+        await dispatch(addToCart(user._id, productId, quantity, null));
+      }
+
+      notifySuccess("Sản phẩm đã được thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      notifyError("Không thể thêm sản phẩm vào giỏ hàng.");
+    }
+  };
 
   if (loading) {
     return (
@@ -138,9 +168,7 @@ const DetailProduct = () => {
 
   return (
     <div className="detail-product-container">
-      <BackButton fallbackPath="/products">
-        Quay về danh sách sản phẩm
-      </BackButton>
+      <BackButton fallbackPath="/products">Quay lại</BackButton>
       <Row gutter={[24, 24]}>
         <Col xs={24} lg={12}>
           <Card bordered={false} className="product-image-carousel-card">
@@ -217,10 +245,23 @@ const DetailProduct = () => {
             <Divider />
 
             <div className="product-actions">
+              <div className="quantity-selector">
+                <Text strong>Số lượng:</Text>
+                <InputNumber
+                  min={1}
+                  max={product.stock} // Set max quantity to product stock
+                  defaultValue={1}
+                  value={quantity}
+                  onChange={(value) => setQuantity(value)}
+                  className="quantity-input"
+                />
+              </div>
               <Button
                 type="primary"
                 size="large"
                 icon={<ShoppingCartOutlined />}
+                onClick={handleAddToCart} // Call handleAddToCart on click
+                disabled={product.stock === 0} // Disable if out of stock
               >
                 Thêm vào giỏ hàng
               </Button>
