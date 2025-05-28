@@ -9,7 +9,7 @@ exports.addReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
 
-    const userId = req.user.id;
+    const userId = req?.user?.id;
 
     const product = await Product.findById(productId);
 
@@ -69,7 +69,7 @@ exports.updateReview = async (req, res) => {
   const productId = req.params.productId;
   try {
     const { rating, comment } = req.body;
-    const userId = req.user.id;
+    const userId = req?.user?.id;
 
     const review = await Review.findOne({ user: userId, product: productId });
     if (!review) {
@@ -97,7 +97,7 @@ exports.updateReview = async (req, res) => {
 };
 
 exports.deleteReview = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req?.user?.id;
   const userRole = req.user.role;
   const { productId, reviewId } = req.params;
   try {

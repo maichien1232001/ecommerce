@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, Dropdown, Avatar, Badge, Button } from "antd";
 import {
   BellOutlined,
@@ -7,7 +7,6 @@ import {
   LogoutOutlined,
   DownOutlined,
   GlobalOutlined,
-  ShoppingCartOutlined,
   HeartOutlined,
   AppstoreOutlined,
   GiftOutlined,
@@ -18,20 +17,75 @@ import {
 } from "@ant-design/icons";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+
 import { getColor, getFirstCharacter } from "../../../constants/avatar";
-import { checkAdmin } from "../../../constants/auth";
+import CartHeader from "../../../features/shop/Cart/CartHeader";
 
 const { Header } = Layout;
 
-const HeaderCommon = () => {
+const checkAdmin = (user) => {
+  return user?.role === "admin";
+};
+
+const HeaderShop = () => {
   const { t, i18n } = useTranslation("common");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { user } = useSelector((state) => state.auth || {});
+  const { user } = useSelector((state) => state.auth || state?.user);
   const isAuthenticated = !!user?._id;
   const isAdmin = isAuthenticated && checkAdmin(user);
+
+  const [currentSelectedKeys, setCurrentSelectedKeys] = useState([]);
+
+  const ecommerceNavItems = [
+    {
+      key: "home",
+      icon: <AppstoreOutlined />,
+      label: "Trang chủ",
+      path: "/",
+    },
+    {
+      key: "products",
+      icon: <GiftOutlined />,
+      label: "Cửa hàng",
+      path: "/products",
+    },
+    {
+      key: "deals",
+      icon: <FireOutlined />,
+      label: "Khuyến mãi",
+      path: "/deals",
+    },
+    {
+      key: "contact",
+      icon: <PhoneOutlined />,
+      label: "Liên hệ",
+      path: "/contact",
+    },
+  ];
+
+  useEffect(() => {
+    const pathName = location.pathname;
+    const sortedNavItems = [...ecommerceNavItems].sort(
+      (a, b) => b.path.length - a.path.length
+    );
+    let matchedKey = null;
+    if (pathName === "/") {
+      matchedKey = "home";
+    } else {
+      const foundItem = sortedNavItems.find((item) =>
+        pathName.startsWith(item.path)
+      );
+      if (foundItem) {
+        matchedKey = foundItem.key;
+      }
+    }
+
+    setCurrentSelectedKeys(matchedKey ? [matchedKey] : []);
+  }, [location.pathname]);
 
   const handleMenuClick = ({ key }) => {
     if (key === "profile") {
@@ -39,6 +93,7 @@ const HeaderCommon = () => {
     } else if (key === "settings") {
       navigate("/admin/settings");
     } else if (key === "logout") {
+      console.log("Logging out...");
       navigate("/login");
     }
   };
@@ -55,10 +110,11 @@ const HeaderCommon = () => {
     { path: "/admin/accounts", label: t("account") },
   ];
 
-  const pathName = window.location.pathname;
+  const currentPathName = location.pathname;
   const title = isAdmin
-    ? _.find(adminRoutes, (route) => route.path === pathName)?.label
-    : "";
+    ? _.find(adminRoutes, (route) => currentPathName.startsWith(route.path))
+        ?.label || t("dashboard")
+    : "LOGO";
 
   const userMenu = {
     items: [
@@ -99,37 +155,10 @@ const HeaderCommon = () => {
     ],
   };
 
-  const ecommerceNavItems = [
-    {
-      key: "home",
-      icon: <AppstoreOutlined />,
-      label: "Trang chủ",
-      onClick: () => navigate("/"),
-    },
-    {
-      key: "products",
-      icon: <GiftOutlined />,
-      label: "Cửa hàng",
-      onClick: () => navigate("/products"),
-    },
-    {
-      key: "deals",
-      icon: <FireOutlined />,
-      label: "Khuyến mãi",
-      onClick: () => navigate("/deals"),
-    },
-    {
-      key: "contact",
-      icon: <PhoneOutlined />,
-      label: "Liên hệ",
-      onClick: () => navigate("/contact"),
-    },
-  ];
-
   const handleEcommerceMenuClick = ({ key }) => {
     const item = ecommerceNavItems.find((item) => item.key === key);
-    if (item && item.onClick) {
-      item.onClick();
+    if (item && item.path) {
+      navigate(item.path);
     }
   };
 
@@ -145,7 +174,7 @@ const HeaderCommon = () => {
       }}
     >
       <div style={{ fontSize: 18, fontWeight: "bold", minWidth: "200px" }}>
-        {isAdmin ? title : "LOGO"}
+        {title}
       </div>
 
       {!isAdmin && (
@@ -160,10 +189,7 @@ const HeaderCommon = () => {
               fontSize: "14px",
               fontWeight: "500",
             }}
-            selectedKeys={[
-              ecommerceNavItems.find((item) => pathName.startsWith(item.path))
-                ?.key || "home",
-            ]}
+            selectedKeys={currentSelectedKeys}
           />
         </div>
       )}
@@ -183,14 +209,7 @@ const HeaderCommon = () => {
           </Badge>
         )}
 
-        {!isAdmin && (
-          <Badge count={3} size="small">
-            <ShoppingCartOutlined
-              style={{ fontSize: 18, cursor: "pointer" }}
-              onClick={() => navigate("/cart")}
-            />
-          </Badge>
-        )}
+        {!isAdmin && <CartHeader />}
 
         {!isAdmin && isAuthenticated && (
           <Badge count={2} size="small">
@@ -265,4 +284,4 @@ const HeaderCommon = () => {
   );
 };
 
-export default HeaderCommon;
+export default HeaderShop;

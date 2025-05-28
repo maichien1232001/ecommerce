@@ -42,7 +42,7 @@ exports.updateProfile = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req?.user?.id;
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(userId);
@@ -70,7 +70,7 @@ exports.changePassword = async (req, res) => {
 
 exports.manageShippingAddresses = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req?.user?.id;
     const { action, addressId, addressData } = req.body;
 
     const user = await User.findById(userId);
@@ -118,7 +118,7 @@ exports.manageShippingAddresses = async (req, res) => {
 
 exports.managePaymentInfo = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req?.user?.id;
     const { action, paymentId, paymentData } = req.body;
 
     const user = await User.findById(userId);
