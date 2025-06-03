@@ -8,6 +8,7 @@ const {
   buildProductFilter,
   buildSortOption,
 } = require("../utils/buildProductFilter");
+const Wishlist = require("../models/Wishlist");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -229,6 +230,82 @@ exports.getProductById = async (req, res) => {
     if (!product) return res.status(404).json({ message: "Product not found" });
 
     res.status(200).json({ product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getProducts = async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    name,
+    priceMin,
+    priceMax,
+    createdFrom,
+    createdTo,
+    updatedFrom,
+    updatedTo,
+    inStock,
+    category,
+    specialTag,
+    status,
+    brand,
+  } = req.query;
+
+  try {
+    const filter = buildProductFilter({
+      name,
+      priceMin,
+      priceMax,
+      createdFrom,
+      createdTo,
+      updatedFrom,
+      updatedTo,
+      inStock,
+      category,
+      specialTag,
+      status,
+      brand,
+    });
+
+    // Fetch products and count
+    const [products, totalCount] = await Promise.all([
+      Product.find(filter)
+        .populate("category", "name slug")
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 }),
+
+      Product.countDocuments(filter),
+    ]);
+
+    let updatedProducts = products;
+
+    // Nếu user đã đăng nhập, thêm isFavorite
+    console.log(req.user);
+    if (req.user) {
+      const wishlist = await Wishlist.findOne({ user: req.user._id }).select(
+        "products.product"
+      );
+
+      const favoriteIds = wishlist
+        ? wishlist.products.map((item) => item.product.toString())
+        : [];
+
+      updatedProducts = products.map((product) => ({
+        ...product.toObject(),
+        isFavorite: favoriteIds.includes(product._id.toString()),
+      }));
+      console.log("updatedProducts", updatedProducts);
+    } else {
+      // Nếu chưa đăng nhập, convert từ Mongoose Document -> Object để đồng bộ kiểu dữ liệu
+      updatedProducts = products.map((p) => p.toObject());
+    }
+
+    const pagination = paginationHelper(page, limit, totalCount);
+
+    res.status(200).json({ products: updatedProducts, pagination });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

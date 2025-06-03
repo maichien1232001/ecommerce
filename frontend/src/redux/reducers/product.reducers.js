@@ -4,6 +4,8 @@ const initialState = {
   products: [],
   product: {},
   pagination: {},
+  buyNowProduct: null,
+  checkoutItems: [],
   filter: {
     page: 1,
     limit: 10,
@@ -72,6 +74,27 @@ const productReducers = (state = initialState, action) => {
         products: state.products.filter(
           (product) => product._id !== action.payload
         ),
+      };
+    case "SET_BUY_NOW_PRODUCT":
+      return {
+        ...state,
+        buyNowProduct: action.payload,
+      };
+    case "CLEAR_BUY_NOW_PRODUCT":
+      return {
+        ...state,
+        buyNowProduct: null,
+      };
+    case "SET_CHECKOUT_ITEMS":
+      return {
+        ...state,
+        checkoutItems: action.payload,
+      };
+
+    case "CLEAR_CHECKOUT_ITEMS":
+      return {
+        ...state,
+        checkoutItems: [],
       };
 
     case "UPDATE_FILTER":

@@ -1,74 +1,119 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
 const Notification = require("../models/Notification");
 const { sendNotification } = require("../sockets/socket");
 const { handleError } = require("../utils/errorHandler");
 const paginationHelper = require("../utils/pagination"); // Nếu bạn cần phân trang trong các API
 const admin = require("../config/firebaseAdmin"); // Firebase Admin SDK
 
+const getProductId = (item) => {
+  if (item.productId) {
+    return typeof item.productId === "object"
+      ? item.productId._id
+      : item.productId;
+  }
+  return item._id; // Trường hợp sản phẩm đơn lẻ
+};
+
 exports.createOrder = async (req, res) => {
   const { products, shippingAddress, paymentMethod } = req.body;
-  const userId = req.user._id.toString();
+  const productItems = products?.items;
+  const totalAmount = products?.total;
+  const userId = req?.user?.id; // giữ nguyên ObjectId
 
   try {
-    let totalAmount = 0;
-    const productList = [];
+    // Kiểm tra sản phẩm
+    const formattedProducts = [];
 
-    // Tính tổng giá trị đơn hàng và kiểm tra sản phẩm
-    for (const item of products) {
-      const product = await Product.findById(item.product);
+    for (const item of productItems) {
+      const productId = getProductId(item);
+      const product = await Product.findById(productId);
       if (!product) {
         return res.status(400).json({ error: "Sản phẩm không tồn tại" });
       }
-      if (product.stock < item.quantity) {
-        return res
-          .status(400)
-          .json({ error: `Sản phẩm ${product.name} không đủ hàng.` });
+
+      const stock = Number(product.stock);
+      const quantity = Number(product.stock || products.quantity);
+
+      if (product.status !== "active") {
+        return res.status(400).json({
+          error: `Sản phẩm "${product.name}" hiện không được bán.`,
+        });
       }
-      totalAmount += product.price * item.quantity;
-      productList.push({
+
+      if (isNaN(stock) || isNaN(quantity)) {
+        return res.status(400).json({
+          error: `Dữ liệu không hợp lệ cho sản phẩm "${product.name}".`,
+        });
+      }
+
+      if (stock < quantity) {
+        return res.status(400).json({
+          error: `Sản phẩm "${product.name}" không đủ hàng trong kho.`,
+        });
+      }
+
+      formattedProducts.push({
         product: product._id,
-        quantity: item.quantity,
-        price: product.price,
+        quantity: item?.quantity || products?.quantity,
+        price: item.price,
       });
     }
 
     // Tạo đơn hàng
     const order = new Order({
       user: userId,
-      products: productList,
+      products: formattedProducts,
       totalAmount,
-      shippingAddress,
+      shippingAddress: shippingAddress,
       paymentMethod,
     });
+
     await order.save();
-    for (const item of products) {
+    // Xoá từng item đã mua khỏi giỏ hàng
+    for (const item of productItems) {
+      const productId = getProductId(item);
+      await Cart.updateOne(
+        { userId },
+        {
+          $pull: {
+            items: { productId },
+          },
+        }
+      );
+    }
+
+    const updatedCart = await Cart.findOne({ userId }).populate(
+      "items.productId"
+    );
+
+    // Trừ tồn kho
+    for (const item of formattedProducts) {
       await Product.findByIdAndUpdate(item.product, {
         $inc: { stock: -item.quantity },
       });
     }
-    // Gửi thông báo cho khách hàng
-    const customerNotification = new Notification({
-      user: order.user,
+
+    // Thông báo cho khách hàng
+    await Notification.create({
+      user: userId,
       type: "order",
-      message: `Bạn vừa tạo thành công đơn hàng ${order._id}.`,
+      message: "Bạn vừa tạo đơn hàng thành công.",
       relatedEntity: order._id,
     });
-    await customerNotification.save();
 
-    // Tìm admin
+    // Gửi thông báo cho admin
     const adminUser = await User.findOne({ role: "admin" });
 
     if (adminUser) {
-      // Tạo thông báo trong DB
-      const adminNotification = new Notification({
+      await Notification.create({
         user: adminUser._id,
         type: "order",
-        message: `Bạn có đơn hàng ${order._id} mới.`,
+        message: `Bạn có đơn hàng mới.`,
         relatedEntity: order._id,
       });
-      await adminNotification.save();
 
       if (adminUser.firebaseToken) {
         try {
@@ -76,85 +121,39 @@ exports.createOrder = async (req, res) => {
             token: adminUser.firebaseToken,
             notification: {
               title: "Đơn hàng mới!",
-              body: `Bạn có đơn hàng ${order._id} mới.`,
+              body: "Bạn có đơn hàng mới.",
             },
             data: { orderId: order._id.toString() },
           });
 
-          console.log(`🔔 Push notification đã gửi đến admin thành công!`);
+          console.log("🔔 Push notification đã gửi đến admin thành công!");
         } catch (error) {
-          console.error(`❌ Lỗi khi gửi push notification:`, error);
+          console.error("❌ Lỗi khi gửi push notification:", error);
         }
       } else {
-        console.warn(
-          `⚠️ Admin chưa có Firebase Token, không thể gửi thông báo.`
-        );
+        console.warn("⚠️ Admin chưa có Firebase Token.");
       }
     } else {
-      console.warn(`⚠️ Không tìm thấy admin, không thể gửi thông báo.`);
+      console.warn("⚠️ Không tìm thấy admin.");
     }
 
-    res
-      .status(201)
-      .json({ message: "Đơn hàng đã được tạo và thông báo đã gửi." });
+    res.status(201).json({
+      message: "Đơn hàng đã được tạo và thông báo đã gửi.",
+      updatedCart,
+      orderId: order._id,
+    });
   } catch (error) {
-    console.error(`❌ Lỗi tạo đơn hàng:`, error);
-    res.status(500).json({ message: error.message });
+    console.error("❌ Lỗi tạo đơn hàng:", error);
+    res
+      .status(500)
+      .json({ message: "Tạo đơn hàng thất bại.", error: error.message });
   }
 };
-// exports.createOrder = async (req, res) => {
-//     const { products, shippingAddress, paymentMethod } = req.body;
-//     const userId = req?.user?.id;
-
-//     try {
-//         let totalAmount = 0;
-//         const productList = [];
-
-//         // Tính tổng giá trị đơn hàng và kiểm tra sản phẩm
-//         for (const item of products) {
-//             const product = await Product.findById(item.product);
-//             if (!product) {
-//                 return res.status(400).json({ error: 'Sản phẩm không tồn tại' });
-//             }
-//             totalAmount += product.price * item.quantity;
-//             productList.push({
-//                 product: product._id,
-//                 quantity: item.quantity,
-//                 price: product.price,
-//             });
-//         }
-
-//         // Tạo đơn hàng mới
-//         const order = new Order({
-//             user: userId,
-//             products: productList,
-//             totalAmount,
-//             shippingAddress,
-//             paymentMethod,
-//         });
-
-//         await order.save();
-
-//         // Giảm số lượng sản phẩm trong kho
-//         for (const item of products) {
-//             const product = await Product.findById(item.product);
-//             if (product) {
-//                 product.stock -= item.quantity;
-//                 await product.save();
-//             }
-//         }
-
-//         return res.status(201).json({ message: 'Đơn hàng đã được tạo thành công', order });
-//     } catch (error) {
-//         handleError(res, error);
-//     }
-// };
-// x
 
 // Lấy thông tin đơn hàng của người dùng
 exports.getUserOrders = async (req, res) => {
   const userId = req?.user?.id;
-  const { page = 1, limit = 10 } = req.query; // Phân trang: mặc định là trang 1 và giới hạn 10 đơn hàng mỗi trang
+  const { page, limit } = req.query;
 
   try {
     const skip = (page - 1) * limit;
@@ -211,15 +210,21 @@ exports.getOrderById = async (req, res) => {
 
 // Cập nhật trạng thái đơn hàng
 exports.updateOrderStatus = async (req, res) => {
-  const orderId = req.params.orderId;
-  const { status, products, shippingAddress, paymentMethod } = req.body;
+  const {
+    orderId,
+    paymentStatus,
+    status,
+    products,
+    shippingAddress,
+    paymentMethod,
+  } = req.body;
 
   try {
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({ error: "Đơn hàng không tồn tại" });
     }
-
+    order.paymentStatus = paymentStatus || order.paymentStatus;
     order.status = status || order.status;
     order.products = products || order.products;
     order.shippingAddress = shippingAddress || order.shippingAddress;

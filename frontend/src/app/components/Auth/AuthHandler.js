@@ -7,7 +7,7 @@ const Auth = () => {
   const dispatch = useDispatch();
   const token =
     useSelector((state) => state.auths.accessToken) ||
-    localStorage.getItem("authToken");
+    localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchUserData = async () => {
       if (token && performance.navigation.type === 1) {

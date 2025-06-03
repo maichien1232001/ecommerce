@@ -5,7 +5,9 @@ import { getToken } from "firebase/messaging";
 
 const proxy = "http://localhost:8080/api";
 
-export const saveTokenFireBase = async (token) => {
+export const saveTokenFireBase = async () => {
+  const token = localStorage.getItem("accessToken");
+
   if (_.isEmpty(token)) return;
   const requestPermission = async () => {
     try {

@@ -1,26 +1,31 @@
-import { ShoppingCartOutlined } from "@ant-design/icons";
-import { Badge } from "antd";
-import _ from "lodash";
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import useFetchCart from "../../../hooks/useFetchCart";
+import React from "react";
+import { Typography, Badge } from "antd";
+import { SafetyCertificateOutlined } from "@ant-design/icons";
+import BackButton from "../../../common/components/BackButton";
+
+const { Title, Text } = Typography;
 
 const CartHeader = () => {
-  const { fetchCart } = useFetchCart();
-  const navigate = useNavigate();
-  const { carts } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.user || state.auth);
-  useEffect(() => {
-    fetchCart();
-  }, [user]);
   return (
-    <Badge count={carts.length} size="small">
-      <ShoppingCartOutlined
-        style={{ fontSize: 18, cursor: "pointer" }}
-        onClick={() => navigate("/cart")}
-      />
-    </Badge>
+    <div className="cart-header">
+      <BackButton fallbackPath="/products" className="modern-back-btn">
+        <span>Tiếp tục mua sắm</span>
+      </BackButton>
+
+      <div className="cart-title-section">
+        <Title level={1} className="cart-main-title">
+          Giỏ hàng của bạn
+        </Title>
+        <Text className="cart-subtitle">
+          Quản lý và thanh toán các sản phẩm yêu thích
+        </Text>
+      </div>
+
+      <div className="cart-security-badge">
+        <SafetyCertificateOutlined />
+        <span>Thanh toán an toàn 100%</span>
+      </div>
+    </div>
   );
 };
 

@@ -2,13 +2,14 @@ import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "./Login.scss";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../../redux/actions/auth.actions";
 import { useDispatch, useSelector } from "react-redux";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const loading = useSelector((state) => state.auths.loading);
 
   const handleRedirect = () => {
@@ -17,8 +18,9 @@ const Login = () => {
 
   const onFinish = (values) => {
     const { email, password } = values;
+    const from = location.state?.from || "/";
     let sessionID = localStorage.getItem("sessionID");
-    dispatch(login({ email, password, sessionID }, navigate));
+    dispatch(login({ email, password, sessionID }, navigate, from));
   };
 
   const onFinishFailed = (errorInfo) => {

@@ -21,7 +21,6 @@ $tag-toprated-bg: #722ed1;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 16px;
     background-color: $card-background;
-    // height: 100%;
   }
 }
 
@@ -85,7 +84,6 @@ $tag-toprated-bg: #722ed1;
     background-color: #8c8c8c;
     color: white;
   }
-
 }
 
 .product-info-card {
@@ -110,11 +108,26 @@ $tag-toprated-bg: #722ed1;
     display: inline-flex;
     align-items: center;
 
-    &.bestseller { background-color: $tag-bestseller-bg; color: white; }
-    &.new { background-color: $tag-new-bg; color: white; }
-    &.featured { background-color: $tag-featured-bg; color: white; }
-    &.sale { background-color: $tag-sale-bg; color: white; }
-    &.topRated { background-color: $tag-toprated-bg; color: white; }
+    &.bestseller {
+      background-color: $tag-bestseller-bg;
+      color: white;
+    }
+    &.new {
+      background-color: $tag-new-bg;
+      color: white;
+    }
+    &.featured {
+      background-color: $tag-featured-bg;
+      color: white;
+    }
+    &.sale {
+      background-color: $tag-sale-bg;
+      color: white;
+    }
+    &.topRated {
+      background-color: $tag-toprated-bg;
+      color: white;
+    }
   }
 
   .price-section {

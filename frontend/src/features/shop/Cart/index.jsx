@@ -1,37 +1,28 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Row,
-  Col,
-  Typography,
-  Card,
-  Divider,
-  Empty,
-  Button,
-  InputNumber,
-  Spin,
-  message,
-} from "antd";
-import {
-  DeleteOutlined,
-  ShoppingCartOutlined,
-  ReloadOutlined,
-  DollarCircleOutlined,
-  ShoppingOutlined,
-} from "@ant-design/icons";
-import "./Cart.scss";
+import { Row, Col, Card, Spin } from "antd";
 import {
   deleteCart,
   updateItemQuantity,
 } from "../../../redux/actions/cart.actions";
-import { notifyError } from "../../../common/components/Tostify";
-import BackButton from "../../../common/components/BackButton";
+import { notifyError, notifyWarning } from "../../../common/components/Tostify";
+import "./Cart.scss";
 
-const { Title, Text } = Typography;
+import CartHeader from "./CartHeader";
+import EmptyCart from "./EmptyCart";
+import CartControls from "./CartControls";
+import CartItem from "./CartItem";
+import OrderSummary from "./OrderSummary";
+import PromoCard from "./PromoCard";
+import {
+  setBuyNowProduct,
+  setCheckoutItems,
+} from "../../../redux/actions/product.action";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const { carts: cartItems, totalPrice: cartTotalPrice } = useSelector(
     (state) => state.cart
   );
@@ -42,6 +33,8 @@ const Cart = () => {
   const [isRemovingItem, setIsRemovingItem] = useState(false);
   const [isUpdatingItem, setIsUpdatingItem] = useState({});
   const [changedQuantities, setChangedQuantities] = useState({});
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -74,6 +67,12 @@ const Cart = () => {
         delete newState[productId];
         return newState;
       });
+
+      setSelectedItems((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
     } catch (error) {
       console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
     } finally {
@@ -83,7 +82,7 @@ const Cart = () => {
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity < 1) {
-      message.warning("Số lượng phải lớn hơn 0.");
+      notifyWarning("Số lượng phải lớn hơn 0.");
       return;
     }
 
@@ -92,7 +91,7 @@ const Cart = () => {
     )?.productId.stock;
 
     if (newQuantity > stockLimit) {
-      message.warning(`Số lượng không được vượt quá tồn kho (${stockLimit}).`);
+      notifyWarning(`Số lượng không được vượt quá tồn kho (${stockLimit}).`);
       return;
     }
 
@@ -105,7 +104,7 @@ const Cart = () => {
   const handleUpdateItemQuantity = (productId) => {
     const sessionID = localStorage.getItem("sessionID");
     const newQuantity = changedQuantities[productId];
-    if (newQuantity === undefined) return; // Only update if quantity actually changed
+    if (newQuantity === undefined) return;
 
     setIsUpdatingItem((prev) => ({ ...prev, [productId]: true }));
 
@@ -129,6 +128,77 @@ const Cart = () => {
     }
   };
 
+  const handleSelectItem = (productId, checked) => {
+    setSelectedItems((prev) => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(productId);
+      } else {
+        newSet.delete(productId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+    if (checked) {
+      setSelectedItems(new Set(cartItems.map((item) => item.productId._id)));
+    } else {
+      setSelectedItems(new Set());
+    }
+  };
+
+  const handleCheckoutSingle = async (productId) => {
+    dispatch(setBuyNowProduct(productId));
+    navigate("/checkout");
+  };
+
+  const handleCheckoutSelected = () => {
+    if (selectedItems.size === 0) {
+      notifyWarning("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+      return;
+    }
+
+    const selectedCartItems = cartItems
+      .filter((item) => selectedItems.has(item.productId._id))
+      .map((item) => ({
+        ...item,
+        quantity:
+          changedQuantities[item.productId._id] !== undefined
+            ? changedQuantities[item.productId._id]
+            : item.quantity,
+      }));
+
+    dispatch(setCheckoutItems(selectedCartItems));
+
+    navigate("/checkout");
+  };
+
+  const getSelectedTotalPrice = () => {
+    return cartItems
+      .filter((item) => selectedItems.has(item.productId._id))
+      .reduce((total, item) => {
+        const quantity =
+          changedQuantities[item.productId._id] !== undefined
+            ? changedQuantities[item.productId._id]
+            : item.quantity;
+        return total + item.productId.price * quantity;
+      }, 0);
+  };
+
+  const getSelectedItemCount = () => {
+    return cartItems
+      .filter((item) => selectedItems.has(item.productId._id))
+      .reduce((total, item) => {
+        const quantity =
+          changedQuantities[item.productId._id] !== undefined
+            ? changedQuantities[item.productId._id]
+            : item.quantity;
+        return total + quantity;
+      }, 0);
+  };
+
   if (isRemovingItem) {
     return (
       <div className="cart-container-loading">
@@ -138,179 +208,76 @@ const Cart = () => {
   }
 
   if (!cartItems || cartItems.length === 0) {
-    return (
-      <div className="cart-container-empty">
-        <Empty
-          image={
-            <ShoppingCartOutlined style={{ fontSize: 80, color: "#999" }} />
-          }
-          description={
-            <Text strong className="empty-cart-text">
-              Giỏ hàng của bạn đang trống!
-            </Text>
-          }
-        >
-          <Button
-            type="primary"
-            size="large"
-            href="/products"
-            icon={<ShoppingOutlined />}
-          >
-            Mua sắm ngay
-          </Button>
-        </Empty>
-      </div>
-    );
+    return <EmptyCart />;
   }
 
+  const subtotal = getSelectedTotalPrice();
+
   return (
-    <div className="cart-page-container">
-      <BackButton fallbackPath="/products">Quay lại</BackButton>
-      <Title level={2} className="cart-page-title">
-        Giỏ hàng của bạn
-      </Title>
-      <Row gutter={[24, 24]}>
-        <Col xs={24} lg={16}>
-          <div className="cart-items-list">
-            {cartItems.map((item) => {
-              const currentQuantity =
-                changedQuantities[item.productId._id] !== undefined
-                  ? changedQuantities[item.productId._id]
-                  : item.quantity;
+    <div className="modern-cart-container">
+      <CartHeader />
 
-              const hasQuantityChanged =
-                changedQuantities[item.productId._id] !== undefined;
-              const isUpdatingThisItem = isUpdatingItem[item.productId._id];
+      <Row gutter={[32, 32]} className="cart-main-content">
+        <Col xs={24} xl={16}>
+          <Card className="cart-items-container">
+            <CartControls
+              selectAll={selectAll}
+              onSelectAll={handleSelectAll}
+              totalItems={cartItems.length}
+            />
 
-              return (
-                <Card key={item._id} className="cart-item-card">
-                  <Row align="middle" gutter={[16, 16]}>
-                    <Col xs={24} sm={6}>
-                      <div className="cart-item-image-wrapper">
-                        <img
-                          src={
-                            item.productId.images &&
-                            item.productId.images.length > 0
-                              ? item.productId.images[0]
-                              : "https://via.placeholder.com/150" // Increased placeholder size
-                          }
-                          alt={item.productId.name}
-                          className="cart-item-image"
-                        />
-                      </div>
-                    </Col>
-                    <Col xs={24} sm={12}>
-                      <Title level={4} className="cart-item-name">
-                        {item.productId.name}
-                      </Title>
-                      <Text className="cart-item-price-per-unit">
-                        Giá:{" "}
-                        <Text strong>
-                          {formatCurrency(item.productId.price)}
-                        </Text>
-                      </Text>
-                      <div
-                        className="cart-item-quantity-control"
-                        style={{ marginBottom: 16 }}
-                      >
-                        <Text strong>Số lượng:</Text>
-                        <InputNumber
-                          min={1}
-                          max={item.productId.stock}
-                          value={currentQuantity}
-                          onChange={(value) =>
-                            handleQuantityChange(item.productId._id, value)
-                          }
-                          className="quantity-input"
-                          disabled={isRemovingItem || isUpdatingThisItem}
-                        />
-                      </div>
-                      <Text strong className="cart-item-subtotal">
-                        Tổng cộng:{" "}
-                        <span className="total-item-price">
-                          {formatCurrency(
-                            currentQuantity * item.productId.price
-                          )}
-                        </span>
-                      </Text>
-                    </Col>
-                    <Col xs={24} sm={6} className="cart-item-actions">
-                      <div className="action-buttons-group">
-                        {hasQuantityChanged && (
-                          <Button
-                            type="primary"
-                            icon={<ReloadOutlined />}
-                            onClick={() =>
-                              handleUpdateItemQuantity(item.productId._id)
-                            }
-                            loading={isUpdatingThisItem}
-                            disabled={isRemovingItem}
-                            size="middle"
-                            className="update-button"
-                          >
-                            Cập nhật
-                          </Button>
-                        )}
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() => handleRemoveItem(item.productId._id)}
-                          className="remove-item-button"
-                          loading={isRemovingItem}
-                          disabled={isUpdatingThisItem}
-                          size="middle"
-                        >
-                          Xóa
-                        </Button>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
-              );
-            })}
-          </div>
+            <div className="cart-items-list">
+              {cartItems.map((item) => {
+                const currentQuantity =
+                  changedQuantities[item.productId._id] !== undefined
+                    ? changedQuantities[item.productId._id]
+                    : item.quantity;
+
+                const hasQuantityChanged =
+                  changedQuantities[item.productId._id] !== undefined;
+                const isUpdatingThisItem = isUpdatingItem[item.productId._id];
+                const isSelected = selectedItems.has(item.productId._id);
+
+                return (
+                  <CartItem
+                    key={item._id}
+                    item={item}
+                    isSelected={isSelected}
+                    currentQuantity={currentQuantity}
+                    hasQuantityChanged={hasQuantityChanged}
+                    isUpdating={isUpdatingThisItem}
+                    isRemoving={isRemovingItem}
+                    onSelect={handleSelectItem}
+                    onQuantityChange={handleQuantityChange}
+                    onUpdate={handleUpdateItemQuantity}
+                    onCheckoutSingle={handleCheckoutSingle}
+                    onRemove={handleRemoveItem}
+                    formatCurrency={formatCurrency}
+                  />
+                );
+              })}
+            </div>
+          </Card>
         </Col>
 
-        <Col xs={24} lg={8}>
-          <Card className="cart-summary-card">
-            <Title level={4} className="summary-title">
-              Tóm tắt đơn hàng
-            </Title>
-            <Divider className="summary-divider" />
-            <div className="summary-row">
-              <Text>Tổng số sản phẩm:</Text>
-              <Text strong className="summary-value">
-                {cartItems.reduce((total, item) => {
-                  const q =
-                    changedQuantities[item.productId._id] !== undefined
-                      ? changedQuantities[item.productId._id]
-                      : item.quantity;
-                  return total + q;
-                }, 0)}
-              </Text>
-            </div>
-            <div className="summary-row total-price">
-              <Text className="total-label">Tổng tiền hàng:</Text>
-              <Text strong className="final-price">
-                {formatCurrency(cartTotalPrice)}
-              </Text>
-            </div>
-
-            <Button
-              type="primary"
-              size="large"
-              block
-              className="checkout-button"
-              icon={<DollarCircleOutlined />}
-              disabled={
+        <Col xs={24} xl={8}>
+          <div className="checkout-sidebar">
+            <OrderSummary
+              selectedItemsCount={selectedItems.size}
+              selectedQuantity={getSelectedItemCount()}
+              subtotal={subtotal}
+              total={cartTotalPrice}
+              onCheckout={handleCheckoutSelected}
+              isDisabled={
+                selectedItems.size === 0 ||
                 isRemovingItem ||
-                Object.values(isUpdatingItem).some(Boolean) ||
-                cartItems.length === 0
+                Object.values(isUpdatingItem).some(Boolean)
               }
-            >
-              Tiến hành thanh toán
-            </Button>
-          </Card>
+              formatCurrency={formatCurrency}
+            />
+
+            <PromoCard />
+          </div>
         </Col>
       </Row>
     </div>
