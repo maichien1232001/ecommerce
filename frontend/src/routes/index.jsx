@@ -18,6 +18,12 @@ import DetailProduct from "../features/shop/DetailProduct";
 import Error403 from "../common/components/Errors/Error403";
 import RoleBasedRedirect from "./RoleBasedRedirect";
 import Cart from "../features/shop/Cart";
+import Checkout from "../features/shop/Checkout";
+import VNPayReturn from "../common/components/VnPayReturn";
+import Wishlist from "../features/shop/WishList";
+import Contact from "../app/components/Contact";
+import ListOrders from "../features/admin/Order/ListOrders";
+import Order from "../features/shop/Order/Order";
 
 const Routers = () => (
   <Router>
@@ -34,6 +40,22 @@ const Routers = () => (
         }
       />
       <Route
+        path="/order"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={Order} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vnpay_return"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={VNPayReturn} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/accounts"
         element={
           <ProtectedRoute>
@@ -42,10 +64,26 @@ const Routers = () => (
         }
       />
       <Route
+        path="/wishlist"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={Wishlist} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/products"
         element={
           <ProtectedRoute>
             <RouterRoot layout={MainLayout} element={ShopPage} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={Contact} />
           </ProtectedRoute>
         }
       />
@@ -62,6 +100,14 @@ const Routers = () => (
         element={
           <ProtectedRoute>
             <RouterRoot layout={MainLayout} element={Cart} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <RouterRoot layout={MainLayout} element={Checkout} />
           </ProtectedRoute>
         }
       />
@@ -91,6 +137,14 @@ const Routers = () => (
         element={
           <ProtectedRoute requiredRole="admin">
             <RouterRoot layout={AdminLayout} element={ListProducts} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <RouterRoot layout={AdminLayout} element={ListOrders} />
           </ProtectedRoute>
         }
       />

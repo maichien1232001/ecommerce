@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {
   changePasswordApi,
   deleteUserProfileApi,
@@ -9,7 +8,6 @@ import {
   updateProfileApi,
 } from "../../apis/user.api";
 import { notifySuccess } from "../../common/components/Tostify";
-import { checkAdmin } from "./auth.actions";
 
 export const updateProfileAccount = (values, navigate) => async (dispatch) => {
   dispatch({ type: "UPDATE_PROFILE_REQUEST" });

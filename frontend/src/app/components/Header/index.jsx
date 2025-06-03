@@ -18,10 +18,11 @@ import {
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { getColor, getFirstCharacter } from "../../../constants/avatar";
-import CartHeader from "../../../features/shop/Cart/CartHeader";
+import CartHeaderIcon from "../../../features/shop/Cart/CartHeaderIcon";
+import { logout } from "../../../redux/actions/auth.actions";
 
 const { Header } = Layout;
 
@@ -33,8 +34,10 @@ const HeaderShop = () => {
   const { t, i18n } = useTranslation("common");
   const navigate = useNavigate();
   const location = useLocation();
-
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth || state?.user);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const wishlistProducts = wishlist?.products;
   const isAuthenticated = !!user?._id;
   const isAdmin = isAuthenticated && checkAdmin(user);
 
@@ -54,10 +57,10 @@ const HeaderShop = () => {
       path: "/products",
     },
     {
-      key: "deals",
+      key: "order",
       icon: <FireOutlined />,
-      label: "Khuyến mãi",
-      path: "/deals",
+      label: "Đơn hàng",
+      path: "/order",
     },
     {
       key: "contact",
@@ -93,8 +96,7 @@ const HeaderShop = () => {
     } else if (key === "settings") {
       navigate("/admin/settings");
     } else if (key === "logout") {
-      console.log("Logging out...");
-      navigate("/login");
+      dispatch(logout(navigate));
     }
   };
 
@@ -209,10 +211,10 @@ const HeaderShop = () => {
           </Badge>
         )}
 
-        {!isAdmin && <CartHeader />}
+        {!isAdmin && <CartHeaderIcon />}
 
         {!isAdmin && isAuthenticated && (
-          <Badge count={2} size="small">
+          <Badge count={_.size(wishlistProducts)} size="small">
             <HeartOutlined
               style={{ fontSize: 18, cursor: "pointer" }}
               onClick={() => navigate("/wishlist")}

@@ -36,6 +36,26 @@ exports.auth = async (req, res, next) => {
   }
 };
 
+exports.optionalAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+
+      if (user) {
+        req.user = user;
+      }
+    } catch (err) {
+      // Token invalid hoặc hết hạn, bỏ qua
+    }
+  }
+  next();
+};
+
 exports.isAdmin = (req, res, next) => {
   let token = req.header("Authorization");
   if (!token) {

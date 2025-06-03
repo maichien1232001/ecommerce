@@ -1,5 +1,6 @@
 const initialState = {
   user: {},
+  loading: false,
 };
 const userReducers = (state = initialState, action) => {
   switch (action.type) {
@@ -108,17 +109,20 @@ const userReducers = (state = initialState, action) => {
     case "GET_USER_PROFILE_REQUEST":
       return {
         ...state,
+        loading: true,
       };
     case "GET_USER_PROFILE_SUCCESS":
       console.log(action.payload);
       return {
         ...state,
         user: action.payload,
+        loading: false,
       };
     case "GET_USER_PROFILE_FAILURE":
       return {
         ...state,
         error: action.payload,
+        loading: false,
       };
     default:
       return state;

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux"; // Import useSelector
-import { viewProduct } from "../../../redux/actions/product.action";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setBuyNowProduct,
+  viewProduct,
+} from "../../../redux/actions/product.action";
 import {
   Carousel,
   Spin,
@@ -12,9 +15,10 @@ import {
   Tag,
   Button,
   InputNumber,
+  Modal,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { optionTags, statusOptionsBase } from "../../../constants/products";
 import BackButton from "../../../common/components/BackButton";
 import "./DetailProduct.scss";
@@ -27,6 +31,7 @@ const { Title, Text, Paragraph } = Typography;
 const DetailProduct = () => {
   const { productId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth || state?.user);
   const isAuthenticated = !!user?._id;
 
@@ -79,6 +84,26 @@ const DetailProduct = () => {
     } catch (error) {
       console.error("Error adding to cart:", error);
       notifyError("Không thể thêm sản phẩm vào giỏ hàng.");
+    }
+  };
+
+  const handleBuyNow = (product) => {
+    handleAddToCart(product);
+    dispatch(setBuyNowProduct(product));
+    if (!isAuthenticated) {
+      Modal.confirm({
+        title: "Yêu cầu đăng nhập",
+        content:
+          "Bạn cần đăng nhập để mua hàng. Bạn có muốn đăng nhập ngay không?",
+        okText: "Đăng nhập",
+        cancelText: "Hủy",
+        onOk: () => {
+          navigate("/login", { state: { from: "/checkout" } });
+        },
+      });
+      return;
+    } else {
+      navigate("/checkout");
     }
   };
 
@@ -249,7 +274,7 @@ const DetailProduct = () => {
                 <Text strong>Số lượng:</Text>
                 <InputNumber
                   min={1}
-                  max={product.stock} // Set max quantity to product stock
+                  max={product.stock}
                   defaultValue={1}
                   value={quantity}
                   onChange={(value) => setQuantity(value)}
@@ -260,12 +285,19 @@ const DetailProduct = () => {
                 type="primary"
                 size="large"
                 icon={<ShoppingCartOutlined />}
-                onClick={handleAddToCart} // Call handleAddToCart on click
-                disabled={product.stock === 0} // Disable if out of stock
+                onClick={handleAddToCart}
+                disabled={product.stock === 0}
               >
                 Thêm vào giỏ hàng
               </Button>
-              <Button size="large" className="buy-now-button">
+              <Button
+                size="large"
+                className="buy-now-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBuyNow(product);
+                }}
+              >
                 Mua ngay
               </Button>
             </div>

@@ -1,4 +1,3 @@
-// Variables
 $primary-color: #1890ff;
 $success-color: #52c41a;
 $warning-color: #faad14;
@@ -10,14 +9,12 @@ $border-radius: 8px;
 $box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 $transition: all 0.3s ease;
 
-// Account Container
 .account-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
   min-height: 100vh;
 
-  // Tabs Styling
   .account-tabs {
     background: white;
     padding: 24px;
@@ -61,7 +58,6 @@ $transition: all 0.3s ease;
     }
   }
 
-  // Tab Content
   .tab-content {
     .info-card {
       border: none;
@@ -85,7 +81,6 @@ $transition: all 0.3s ease;
       }
     }
 
-    // Form Styling
     .ant-form {
       .ant-form-item-label {
         > label {
@@ -111,7 +106,7 @@ $transition: all 0.3s ease;
         font-size: 14px;
         transition: $transition;
         height: 44px;
-        input{
+        input {
           height: 44px;
         }
 
@@ -162,7 +157,6 @@ $transition: all 0.3s ease;
       }
     }
 
-    // Submit Button
     .submit-btn {
       background: linear-gradient(135deg, $primary-color 0%, #40a9ff 100%);
       border: none;
@@ -185,7 +179,6 @@ $transition: all 0.3s ease;
       }
     }
 
-    // Payment Methods Section
     .payment-methods {
       margin-top: 24px;
       padding: 20px;
@@ -254,7 +247,7 @@ $transition: all 0.3s ease;
     color: white;
     border: none;
     height: 100%;
-    .ant-card-body{
+    .ant-card-body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -262,11 +255,8 @@ $transition: all 0.3s ease;
     }
   }
 
-
-
   .credit-card-back {
     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    
   }
 
   .card-header {
@@ -290,7 +280,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .account-container {
     padding: 16px;
@@ -357,7 +346,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Animation Effects
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -373,7 +361,6 @@ $transition: all 0.3s ease;
   animation: fadeIn 0.3s ease-in-out;
 }
 
-// Success/Error States
 .ant-form-item-has-success {
   .ant-input,
   .ant-input-password,
@@ -398,8 +385,6 @@ $transition: all 0.3s ease;
   }
 }
 
-
-// Variables
 $primary-color: #1890ff;
 $success-color: #52c41a;
 $warning-color: #faad14;
@@ -411,7 +396,6 @@ $border-radius: 8px;
 $box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 $transition: all 0.3s ease;
 
-// Avatar Section
 .avatar-section {
   display: flex;
   align-items: center;
@@ -498,7 +482,6 @@ $transition: all 0.3s ease;
       }
     }
 
-    // Animation for avatar actions
     @keyframes bounceIn {
       0% {
         transform: scale(0.3);
@@ -539,12 +522,10 @@ $transition: all 0.3s ease;
   }
 }
 
-// Hidden uploader
 .avatar-uploader {
   display: none !important;
 }
 
-// Form styling
 .user-form {
   .ant-form-item-label > label {
     font-weight: 500;
@@ -604,7 +585,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Preview Modal
 .avatar-preview-modal {
   .ant-modal-content {
     border-radius: $border-radius;
@@ -645,7 +625,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .avatar-section {
     flex-direction: column;
@@ -711,7 +690,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Animation for entire component
 @keyframes slideInUp {
   from {
     opacity: 0;
@@ -727,14 +705,13 @@ $transition: all 0.3s ease;
   animation: slideInUp 0.4s ease-out;
 }
 
-// Loading state for avatar
 .avatar-loading {
   .user-avatar {
     position: relative;
     overflow: hidden;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: -100%;
@@ -760,7 +737,6 @@ $transition: all 0.3s ease;
   }
 }
 
-// Success/Error states for form
 .ant-form-item-has-success {
   .ant-input,
   .ant-input-password,

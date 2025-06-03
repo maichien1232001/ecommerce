@@ -4,10 +4,12 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import "./Home.scss";
 import { getProducts } from "../../../apis/products";
 import ProductCard from "../ComponentCommon/ProductCard";
+import { useSelector } from "react-redux";
 
 const { Title, Text } = Typography;
 
 const HomePage = () => {
+  const { wishlist } = useSelector((state) => state.wishlist);
   const [productsActive, setProductsActive] = useState([]);
   const [productsNew, setProductsNew] = useState([]);
   const [productsFeatured, setProductsFeatured] = useState([]);
@@ -57,7 +59,7 @@ const HomePage = () => {
     fetchProductFeatured();
     fetchProductBestSeller();
     fetchProductSale();
-  }, []);
+  }, [wishlist]);
 
   return (
     <div className="homepage-container">
