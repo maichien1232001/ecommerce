@@ -1,7 +1,7 @@
 import { Empty } from "antd";
-import React from "react";
+import React, { memo } from "react";
 
-const EmptyOrder = React.memo(({ searchTerm, statusFilter }) => (
+const EmptyOrder = memo(({ searchTerm, statusFilter }) => (
   <Empty
     image={Empty.PRESENTED_IMAGE_SIMPLE}
     description={

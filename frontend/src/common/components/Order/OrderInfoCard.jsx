@@ -1,10 +1,10 @@
 import { Card, Col, Row, Typography } from "antd";
-import React from "react";
+import React, { memo } from "react";
 import { formatCurrency, formatDetailedDate } from "../../../constants/common";
 
 const { Text } = Typography;
 
-const OrderInfoCard = React.memo(({ order }) => (
+const OrderInfoCard = memo(({ order }) => (
   <Card title="Thông tin đơn hàng" style={{ marginBottom: "16px" }}>
     <Row gutter={[16, 8]}>
       <Col span={12}>

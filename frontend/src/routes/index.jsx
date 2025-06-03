@@ -21,8 +21,9 @@ import Cart from "../features/shop/Cart";
 import Checkout from "../features/shop/Checkout";
 import VNPayReturn from "../common/components/VnPayReturn";
 import Wishlist from "../features/shop/WishList";
-import Order from "../features/shop/Order";
 import Contact from "../app/components/Contact";
+import ListOrders from "../features/admin/Order/ListOrders";
+import Order from "../features/shop/Order/Order";
 
 const Routers = () => (
   <Router>
@@ -136,6 +137,14 @@ const Routers = () => (
         element={
           <ProtectedRoute requiredRole="admin">
             <RouterRoot layout={AdminLayout} element={ListProducts} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/orders"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <RouterRoot layout={AdminLayout} element={ListOrders} />
           </ProtectedRoute>
         }
       />

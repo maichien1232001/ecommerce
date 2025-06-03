@@ -51,7 +51,7 @@ exports.getWishlist = async (req, res) => {
     );
 
     if (!wishlist) {
-      return res.status(404).json({ error: "Danh sách yêu thích trống" });
+      return res.status(200).json({ error: "Danh sách yêu thích trống" });
     }
 
     return res.status(200).json(wishlist);

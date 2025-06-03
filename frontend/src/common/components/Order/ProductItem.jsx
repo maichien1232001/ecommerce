@@ -1,7 +1,7 @@
 import { Image } from "antd";
-import React from "react";
+import React, { memo } from "react";
 
-const ProductItem = React.memo(({ product, showFullDetails = false }) => {
+const ProductItem = memo(({ product, showFullDetails = false }) => {
   const imageSize = showFullDetails ? 80 : 48;
   console.log(product.product);
   return (

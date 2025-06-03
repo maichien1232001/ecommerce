@@ -1,9 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { Card, Divider } from "antd";
 import ProductItem from "./ProductItem";
 import { formatCurrency } from "../../../constants/common";
 
-const DetailedProductList = React.memo(({ products, totalAmount }) => (
+const DetailedProductList = memo(({ products, totalAmount }) => (
   <Card title="Danh sách sản phẩm" style={{ marginBottom: "16px" }}>
     <div className="modal-product-list">
       {products.map((product, index) => (

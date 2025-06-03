@@ -1,13 +1,13 @@
+import React, { memo } from "react";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { Button, Modal } from "antd";
-import React from "react";
 import OrderStatusCards from "./OrderStatusCards";
 import OrderInfoCard from "./OrderInfoCard";
 import ShippingAddressCard from "./ShippingAddressCard";
 import DetailedProductList from "./DetailedProductList";
 import OrderTimeline from "./OrderTimeline";
 
-const OrderDetailsModal = React.memo(({ order, visible, onClose }) => {
+const OrderDetailsModal = memo(({ order, visible, onClose }) => {
   if (!order) return null;
 
   return (

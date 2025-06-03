@@ -18,10 +18,11 @@ import {
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { getColor, getFirstCharacter } from "../../../constants/avatar";
 import CartHeaderIcon from "../../../features/shop/Cart/CartHeaderIcon";
+import { logout } from "../../../redux/actions/auth.actions";
 
 const { Header } = Layout;
 
@@ -33,7 +34,7 @@ const HeaderShop = () => {
   const { t, i18n } = useTranslation("common");
   const navigate = useNavigate();
   const location = useLocation();
-
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth || state?.user);
   const { wishlist } = useSelector((state) => state.wishlist);
   const wishlistProducts = wishlist?.products;
@@ -95,8 +96,7 @@ const HeaderShop = () => {
     } else if (key === "settings") {
       navigate("/admin/settings");
     } else if (key === "logout") {
-      console.log("Logging out...");
-      navigate("/login");
+      dispatch(logout(navigate));
     }
   };
 

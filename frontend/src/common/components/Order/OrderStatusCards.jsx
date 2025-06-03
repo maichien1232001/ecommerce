@@ -1,8 +1,8 @@
 import { Card, Col, Row } from "antd";
-import React from "react";
+import React, { memo } from "react";
 import StatusBadge from "./StatusBadge";
 
-const OrderStatusCards = React.memo(({ order }) => (
+const OrderStatusCards = memo(({ order }) => (
   <Row gutter={16} style={{ marginBottom: "24px" }}>
     <Col span={12}>
       <Card size="small">

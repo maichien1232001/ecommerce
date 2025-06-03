@@ -64,6 +64,24 @@ const orderReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
+    case "GET_ALL_ORDER_REQUEST":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "GET_ALL_ORDER_SUCCESS":
+      return {
+        ...state,
+        loading: false,
+        orders: action.payload.orders,
+        paginationState: action.payload.pagination,
+      };
+    case "GET_ALL_ORDER_FAILURE":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     case "UPDATE_PAGINATION":
       return {
         ...state,

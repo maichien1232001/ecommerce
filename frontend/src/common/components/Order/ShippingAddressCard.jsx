@@ -1,9 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import { Card, Typography } from "antd";
 
 const { Text } = Typography;
-const ShippingAddressCard = React.memo(({ shippingAddress }) => {
+const ShippingAddressCard = memo(({ shippingAddress }) => {
   if (!shippingAddress) return null;
 
   return (

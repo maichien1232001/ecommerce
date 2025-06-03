@@ -1,10 +1,7 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { Col, Row, Typography } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getOrderUser,
-  updatePagination,
-} from "../../../redux/actions/order.actions";
+import { useDispatch } from "react-redux";
+import { updatePagination } from "../../../redux/actions/order.actions";
 import OrderCard from "./OrderCard";
 import LoginRequired from "./LoginRequired";
 import OrderFilters from "./OrderFilters";
@@ -36,23 +33,14 @@ const OrderGrid = memo(({ orders, onViewDetails }) => (
   </Row>
 ));
 
-const Order = () => {
+const OrderCommon = (props) => {
+  const { orders, paginationState, isAuthenticated, pagination, title } = props;
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const dispatch = useDispatch();
-  const { orders, pagination, paginationState } = useSelector(
-    (state) => state.order
-  );
-  const { user } = useSelector((state) => state.auth || state?.user);
-  const isAuthenticated = !!user?._id;
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(getOrderUser(pagination));
-    }
-  }, [isAuthenticated, pagination]);
 
   const handleSearchChange = useCallback((value) => {
     setSearchTerm(value);
@@ -91,7 +79,7 @@ const Order = () => {
   return (
     <div className="order-management">
       <PageHeader
-        title="Đơn Hàng Của Tôi"
+        title={title}
         subtitle="Quản lý và theo dõi tất cả đơn hàng của bạn"
       />
 
@@ -129,4 +117,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default OrderCommon;

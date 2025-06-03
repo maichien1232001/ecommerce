@@ -4,10 +4,10 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
-import React from "react";
+import React, { memo } from "react";
 import { formatDate } from "../../../constants/common";
 
-const OrderHeader = React.memo(({ order, onViewDetails }) => (
+const OrderHeader = memo(({ order, onViewDetails }) => (
   <div className="order-header">
     <div className="order-info">
       <div className="order-id">

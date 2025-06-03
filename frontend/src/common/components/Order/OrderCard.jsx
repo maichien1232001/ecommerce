@@ -1,11 +1,11 @@
-import React from "react";
+import React, { memo } from "react";
 import { Card } from "antd";
 import OrderHeader from "./OrderHeader";
 import ProductList from "./ProductList";
 import OrderStatusSection from "./OrderStatusSection";
 import OrderFooter from "./OrderFooter";
 
-const OrderCard = React.memo(({ order, onViewDetails }) => (
+const OrderCard = memo(({ order, onViewDetails }) => (
   <div className="order-card">
     <Card>
       <OrderHeader order={order} onViewDetails={onViewDetails} />
