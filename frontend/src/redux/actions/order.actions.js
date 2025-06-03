@@ -21,6 +21,7 @@ export const addOrder = (values) => async (dispatch) => {
       type: "ADD_ORDER_FAILURE",
       payload: error.message,
     });
+    notifyError(error.message);
     throw error;
   }
 };

@@ -22,6 +22,11 @@ const ProductCard = (props) => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth || state?.user);
   const isAuthenticated = !!user?._id;
+  const isOutOfStock = product.stock === 0;
+  const isActive = product.status === "inactive";
+  const isDiscontinued = product.status === "discontinued";
+
+  const isUnavailable = isOutOfStock || isActive || isDiscontinued;
 
   const getTagLabel = (value) => {
     const tag = optionTags.find((opt) => opt.value === value);
@@ -29,6 +34,15 @@ const ProductCard = (props) => {
   };
 
   const handleAddToCart = async (product) => {
+    if (isOutOfStock) {
+      notifyError("Sản phẩm đã hết hàng!");
+      return;
+    }
+    if (isActive || isDiscontinued) {
+      notifyError("Sản phẩm đã ngừng bán!");
+      return;
+    }
+
     try {
       let sessionID = localStorage.getItem("sessionID");
 
@@ -59,6 +73,15 @@ const ProductCard = (props) => {
   };
 
   const handleBuyNow = (product) => {
+    if (isOutOfStock) {
+      notifyError("Sản phẩm đã hết hàng!");
+      return;
+    }
+    if (isActive || isDiscontinued) {
+      notifyError("Sản phẩm đã ngừng bán!");
+      return;
+    }
+
     handleAddToCart(product);
     dispatch(setBuyNowProduct(product));
     if (!isAuthenticated) {
@@ -78,17 +101,57 @@ const ProductCard = (props) => {
     }
   };
 
+  const handleCardClick = () => {
+    navigate(`/product/${product._id}`);
+  };
+
   return (
     <>
       <Card
-        onClick={() => navigate(`/product/${product._id}`)}
-        className="product-card"
-        hoverable
+        onClick={handleCardClick}
+        className={`product-card ${isUnavailable ? "unavailable" : ""}`}
+        hoverable={!isUnavailable}
+        style={{
+          opacity: isUnavailable ? 0.6 : 1,
+          cursor: isUnavailable ? "default" : "pointer",
+        }}
         cover={
-          <img
-            alt={product.name}
-            src={product.images?.[0] || "https://via.placeholder.com/300"}
-          />
+          <div style={{ position: "relative" }}>
+            <img
+              alt={product.name}
+              src={product.images?.[0] || "https://via.placeholder.com/300"}
+              style={{
+                filter: isUnavailable ? "grayscale(50%)" : "none",
+              }}
+            />
+            {isUnavailable && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Tag
+                  color="red"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                  }}
+                >
+                  {isOutOfStock ? "Hết hàng" : "Ngừng bán"}
+                </Tag>
+              </div>
+            )}
+          </div>
         }
         actions={[
           <Button
@@ -98,6 +161,7 @@ const ProductCard = (props) => {
             }}
             type="primary"
             key="buy"
+            disabled={isUnavailable}
           >
             Mua ngay
           </Button>,
@@ -107,16 +171,49 @@ const ProductCard = (props) => {
               handleAddToCart(product);
             }}
             key="add-to-cart"
+            disabled={isUnavailable}
           >
             Thêm vào giỏ
           </Button>,
         ]}
       >
-        {product.specialTag && (
+        {product.specialTag && !isUnavailable && (
           <Tag className={`special-tag ${product.specialTag}`}>
             {getTagLabel(product.specialTag)}
           </Tag>
         )}
+
+        {/* Status tags positioned at top left */}
+        {isOutOfStock && (
+          <Tag
+            color="red"
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              zIndex: 10,
+              fontWeight: "bold",
+            }}
+          >
+            Hết hàng
+          </Tag>
+        )}
+        {(isActive || isDiscontinued) && (
+          <Tag
+            color="red"
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              zIndex: 10,
+              fontWeight: "bold",
+            }}
+          >
+            Ngừng bán
+          </Tag>
+        )}
+
+        {/* Wishlist button logic */}
         {favorite ? (
           <Button
             icon={<HeartFilled />}
@@ -126,6 +223,7 @@ const ProductCard = (props) => {
               top: "10px",
               right: "10px",
               color: "red",
+              zIndex: 10,
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -136,13 +234,19 @@ const ProductCard = (props) => {
           <Button
             icon={<HeartOutlined />}
             shape="circle"
-            style={{ position: "absolute", top: "10px", right: "10px" }}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              zIndex: 10,
+            }}
             onClick={(e) => {
               e.stopPropagation();
               handleAddWishList(product);
             }}
           />
         )}
+
         {typeof product.isFavorite === "boolean" ? (
           product.isFavorite ? (
             <Button
@@ -153,6 +257,7 @@ const ProductCard = (props) => {
                 top: "10px",
                 right: "10px",
                 color: "red",
+                zIndex: 10,
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -163,7 +268,12 @@ const ProductCard = (props) => {
             <Button
               icon={<HeartOutlined />}
               shape="circle"
-              style={{ position: "absolute", top: "10px", right: "10px" }}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                zIndex: 10,
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleAddWishList(product);
@@ -173,11 +283,24 @@ const ProductCard = (props) => {
         ) : null}
 
         <Meta
-          title={product.name}
+          title={
+            <span style={{ color: isUnavailable ? "#999" : "inherit" }}>
+              {product.name}
+            </span>
+          }
           description={
             <>
-              <Text className="product-brand">{product.brand}</Text>
-              <Title level={4} className="product-price">
+              <Text
+                className="product-brand"
+                style={{ color: isUnavailable ? "#999" : "inherit" }}
+              >
+                {product.brand}
+              </Text>
+              <Title
+                level={4}
+                className="product-price"
+                style={{ color: isUnavailable ? "#999" : "inherit" }}
+              >
                 {new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",

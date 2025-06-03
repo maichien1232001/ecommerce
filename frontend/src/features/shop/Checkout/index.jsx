@@ -68,6 +68,7 @@ const Checkout = () => {
     try {
       const orderCreatedSuccessfully = await createOrder();
       if (!orderCreatedSuccessfully) {
+        setProcess(false);
         return;
       }
 
