@@ -44,8 +44,10 @@ const Register = () => {
     <div className="container-register">
       <div className="form-wrapper">
         <div className="register-header">
-          <h1>Create Account</h1>
-          <p>Join thousands of customers who trust our platform</p>
+          <h1>Tạo tài khoản</h1>
+          <p>
+            Tham gia cùng hàng ngàn khách hàng tin tưởng nền tảng của chúng tôi
+          </p>
         </div>
 
         <Form
@@ -59,22 +61,22 @@ const Register = () => {
         >
           <Form.Item
             className="form-item"
-            label="Full Name"
+            label="Tên đầy đủ"
             name="username"
             rules={[
               {
                 required: true,
-                message: "Please enter your full name!",
+                message: "Vui lòng nhập tên đầy đủ của bạn!",
               },
               {
                 min: 2,
-                message: "Name must be at least 2 characters long!",
+                message: "Tên phải dài ít nhất 2 ký tự!",
               },
             ]}
           >
             <Input
               className="input-form"
-              placeholder="Enter your full name"
+              placeholder="Nhập tên đầy đủ của bạn"
               prefix={<UserOutlined />}
               size="large"
             />
@@ -83,21 +85,21 @@ const Register = () => {
           <Form.Item
             className="form-item"
             name="email"
-            label="Email Address"
+            label="Địa chỉ email"
             rules={[
               {
                 type: "email",
-                message: "Please enter a valid email address!",
+                message: "Vui lòng nhập địa chỉ email hợp lệ!",
               },
               {
                 required: true,
-                message: "Please enter your email address!",
+                message: "Vui lòng nhập địa chỉ email của bạn!",
               },
             ]}
           >
             <Input
               className="input-form"
-              placeholder="Enter your email address"
+              placeholder="Nhập địa chỉ email của bạn"
               prefix={<MailOutlined />}
               size="large"
             />
@@ -105,22 +107,22 @@ const Register = () => {
 
           <Form.Item
             className="form-item"
-            label="Password"
+            label="Mật khẩu"
             name="password"
             rules={[
               {
                 required: true,
-                message: "Please create a password!",
+                message: "Vui lòng tạo mật khẩu!",
               },
               {
                 min: 6,
-                message: "Password must be at least 6 characters long!",
+                message: "Mật khẩu phải dài ít nhất 6 ký tự!",
               },
             ]}
           >
             <Input.Password
               className="input-form"
-              placeholder="Create a strong password"
+              placeholder="Tạo mật khẩu mạnh"
               prefix={<LockOutlined />}
               size="large"
               iconRender={(visible) =>
@@ -131,27 +133,27 @@ const Register = () => {
 
           <Form.Item
             className="form-item"
-            label="Confirm Password"
+            label="Xác nhận mật khẩu"
             name="confirmPassword"
             dependencies={["password"]}
             rules={[
               {
                 required: true,
-                message: "Please confirm your password!",
+                message: "Vui lòng xác nhận mật khẩu của bạn!",
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error("Passwords do not match!"));
+                  return Promise.reject(new Error("Mật khẩu không khớp!"));
                 },
               }),
             ]}
           >
             <Input.Password
               className="input-form"
-              placeholder="Confirm your password"
+              placeholder="Xác nhận mật khẩu của bạn"
               prefix={<LockOutlined />}
               size="large"
               iconRender={(visible) =>
@@ -166,9 +168,9 @@ const Register = () => {
             valuePropName="checked"
           >
             <Checkbox>
-              I agree to the{" "}
-              <span className="link-terms">Terms of Service</span> and{" "}
-              <span className="link-terms">Privacy Policy</span>
+              Tôi đồng ý với{" "}
+              <span className="link-terms">Điều khoản dịch vụ</span> và{" "}
+              <span className="link-terms">Chính sách bảo mật</span>
             </Checkbox>
           </Form.Item>
 
@@ -181,16 +183,16 @@ const Register = () => {
               size="large"
               block
             >
-              {loading ? "Creating Account..." : "Create Account"}
+              {loading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
             </Button>
           </Form.Item>
         </Form>
 
         <div className="footer-register">
           <span>
-            Already have an account?{" "}
+            Đã có tài khoản?{" "}
             <span className="link-login" onClick={handleRedirect}>
-              Sign in here
+              Đăng nhập tại đây
             </span>
           </span>
         </div>
