@@ -116,7 +116,7 @@ const userReducers = (state = initialState, action) => {
       return {
         ...state,
         user: action.payload,
-        loadding: false,
+        loading: false,
       };
     case "GET_USER_PROFILE_FAILURE":
       return {

@@ -1,11 +1,11 @@
+import React, { memo } from "react";
 import { FilterOutlined } from "@ant-design/icons";
 import { Card, Col, Input, Row, Select } from "antd";
-import React from "react";
 
 const { Option } = Select;
 const { Search } = Input;
 
-const OrderFilters = React.memo(
+const OrderFilters = memo(
   ({ searchTerm, statusFilter, onSearchChange, onStatusChange }) => (
     <div className="order-filters">
       <Card>

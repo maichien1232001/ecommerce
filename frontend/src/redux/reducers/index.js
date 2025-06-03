@@ -9,7 +9,7 @@ import cartReducer from "./cart.reducers";
 import wishlistReducer from "./wishlist.reducers";
 import orderReducer from "./order.reducers";
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   auths: authReducer,
   products: productReducers,
   category: categoryReducers,
@@ -20,5 +20,12 @@ const rootReducer = combineReducers({
   wishlist: wishlistReducer,
   order: orderReducer,
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === "LOGOUT") {
+    state = undefined;
+  }
+  return appReducer(state, action);
+};
 
 export default rootReducer;

@@ -1,5 +1,6 @@
 import {
   createOrderApi,
+  getAllOrderApi,
   getUserOrderApi,
   updateOrderStatusApi,
 } from "../../apis/order.api";
@@ -51,6 +52,23 @@ export const getOrderUser = (values) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: "GET_ORDER_USER_FAILURE",
+      payload: error.message,
+    });
+    notifyError(error.message);
+  }
+};
+
+export const getAllOrder = (values) => async (dispatch) => {
+  dispatch({ type: "GET_ALL_ORDER_REQUEST" });
+  try {
+    const response = await getAllOrderApi(values);
+    dispatch({
+      type: "GET_ALL_ORDER_SUCCESS",
+      payload: response?.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: "GET_ALL_ORDER_FAILURE",
       payload: error.message,
     });
     notifyError(error.message);

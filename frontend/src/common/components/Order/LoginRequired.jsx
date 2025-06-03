@@ -1,10 +1,10 @@
+import React, { memo } from "react";
 import { LoginOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card } from "antd";
 import Paragraph from "antd/es/skeleton/Paragraph";
 import Title from "antd/es/skeleton/Title";
-import React from "react";
 
-const LoginRequired = React.memo(() => (
+const LoginRequired = memo(() => (
   <div className="login-required">
     <Card className="login-card">
       <div className="avatar-container">

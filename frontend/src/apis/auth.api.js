@@ -1,5 +1,6 @@
 import axios from "axios";
 import API from "../config/axiosInterceptor";
+import { handleError } from "../utils/handleError";
 
 const proxy = "http://localhost:8080/api";
 
@@ -10,11 +11,7 @@ export const registerApi = async (values) => {
     });
     return response.data;
   } catch (error) {
-    const errMsg =
-      error?.response?.data?.error ||
-      error?.response?.data?.message ||
-      "Đã có lỗi xảy ra. Vui lòng thử lại.";
-    throw new Error(errMsg);
+    handleError(error);
   }
 };
 
@@ -25,10 +22,6 @@ export const loginApi = async (values) => {
     });
     return response.data;
   } catch (error) {
-    const errMsg =
-      error?.response?.data?.error ||
-      error?.response?.data?.message ||
-      "Đã có lỗi xảy ra. Vui lòng thử lại.";
-    throw new Error(errMsg);
+    handleError(error);
   }
 };

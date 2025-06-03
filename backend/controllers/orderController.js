@@ -162,7 +162,8 @@ exports.getUserOrders = async (req, res) => {
     const orders = await Order.find({ user: userId })
       .skip(skip)
       .limit(limit)
-      .populate("products.product");
+      .populate("products.product")
+      .sort({ createdAt: -1 });
 
     const totalOrders = await Order.countDocuments({ user: userId });
     const pagination = paginationHelper(page, limit, totalOrders);
@@ -181,7 +182,8 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Order.find({})
       .skip(skip)
       .limit(limit)
-      .populate("products.product");
+      .populate("products.product")
+      .sort({ createdAt: -1 });
 
     const totalOrders = await Order.countDocuments({});
     const pagination = paginationHelper(page, limit, totalOrders);

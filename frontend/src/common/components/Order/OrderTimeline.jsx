@@ -1,14 +1,14 @@
+import React, { memo } from "react";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   LoadingOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
-import React from "react";
 import { formatDetailedDate } from "../../../constants/common";
 import { Card, Timeline } from "antd";
 
-const OrderTimeline = React.memo(({ order }) => {
+const OrderTimeline = memo(({ order }) => {
   const getTimelineItems = () => {
     const items = [
       {

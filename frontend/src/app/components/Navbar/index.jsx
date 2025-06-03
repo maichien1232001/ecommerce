@@ -36,36 +36,36 @@ const listMenu = [
     path: "/admin/orders",
     title: "Orders",
   },
-  {
-    key: 4,
-    icon: <CommentOutlined />,
-    path: "/admin/reviews",
-    title: "Reviews",
-  },
-  {
-    key: 5,
-    icon: <HeartOutlined />,
-    path: "/admin/wishlists",
-    title: "Wish Lists",
-  },
-  {
-    key: 6,
-    icon: <TagOutlined />,
-    path: "/admin/couponds",
-    title: "Coupons",
-  },
+  // {
+  //   key: 4,
+  //   icon: <CommentOutlined />,
+  //   path: "/admin/reviews",
+  //   title: "Reviews",
+  // },
+  // {
+  //   key: 5,
+  //   icon: <HeartOutlined />,
+  //   path: "/admin/wishlists",
+  //   title: "Wish Lists",
+  // },
+  // {
+  //   key: 6,
+  //   icon: <TagOutlined />,
+  //   path: "/admin/couponds",
+  //   title: "Coupons",
+  // },
   {
     key: 7,
     icon: <UserOutlined />,
     path: "/admin/accounts",
     title: "Accounts",
   },
-  {
-    key: 8,
-    icon: <SettingOutlined />,
-    path: "/admin/settings",
-    title: "Settings",
-  },
+  // {
+  //   key: 8,
+  //   icon: <SettingOutlined />,
+  //   path: "/admin/settings",
+  //   title: "Settings",
+  // },
 ];
 
 const NavBar = () => {

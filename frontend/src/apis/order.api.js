@@ -19,6 +19,21 @@ export const getUserOrderApi = async ({ page = 1, limit = 10 }) => {
   }
 };
 
+export const getAllOrderApi = async ({ page = 1, limit = 10 }) => {
+  const params = {
+    page,
+    limit,
+  };
+  try {
+    const response = await API.get(`${proxy}/orders`, {
+      params,
+    });
+    return response;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
 export const createOrderApi = async (value) => {
   try {
     const response = await API.post(`${proxy}/orders/create`, value);

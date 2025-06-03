@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import ProductItem from "./ProductItem";
 import { Tag } from "antd";
 
-const ProductList = React.memo(({ products, maxDisplay = 2 }) => (
+const ProductList = memo(({ products, maxDisplay = 2 }) => (
   <div className="product-list">
     {products.slice(0, maxDisplay).map((product, index) => (
       <ProductItem key={`${product.product._id}-${index}`} product={product} />
