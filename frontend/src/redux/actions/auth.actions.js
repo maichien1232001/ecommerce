@@ -22,7 +22,7 @@ export const register = (values, navigate) => async (dispatch) => {
   }
 };
 
-export const login = (values, navigate) => async (dispatch) => {
+export const login = (values, navigate, from) => async (dispatch) => {
   dispatch({ type: "LOGIN_REQUEST" });
   try {
     const response = await loginApi(values);
@@ -36,8 +36,12 @@ export const login = (values, navigate) => async (dispatch) => {
     });
     const isAdmin = checkAdmin(response?.user);
     const token = _.get(response, "accessToken");
-    localStorage.setItem("authToken", token);
-    !isAdmin ? navigate("/") : navigate("/admin/products");
+    localStorage.setItem("accessToken", token);
+    if (from) {
+      navigate(from, { replace: true });
+    } else {
+      navigate(isAdmin ? "/admin/products" : "/", { replace: true });
+    }
   } catch (error) {
     dispatch({
       type: "LOGIN_FAILURE",

@@ -101,3 +101,25 @@ export const updateFilter = (payload) => {
     payload,
   };
 };
+
+export const setBuyNowProduct = (product) => (dispatch) => {
+  dispatch({
+    type: "SET_BUY_NOW_PRODUCT",
+    payload: product,
+  });
+};
+
+export const clearBuyNowProduct = () => (dispatch) => {
+  dispatch({
+    type: "CLEAR_BUY_NOW_PRODUCT",
+  });
+};
+
+export const setCheckoutItems = (items) => ({
+  type: "SET_CHECKOUT_ITEMS",
+  payload: items,
+});
+
+export const clearCheckoutItems = () => ({
+  type: "CLEAR_CHECKOUT_ITEMS",
+});

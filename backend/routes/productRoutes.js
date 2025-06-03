@@ -8,8 +8,13 @@ const {
   importProducts,
   getProductById,
 } = require("../controllers/productController");
-const { protect, isAdmin, auth } = require("../middlewares/authMiddleware");
-const upload = require("../utils/upload"); // Dùng để xử lý file upload (ví dụ: multer)
+const {
+  protect,
+  isAdmin,
+  auth,
+  optionalAuth,
+} = require("../middlewares/authMiddleware");
+const upload = require("../utils/upload");
 
 const router = express.Router();
 
@@ -17,10 +22,10 @@ const router = express.Router();
 const uploads = multer({ storage: multer.memoryStorage() });
 
 router.post("/import", auth, uploads.single("file"), importProducts);
-router.post("/", auth, isAdmin, upload.array("images"), createProduct); // Tạo sản phẩm
-router.put("/:productId", auth, isAdmin, upload.array("images"), updateProduct); // Cập nhật sản phẩm
-router.delete("/:productId", auth, isAdmin, deleteProduct); // Xóa sản phẩm
-router.get("/", getProducts); // Lấy danh sách sản phẩm (với phân trang và tìm kiếm)
-router.get("/:productId", getProductById); // Lấy danh sách sản phẩm (với phân trang và tìm kiếm)
+router.post("/", auth, isAdmin, upload.array("images"), createProduct);
+router.put("/:productId", auth, isAdmin, upload.array("images"), updateProduct);
+router.delete("/:productId", auth, isAdmin, deleteProduct);
+router.get("/", optionalAuth, getProducts);
+router.get("/:productId", getProductById);
 
 module.exports = router;

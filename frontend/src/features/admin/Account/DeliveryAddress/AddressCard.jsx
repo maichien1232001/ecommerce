@@ -83,7 +83,7 @@ const AddressCard = ({
         </div>
 
         {/* Nút đặt làm mặc định nằm bên ngoài actions */}
-        {showSetDefault && (
+        {/* {showSetDefault && (
           <div style={{ marginTop: 12, textAlign: "right" }}>
             <Button
               size="small"
@@ -95,7 +95,7 @@ const AddressCard = ({
               Đặt làm mặc định
             </Button>
           </div>
-        )}
+        )} */}
       </div>
     </Card>
   );

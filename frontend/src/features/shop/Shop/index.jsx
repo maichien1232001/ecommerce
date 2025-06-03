@@ -31,6 +31,7 @@ const ShopPage = () => {
   const { products, pagination, loading, filter } = useSelector(
     (state) => state.products
   );
+  const { wishlist } = useSelector((state) => state.wishlist);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -41,11 +42,11 @@ const ShopPage = () => {
       limit: PRODUCTS_PER_PAGE,
     };
     dispatch(getListProducts(params));
-  }, [dispatch, filter, currentPage]);
+  }, [dispatch, filter, currentPage, wishlist]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [filter]);
+  }, [filter, wishlist]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

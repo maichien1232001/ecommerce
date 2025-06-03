@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL: "http://localhost:8080/api",
-  withCredentials: true, // gửi cookie chứa refresh token
+  withCredentials: true,
 });
 
 API.interceptors.request.use(

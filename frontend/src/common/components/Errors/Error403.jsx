@@ -9,7 +9,7 @@ const Error403 = () => {
   const navigate = useNavigate();
   const token =
     useSelector((state) => state.auths.accessToken) ||
-    localStorage.getItem("authToken");
+    localStorage.getItem("accessToken");
   const handleBackHome = () => {
     dispatch(getUserProfile(token));
     navigate("/");

@@ -12,7 +12,7 @@
     .header-action-product-card {
       width: 100%;
       background-color: #f0f2f5;
-      .header-btn-wrapper{
+      .header-btn-wrapper {
         display: flex;
         align-items: center;
         gap: 0 8px;
@@ -24,33 +24,33 @@
         padding: 8px;
         box-shadow: var(--boxshadow);
 
-        .header-btn-product-card{
+        .header-btn-product-card {
           display: flex;
           justify-content: space-between;
         }
-        .header-filter{
+        .header-filter {
           display: flex;
           align-items: center;
           gap: 0 8px;
-          .filter-toggle-icon{
+          .filter-toggle-icon {
             cursor: pointer;
             color: var(--primary-color);
-            &:hover{
+            &:hover {
               opacity: 0.8;
             }
           }
         }
-        .search-product{
+        .search-product {
           width: 400px;
-          .ant-input-affix-wrapper{
+          .ant-input-affix-wrapper {
             height: 40px;
           }
-          .ant-btn{
+          .ant-btn {
             height: 40px;
           }
         }
-        .advanced-filter{
-         margin-top: 8px;
+        .advanced-filter {
+          margin-top: 8px;
         }
       }
       .import-products {
@@ -60,12 +60,12 @@
       }
     }
   }
-  .card-table-product{
+  .card-table-product {
     margin-top: 16px;
-    .ant-card-body{
+    .ant-card-body {
       padding: 8px;
     }
-    .table-product{ 
+    .table-product {
       overflow: hidden;
     }
   }

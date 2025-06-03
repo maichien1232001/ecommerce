@@ -20,18 +20,18 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
     [user?.paymentInfo]
   );
 
-  const showModal = useCallback((payment = null) => {
+  const showModal = (payment = null) => {
     setIsEditing(!!payment);
     setEditingPayment(payment);
     setIsModalVisible(true);
     setModalMode(payment ? "update" : "add");
-  }, []);
+  };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     setIsModalVisible(false);
     setIsEditing(false);
     setEditingPayment(null);
-  }, []);
+  };
 
   const handleSubmit = useCallback(
     async (values) => {
@@ -54,7 +54,7 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
         console.log(error);
       }
     },
-    [modalMode, editingPayment, onUpdatePaymentInfo, handleCancel]
+    [modalMode, editingPayment, onUpdatePaymentInfo]
   );
 
   const handleDelete = useCallback(
@@ -106,7 +106,7 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
   if (paymentInfo.length === 0) {
     return (
       <>
-        <EmptyPaymentState onAddPayment={() => showModal()} />
+        <EmptyPaymentState onAddPayment={() => showModal(null)} />
         <PaymentModal
           isVisible={isModalVisible}
           isEditing={isEditing}
@@ -142,7 +142,7 @@ const PaymentMethod = ({ user, onUpdatePaymentInfo, useLocationMapping }) => {
                 <PaymentItem
                   key={payment?._id}
                   payment={payment}
-                  onEdit={showModal}
+                  onEdit={() => showModal(payment)}
                   onDelete={() => handleDelete(payment?._id)}
                   onSetDefault={handleSetDefault}
                   setModalMode={(e) => setModalMode(e)}

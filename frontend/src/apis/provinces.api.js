@@ -3,7 +3,6 @@ import API from "../config/axiosInterceptor";
 
 const proxy = "http://localhost:8080/api";
 
-// 1. Lấy danh sách tất cả tỉnh/thành phố
 export const getProvincesApi = async () => {
   try {
     const response = await API.get(`${proxy}/address/provinces`);
@@ -17,7 +16,6 @@ export const getProvincesApi = async () => {
   }
 };
 
-// 3. Lấy danh sách quận/huyện theo tỉnh
 export const getDistrictsApi = async (provinceCode) => {
   try {
     const response = await API.get(
@@ -33,7 +31,6 @@ export const getDistrictsApi = async (provinceCode) => {
   }
 };
 
-// 5. Lấy danh sách xã/phường theo quận/huyện
 export const getWardsApi = async (districtCode) => {
   try {
     const response = await API.get(
@@ -49,7 +46,7 @@ export const getWardsApi = async (districtCode) => {
   }
 };
 
-// // 7. Tìm kiếm tỉnh/thành phố
+// //  Tìm kiếm tỉnh/thành phố
 // export const searchProvincesApi = async (query, limit = 10) => {
 //   try {
 //     const response = await API.get(`${proxy}/address/search/provinces`, {
@@ -63,7 +60,7 @@ export const getWardsApi = async (districtCode) => {
 //   }
 // };
 
-// // 8. Tìm kiếm quận/huyện trong một tỉnh
+// //  Tìm kiếm quận/huyện trong một tỉnh
 // export const searchDistrictsApi = async (query, provinceCode, limit = 10) => {
 //   try {
 //     const response = await API.get(`${proxy}/address/search/districts`, {
@@ -77,7 +74,7 @@ export const getWardsApi = async (districtCode) => {
 //   }
 // };
 
-// // 9. Tìm kiếm xã/phường trong một quận/huyện
+// //  Tìm kiếm xã/phường trong một quận/huyện
 // export const searchWardsApi = async (query, districtCode, limit = 10) => {
 //   try {
 //     const response = await API.get(`${proxy}/address/search/wards`, {

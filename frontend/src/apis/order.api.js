@@ -1,29 +1,38 @@
 import axios from "axios";
 import API from "../config/axiosInterceptor";
+import { handleError } from "../utils/handleError";
+
 const proxy = "http://localhost:8080/api";
 
-const handleError = (error) => {
-  const errMsg =
-    error?.response?.data?.error ||
-    error?.response?.data?.message ||
-    "Đã có lỗi xảy ra. Vui lòng thử lại.";
-  throw new Error(errMsg);
-};
-
-export const getAllOrderApi = async () => {
+export const getUserOrderApi = async ({ page = 1, limit = 10 }) => {
+  const params = {
+    page,
+    limit,
+  };
   try {
-    const response = API.get(`${proxy}/orders/`);
-    return response?.data;
+    const response = await API.get(`${proxy}/orders/user-order`, {
+      params,
+    });
+    return response;
   } catch (error) {
-    handleError();
+    handleError(error);
   }
 };
 
 export const createOrderApi = async (value) => {
   try {
-    const response = API.post(`${proxy}/orders/create`, value);
+    const response = await API.post(`${proxy}/orders/create`, value);
     return response?.data;
   } catch (error) {
-    handleError();
+    handleError(error);
+  }
+};
+
+export const updateOrderStatusApi = async (values) => {
+  try {
+    const response = await API.put(`${proxy}/orders/status`, values);
+    return response?.data;
+  } catch (error) {
+    handleError(error);
   }
 };
