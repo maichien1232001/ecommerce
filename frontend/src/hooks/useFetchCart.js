@@ -5,7 +5,7 @@ import _ from "lodash";
 
 const useFetchCart = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user || state.auth);
+  const { user } = useSelector((state) => state.user || state.auths);
   const sessionId = localStorage.getItem("sessionID");
   const fetchCart = async () => {
     try {

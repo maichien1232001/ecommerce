@@ -17,8 +17,6 @@ const OrderSummaryCard = ({
   onSubmit,
   loading,
 }) => {
-  const { user } = useSelector((state) => state.auth || state?.user);
-
   const calculateTotal = () => {
     if (isSingleProductCheckout) {
       return buyNowProduct.price;

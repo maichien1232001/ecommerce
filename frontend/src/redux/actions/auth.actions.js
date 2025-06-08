@@ -9,7 +9,11 @@ export const register = (values, navigate) => async (dispatch) => {
     const response = await registerApi(values);
     dispatch({
       type: "REGISTER_SUCCESS",
-      payload: response.user,
+      payload: response,
+    });
+    dispatch({
+      type: "GET_USER_PROFILE_SUCCESS",
+      payload: response?.user,
     });
     const isAdmin = checkAdmin(response);
     const token = _.get(response, "accessToken");
@@ -20,6 +24,7 @@ export const register = (values, navigate) => async (dispatch) => {
       type: "REGISTER_FAILURE",
       payload: error.message,
     });
+    notifyError(error.message);
   }
 };
 

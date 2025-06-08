@@ -5,7 +5,7 @@ import OrderCommon from "../../../common/components/Order";
 
 const ListOrders = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
   const { orders, pagination, paginationState } = useSelector(
     (state) => state.order
   );

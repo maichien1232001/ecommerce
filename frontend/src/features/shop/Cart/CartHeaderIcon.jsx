@@ -10,7 +10,7 @@ const CartHeaderIcon = () => {
   const { fetchCart } = useFetchCart();
   const navigate = useNavigate();
   const { carts } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.user || state.auth);
+  const { user } = useSelector((state) => state.user || state.auths);
   useEffect(() => {
     fetchCart();
   }, [user]);

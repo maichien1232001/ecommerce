@@ -11,6 +11,7 @@ import {
   TagOutlined,
   UserOutlined,
   SettingOutlined,
+  ProductOutlined,
 } from "@ant-design/icons";
 
 import "./Navbar.scss";
@@ -28,20 +29,20 @@ const listMenu = [
     key: 2,
     icon: <AppstoreOutlined />,
     path: "/admin/products",
-    title: "Products",
+    title: "Sản phẩm",
   },
   {
     key: 3,
     icon: <ShoppingCartOutlined />,
     path: "/admin/orders",
-    title: "Orders",
+    title: "Đơn hàng",
   },
-  // {
-  //   key: 4,
-  //   icon: <CommentOutlined />,
-  //   path: "/admin/reviews",
-  //   title: "Reviews",
-  // },
+  {
+    key: 4,
+    icon: <ProductOutlined />,
+    path: "/admin/category",
+    title: "Phân loại sản phầm",
+  },
   // {
   //   key: 5,
   //   icon: <HeartOutlined />,
@@ -58,7 +59,7 @@ const listMenu = [
     key: 7,
     icon: <UserOutlined />,
     path: "/admin/accounts",
-    title: "Accounts",
+    title: "Tài khoản",
   },
   // {
   //   key: 8,

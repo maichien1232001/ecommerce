@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 
 const RoleBasedRedirect = () => {
   const token = localStorage.getItem("accessToken");
-  const { user } = useSelector((state) => state.auth || state.user);
+  const { user } = useSelector((state) => state?.user);
 
   if (user.role === "admin") {
     return <Navigate to="/admin" />;

@@ -27,7 +27,7 @@ const Cart = () => {
     (state) => state.cart
   );
 
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
   const isAuthenticated = !!user?._id;
 
   const [isRemovingItem, setIsRemovingItem] = useState(false);

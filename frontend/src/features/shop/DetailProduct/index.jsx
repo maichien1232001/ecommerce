@@ -32,7 +32,7 @@ const DetailProduct = () => {
   const { productId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
   const isAuthenticated = !!user?._id;
 
   const [product, setProduct] = useState(null);

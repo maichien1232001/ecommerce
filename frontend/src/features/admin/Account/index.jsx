@@ -19,7 +19,7 @@ const Account = () => {
   const [addressForm] = Form.useForm();
   const [paymentForm] = Form.useForm();
 
-  const { user } = useSelector((state) => state.auth || state.user);
+  const { user } = useSelector((state) => state.user);
 
   const onFinishAddress = (addressId, values, action) => {
     try {
