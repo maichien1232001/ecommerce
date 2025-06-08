@@ -11,7 +11,7 @@ const { Title, Text } = Typography;
 const Wishlist = () => {
   const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
   const { wishlist } = useSelector((state) => state.wishlist);
   const wishlistProducts = wishlist?.products;
   const isAuthenticated = !!user?._id;

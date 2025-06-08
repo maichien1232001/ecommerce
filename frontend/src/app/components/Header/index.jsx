@@ -35,7 +35,7 @@ const HeaderShop = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const user = useSelector((state) => state.user?.user);
   const { wishlist } = useSelector((state) => state.wishlist);
   const wishlistProducts = wishlist?.products;
   const isAuthenticated = !!user?._id;

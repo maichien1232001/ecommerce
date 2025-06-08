@@ -282,8 +282,6 @@ exports.getProducts = async (req, res) => {
 
     let updatedProducts = products;
 
-    // Nếu user đã đăng nhập, thêm isFavorite
-    console.log(req.user);
     if (req.user) {
       const wishlist = await Wishlist.findOne({ user: req.user._id }).select(
         "products.product"

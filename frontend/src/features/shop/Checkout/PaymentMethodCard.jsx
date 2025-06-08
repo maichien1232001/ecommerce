@@ -14,7 +14,7 @@ const PaymentMethodCard = ({
   loading,
   form,
 }) => {
-  const { user } = useSelector((state) => state?.auth || state.user);
+  const { user } = useSelector((state) => state.user);
   const { paymentInfo } = user;
   const paymentMethodDefault = _.find(paymentInfo, (item) => item.isDefault);
 

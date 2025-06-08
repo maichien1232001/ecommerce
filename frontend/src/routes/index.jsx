@@ -24,6 +24,7 @@ import Wishlist from "../features/shop/WishList";
 import Contact from "../app/components/Contact";
 import ListOrders from "../features/admin/Order/ListOrders";
 import Order from "../features/shop/Order/Order";
+import Categories from "../features/Categories";
 
 const Routers = () => (
   <Router>
@@ -153,6 +154,14 @@ const Routers = () => (
         element={
           <ProtectedRoute requiredRole="admin">
             <RouterRoot layout={AdminLayout} element={Account} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/category"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <RouterRoot layout={AdminLayout} element={Categories} />
           </ProtectedRoute>
         }
       />

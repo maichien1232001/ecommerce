@@ -21,11 +21,14 @@ import StatusFilter from "./FilterProduct/FilterByStatus";
 import BrandFilter from "./FilterProduct/FilterByBrand";
 import TagFilter from "./FilterProduct/FilterByTags";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { getColumns } from "../../../common/components/Table/constant";
 
 export const ListProducts = () => {
   const dispatch = useDispatch();
 
-  const { products, filter, loading } = useSelector((state) => state.products);
+  const { products, filter, loading, pagination } = useSelector(
+    (state) => state.products
+  );
 
   const [isOpenViewProduct, setIsOpenViewProduct] = useState(false);
   const [isOpenEditProduct, setIsOpenEditProduct] = useState(false);
@@ -159,6 +162,19 @@ export const ListProducts = () => {
           data={products}
           loading={loading}
           handleActionClick={handleActionClick}
+          columns={getColumns(
+            handleActionClick,
+            _.get(filter, "page"),
+            _.get(filter, "limit")
+          )}
+          pagination={{
+            current: _.get(filter, "page"),
+            pageSize: _.get(filter, "limit"),
+            total: _.get(pagination, "totalCount"),
+            showSizeChanger: true,
+            pageSizeOptions: ["5", "10", "20", "50", "100"],
+            showTotal: (total) => `Tổng ${total} sản phẩm`,
+          }}
         />
 
         <ViewProduct

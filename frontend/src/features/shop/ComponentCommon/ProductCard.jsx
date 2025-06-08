@@ -20,7 +20,7 @@ const ProductCard = (props) => {
   const { product, favorite } = props;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
   const isAuthenticated = !!user?._id;
   const isOutOfStock = product.stock === 0;
   const isActive = product.status === "inactive";

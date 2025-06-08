@@ -28,7 +28,7 @@ const Checkout = () => {
   const { buyNowProduct, checkoutItems } = useSelector(
     (state) => state.products
   );
-  const { user } = useSelector((state) => state.auth || state?.user);
+  const { user } = useSelector((state) => state?.user);
 
   const isMultipleItemsCheckout = checkoutItems && checkoutItems.length > 0;
   const isSingleProductCheckout = buyNowProduct && !isMultipleItemsCheckout;

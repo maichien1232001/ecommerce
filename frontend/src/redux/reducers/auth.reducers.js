@@ -19,7 +19,6 @@ const authReducer = (state = initialState, action) => {
         loading: false,
         user: action.payload.user,
         accessToken: action.payload.accessToken,
-        refreshToken: action.payload.refreshToken,
       };
     case "REGISTER_FAILURE":
       return {
@@ -38,7 +37,6 @@ const authReducer = (state = initialState, action) => {
         loading: false,
         user: action.payload.user,
         accessToken: action.payload.accessToken,
-        refreshToken: action.payload.refreshToken,
       };
     case "LOGIN_FAILURE":
       return {

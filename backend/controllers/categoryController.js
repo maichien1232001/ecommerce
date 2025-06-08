@@ -28,8 +28,22 @@ exports.createCategory = async (req, res) => {
 
 // Lấy tất cả danh mục
 exports.getAllCategories = async (req, res) => {
+  const { page = 1, limit = 10, name } = req.query;
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    const filter = {};
+
+    if (name) {
+      filter.name = { $regex: name, $options: "i" };
+    }
+    let categories;
+    if (req?.user?.role === "admin") {
+      categories = await Category.find(filter)
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
+    } else {
+      categories = await Category.find().sort({ createdAt: -1 });
+    }
     res.status(200).json({ categories });
   } catch (error) {
     res
@@ -42,7 +56,7 @@ exports.getAllCategories = async (req, res) => {
 exports.updateCategory = async (req, res) => {
   try {
     // const { categoryId } = req.params;
-    const { categoryId, name, description } = req.body;
+    const { categoryId, name } = req.body;
 
     const category = await Category.findById(categoryId);
     if (!category) {
@@ -50,14 +64,16 @@ exports.updateCategory = async (req, res) => {
     }
 
     category.name = name || category.name;
-    category.description = description || category.description;
     category.slug = slugify(name || category.name, {
       lower: true,
       strict: true,
     });
 
-    await category.save();
-    res.status(200).json({ message: "Cập nhật danh mục thành công", category });
+    const newCategory = await category.save();
+    res.status(200).json({
+      message: "Cập nhật danh mục thành công",
+      category: newCategory,
+    });
   } catch (error) {
     res
       .status(500)
@@ -75,8 +91,10 @@ exports.deleteCategory = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy danh mục" });
     }
 
-    await category.deleteOne();
-    res.status(200).json({ message: "Xoá danh mục thành công" });
+    const newCategory = await category.deleteOne();
+    res
+      .status(200)
+      .json({ message: "Xoá danh mục thành công", category: newCategory });
   } catch (error) {
     res
       .status(500)

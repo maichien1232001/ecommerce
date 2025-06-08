@@ -26,9 +26,11 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     const { username, email, password } = values;
-
+    let sessionID = localStorage.getItem("sessionID");
     try {
-      await dispatch(register({ name: username, email, password }, navigate));
+      await dispatch(
+        register({ name: username, email, password, sessionID }, navigate)
+      );
     } catch (error) {
       console.error("Registration failed:", error);
     } finally {
