@@ -12,7 +12,7 @@ const { TextArea } = Input;
 
 const FormProducts = (props) => {
   const { form, handleClose, handleSubmit, isEdit, state, setState } = props;
-  const categories = useSelector((state) => state.category.category);
+  const { allCategory } = useSelector((state) => state.category);
   const brand = useSelector((state) => state.brand.brand);
   const handleSetFileList = (list) => {
     setState((prev) => ({
@@ -76,7 +76,7 @@ const FormProducts = (props) => {
         rules={[{ required: true, message: "Hãy chọn loại sản phẩm" }]}
       >
         <CommonSelect
-          options={categories}
+          options={allCategory}
           value={state.selectedCategory}
           onChange={(cat) => setState({ ...state, selectedCategory: cat })}
           getValue={(item) => item._id}

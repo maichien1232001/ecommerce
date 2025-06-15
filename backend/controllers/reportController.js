@@ -38,7 +38,6 @@ const getDateRange = (period, startDate, endDate) => {
       start = today.clone().startOf("day");
       end = today.clone().endOf("day");
   }
-  console.log(end);
 
   return { dateStart: start, dateEnd: end };
 };

@@ -50,7 +50,7 @@ const DashboardManagemnet = () => {
 
   const { products } = useSelector((state) => state.products);
   const { orders } = useSelector((state) => state.order);
-  const { category } = useSelector((state) => state.category);
+  const { allCategory } = useSelector((state) => state.category);
   const { loading } = useSelector((state) => state.order || state.products);
 
   const fetchDashboardData = async () => {
@@ -149,7 +149,7 @@ const DashboardManagemnet = () => {
   }, [dashboardData.products]);
 
   const categoryData = useMemo(() => {
-    const categoryMap = category.reduce((map, cat) => {
+    const categoryMap = allCategory.reduce((map, cat) => {
       map[cat._id] = cat.name;
       return map;
     }, {});
@@ -165,7 +165,7 @@ const DashboardManagemnet = () => {
       type,
       value,
     }));
-  }, [dashboardData.products, category]);
+  }, [dashboardData.products, allCategory]);
 
   console.log(revenueData);
 
