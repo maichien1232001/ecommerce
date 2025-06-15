@@ -295,7 +295,6 @@ exports.getProducts = async (req, res) => {
         ...product.toObject(),
         isFavorite: favoriteIds.includes(product._id.toString()),
       }));
-      console.log("updatedProducts", updatedProducts);
     } else {
       // Nếu chưa đăng nhập, convert từ Mongoose Document -> Object để đồng bộ kiểu dữ liệu
       updatedProducts = products.map((p) => p.toObject());

@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 const { Title, Text, Link } = Typography;
 
 const Footer = () => {
-  const { category } = useSelector((state) => state.category);
+  const { allCategory } = useSelector((state) => state.category);
   const companyLinks = [
     { title: "Về cửa hàng", href: "#" },
     { title: "Tin tức", href: "#" },
@@ -36,7 +36,7 @@ const Footer = () => {
     { title: "FAQ", href: "#" },
   ];
 
-  const categoryLinks = _.map(category, (item) => ({
+  const categoryLinks = _.map(allCategory, (item) => ({
     title: _.capitalize(item.name),
     href: "#",
   }));

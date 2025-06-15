@@ -6,12 +6,18 @@ export const getListCategoryApi = async ({
   page = 1,
   limit = 10,
   name = "",
+  all,
 } = {}) => {
   try {
-    const params = {
-      page,
-      limit,
-    };
+    let params = {};
+    if (!all) {
+      params = {
+        page,
+        limit,
+      };
+    } else {
+      params.all = all;
+    }
     if (name) params.name = name;
     const res = await API.get(`${proxy}/category`, {
       params,
@@ -24,10 +30,8 @@ export const getListCategoryApi = async ({
 
 export const createCategoryApi = async (values) => {
   try {
-    const res = await API.post(`${proxy}/`, {
-      values,
-    });
-    return res?.data;
+    const res = await API.post(`${proxy}/category/create`, values);
+    return res;
   } catch (error) {
     handleError(error);
   }
@@ -35,9 +39,7 @@ export const createCategoryApi = async (values) => {
 
 export const updateItemCategoryApi = async (values) => {
   try {
-    const res = await API.put(`${proxy}/update`, {
-      values,
-    });
+    const res = await API.put(`${proxy}/category/update`, values);
     return res?.data;
   } catch (error) {
     handleError(error);
@@ -46,8 +48,8 @@ export const updateItemCategoryApi = async (values) => {
 
 export const deleteItemCategoryApi = async (values) => {
   try {
-    const res = await API.post(`${proxy}/delete`, {
-      values,
+    const res = await API.post(`${proxy}/category/delete`, {
+      categoryId: values,
     });
     return res?.data;
   } catch (error) {

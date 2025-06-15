@@ -175,6 +175,15 @@ export const ListProducts = () => {
             pageSizeOptions: ["5", "10", "20", "50", "100"],
             showTotal: (total) => `Tổng ${total} sản phẩm`,
           }}
+          onChange={(pagination) => {
+            dispatch(
+              updateFilter({
+                ...filter,
+                page: pagination.current,
+                limit: pagination.pageSize,
+              })
+            );
+          }}
         />
 
         <ViewProduct

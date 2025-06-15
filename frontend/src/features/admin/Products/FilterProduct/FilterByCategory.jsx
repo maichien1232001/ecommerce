@@ -6,7 +6,7 @@ import { updateFilter } from "../../../../redux/actions/product.action";
 const FilterByCategory = () => {
   const dispatch = useDispatch();
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const listCategories = useSelector((state) => state.category.category);
+  const listCategories = useSelector((state) => state.category.allCategory);
   const { filter } = useSelector((state) => state.products);
   return (
     <div>
