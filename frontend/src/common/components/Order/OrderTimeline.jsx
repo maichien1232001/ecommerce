@@ -55,6 +55,34 @@ const OrderTimeline = memo(({ order }) => {
       });
     }
 
+    if (order.status === "Shipping") {
+      items.push(
+        {
+          color: "blue",
+          dot: <LoadingOutlined />,
+          children: (
+            <div>
+              <div>Đơn hàng đang được giao</div>
+              <div style={{ fontSize: "12px", color: "#8c8c8c" }}>
+                Đơn hàng đã được chuẩn bị xong
+              </div>
+            </div>
+          ),
+        },
+        {
+          color: "green",
+          dot: <CheckCircleOutlined />,
+          children: (
+            <div>
+              <div>Đã giao hàng thành công</div>
+              <div style={{ fontSize: "12px", color: "#8c8c8c" }}>
+                Đơn hàng đã được giao đến khách hàng
+              </div>
+            </div>
+          ),
+        }
+      );
+    }
     if (order.status === "Delivered") {
       items.push(
         {

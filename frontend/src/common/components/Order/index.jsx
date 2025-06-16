@@ -9,6 +9,7 @@ import EmptyOrder from "./EmptyOrder";
 import CustomPagination from "./CustomPagination";
 import OrderDetailsModal from "./OrderDetailsModal";
 import "./Order.scss";
+import ModalUpdateOrderStatus from "./ModalUpdateOrderStatus";
 
 const { Title, Text } = Typography;
 
@@ -23,11 +24,15 @@ const PageHeader = memo(({ title, subtitle }) => {
   );
 });
 
-const OrderGrid = memo(({ orders, onViewDetails }) => (
+const OrderGrid = memo(({ orders, onViewDetails, onEditStatus }) => (
   <Row gutter={[16, 16]}>
     {orders.map((order) => (
       <Col xs={24} sm={12} lg={8} key={order._id}>
-        <OrderCard order={order} onViewDetails={onViewDetails} />
+        <OrderCard
+          order={order}
+          onViewDetails={onViewDetails}
+          onEditStatus={onEditStatus}
+        />
       </Col>
     ))}
   </Row>
@@ -39,6 +44,7 @@ const OrderCommon = (props) => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -54,15 +60,25 @@ const OrderCommon = (props) => {
     dispatch(updatePagination({ ...pagination, page: page }));
   };
 
-  const handleViewDetails = useCallback((order) => {
+  const handleViewDetails = (order) => {
     setSelectedOrder(order);
     setModalVisible(true);
-  }, []);
+  };
 
-  const handleCloseModal = useCallback(() => {
+  const handleCloseModal = () => {
     setModalVisible(false);
     setSelectedOrder(null);
-  }, []);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const onEditStatus = (order) => {
+    setSelectedOrder(order);
+    setIsOpen(true);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -94,7 +110,11 @@ const OrderCommon = (props) => {
         <EmptyOrder searchTerm={searchTerm} statusFilter={statusFilter} />
       ) : (
         <>
-          <OrderGrid orders={orders} onViewDetails={handleViewDetails} />
+          <OrderGrid
+            orders={orders}
+            onViewDetails={handleViewDetails}
+            onEditStatus={onEditStatus}
+          />
 
           {paginationState.totalCount > pagination.limit && (
             <CustomPagination
@@ -112,6 +132,11 @@ const OrderCommon = (props) => {
         order={selectedOrder}
         visible={modalVisible}
         onClose={handleCloseModal}
+      />
+      <ModalUpdateOrderStatus
+        order={selectedOrder}
+        visible={isOpen}
+        onClose={handleClose}
       />
     </div>
   );

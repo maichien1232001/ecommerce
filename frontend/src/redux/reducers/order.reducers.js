@@ -22,6 +22,7 @@ const orderReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         order: action.payload,
+        orders: [action.payload, ...state.orders],
       };
     case "ADD_ORDER_FAILURE":
       return {
@@ -39,6 +40,11 @@ const orderReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         order: action.payload,
+        orders: state.orders.map((order) =>
+          order._id === action.payload?.order?._id
+            ? action.payload.order
+            : order
+        ),
       };
     case "UPDATE_ORDER_STATUS_FAILURE":
       return {

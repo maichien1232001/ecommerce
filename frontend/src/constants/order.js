@@ -5,7 +5,16 @@ const STATUS_CONFIG = {
       text: "Chờ xử lý",
       icon: "ClockCircleOutlined",
     },
-    Processing: { color: "blue", text: "Đang xử lý", icon: "LoadingOutlined" },
+    Processing: {
+      color: "blue",
+      text: "Đang chuẩn bị hàng",
+      icon: "LoadingOutlined",
+    },
+    Shipping: {
+      color: "green",
+      text: "Đang giao hàng",
+      icon: "CheckCircleOutlined",
+    },
     Delivered: { color: "green", text: "Đã giao", icon: "CheckCircleOutlined" },
     Cancelled: { color: "red", text: "Đã hủy", icon: "CloseCircleOutlined" },
   },
