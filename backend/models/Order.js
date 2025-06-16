@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true }, // Tổng giá trị đơn hàng
   status: {
     type: String,
-    enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+    enum: ["Pending", "Processing", "Shipping", "Delivered", "Cancelled"],
     default: "Pending",
   },
   shippingAddress: {

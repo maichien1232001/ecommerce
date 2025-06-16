@@ -4,7 +4,7 @@ import {
   getUserOrderApi,
   updateOrderStatusApi,
 } from "../../apis/order.api";
-import { notifyError } from "../../common/components/Tostify";
+import { notifyError, notifySuccess } from "../../common/components/Tostify";
 
 export const addOrder = (values) => async (dispatch) => {
   dispatch({ type: "ADD_ORDER_REQUEST" });
@@ -29,10 +29,12 @@ export const updateOrderStatus = (values) => async (dispatch) => {
   dispatch({ type: "UPDATE_ORDER_STATUS_REQUEST" });
   try {
     const response = await updateOrderStatusApi(values);
+    console.log(22222, response);
     dispatch({
       type: "UPDATE_ORDER_STATUS_SUCCESS",
       payload: response,
     });
+    notifySuccess("Thông báo", "Cập nhật trạng thái đơn hàng thành công");
   } catch (error) {
     dispatch({
       type: "UPDATE_ORDER_STATUS_FAILURE",

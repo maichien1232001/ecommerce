@@ -3,7 +3,6 @@ import React, { memo } from "react";
 
 const ProductItem = memo(({ product, showFullDetails = false }) => {
   const imageSize = showFullDetails ? 80 : 48;
-  console.log(product.product);
   return (
     <div className={`product-item ${showFullDetails ? "detailed" : ""}`}>
       <Image

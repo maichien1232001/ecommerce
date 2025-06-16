@@ -232,12 +232,14 @@ exports.updateOrderStatus = async (req, res) => {
     order.shippingAddress = shippingAddress || order.shippingAddress;
     order.paymentMethod = paymentMethod || order.paymentMethod;
     order.updatedAt = Date.now() || order.updatedAt;
-    await order.save();
+    const updatedOrder = await order.save();
+    await updatedOrder.populate("products.product");
     // await sendOrderNotification(userId, newOrder);
 
-    return res
-      .status(201)
-      .json({ message: "Trạng thái đơn hàng đã được cập nhật", order });
+    return res.status(201).json({
+      message: "Trạng thái đơn hàng đã được cập nhật",
+      order: updatedOrder,
+    });
   } catch (error) {
     handleError(res, error);
   }

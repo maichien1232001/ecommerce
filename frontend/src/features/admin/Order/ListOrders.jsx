@@ -9,6 +9,7 @@ const ListOrders = () => {
   const { orders, pagination, paginationState } = useSelector(
     (state) => state.order
   );
+
   const isAuthenticated = !!user?._id;
   useEffect(() => {
     if (isAuthenticated) {
